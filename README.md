@@ -1,7 +1,7 @@
 # online-delivery-system
 A CLI software to order, track and manage delivery of goods.
 
-##Abstract
+##  Abstract
 One of the major problems faced by the residents of IIT Jodhpur is the frequent need to travel a long distance to reach the Community Centre to buy commodities. Not only is it time-consuming but also difficult, especially during the summer season.
 Our Online Delivery System provides the necessary interface between customers and vendors needed for the smooth functioning of a delivery system and additional features which make it appealing to the customers.  The actors in our system are the customers, vendors, bank and the Database.
 
