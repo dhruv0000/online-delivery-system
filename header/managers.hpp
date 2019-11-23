@@ -8,7 +8,7 @@ using namespace std;
 
 class ProductManager {
     public:
-    bool addProduct(string name, string type, string description, int quantity, double price) {
+    static bool addProduct(string name, string type, string description, int quantity, double price) {
         // if(Database::currentUser->)
         Stock* newStock = new Stock((Vendor*) Database::currentUser, quantity, price);
         bool found = false;
@@ -25,7 +25,7 @@ class ProductManager {
         return true;
     }
     
-    void showTopProducts(int count = 10) {
+    static void showTopProducts(int count = 10) {
         vector<Product*> productsToShow(Database::products);
         sort(productsToShow.begin(), productsToShow.end(), Product::compareProduct);
         printSeparator();
@@ -35,7 +35,7 @@ class ProductManager {
         }
     }
 
-    void searchProducts(string query, int limit = 10) {
+    static void searchProducts(string query, int limit = 10) {
         vector<Product*> productsToShow(Database::products);
         sort(productsToShow.begin(), productsToShow.end(), Product::compareProduct);
         printSeparator();
@@ -48,10 +48,71 @@ class ProductManager {
         }
     }
 
-    bool setDiscount(double discount) {
+    static bool setDiscount(double discount) {
         Database::discount = discount;
         return true;
     }
 
 
-}
+};
+
+
+class UserManager{
+
+
+public:
+    static bool registerUser(){
+        User* newUser = new User(userName, hashPassword, accountNumber, address, type);
+        Database :: users.push_back(*newUser);
+        return true;
+    }
+    
+    static bool loginUser(string userName, unsigned long hashPassword){
+        for(auto existingUser : (Database::users)){
+            if(userName == existingUser->userName){
+                if(hashPassword == existingUser->hashPassword){
+                    Database :: currentUser = existingUser;
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        }
+    return false;
+    }
+
+    static bool logoutUser(){
+        if(Database :: currentUser == NULL) return false;
+        Database :: currentUser = NULL;
+        return true;
+    }
+
+    static bool showUserProfile(){
+        if(Database :: currentUser){
+            User* check = Database ::currentUser;
+            cout<<"Following are your details :"<<endl;
+            cout<<"User Name :\t\t"<<check->username<<endl;
+            cout<<"Account Number :\t\t"<<check->account<<endl;
+            cout<<"Address :\t\t"endl;
+            (check->address).displayAddress();
+            cout<<"Wallet balance :\t\t"<<(check->wallet).getBalance()<<endl;
+            //Still we have to add show cart orders and pending orders
+            return true; 
+        }
+        return false;
+
+    }
+
+    static bool addMoneyFromAccount(double amount){
+        printSeparator();
+        cout<<"Directing to Bank Gateway"<<endl;
+        ((Database::currentUser)->wallet).updateBalance(amount);
+        printSeparator()
+        return true;
+    }
+
+    static int getWalletBalance(){
+        return ((Databse::currentUser)->wallet).getBalance();
+    }
+
+};
