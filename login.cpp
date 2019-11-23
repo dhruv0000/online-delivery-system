@@ -1,73 +1,17 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-
-class UserManager{
-public:
-
-
-};
-
-
-
 void printFlow(){
   cout<<"Enter the number corresponding to funtion you wish to perform"<<endl;
 }
 
-class Password{
-public:
-    static bool checkStrength(string passwd){
-        int length = passwd;
-        int countUpper = 0,countLower = 0,countDigit = 0;
-        for(int i=0;i<len;i++){
-            if(passwd[i] >= 65 && passwd[i] <= 90)
-                countUpper++;
-            if(passwd[i] >= 97 && passwd[i] <= 122)
-                countLower++;
-            if(passwd[i] >= 48 && passwd[i] <= 57)
-                countDigit++;
-        }
-        if(countUpper && countLower && countDigit)
-            return false;
 
-        return true;
-    }
-    static unsigned long hashValue(string passwd){
-        hash<string> h;
-        return h(passwd);
-    }
 
-};
-
-class Address{
-private:
-    string bulding,street,city,state;
-
-public:
-    void storeAddress(){
-        cout<<"Enter each details in one line each "<<endl;
-        cout<<"Enter your building or appartment : ";
-        getline(str,building);
-        cout<<"Enter your street : ";
-        getline(str,street);
-        cout<<"Enter your city : ";
-        getline(str,city);
-        cout<<"Enter your state : ";
-        getline(str,state);
-    }
-
-    void display(){
-        cout<<"Building/Appartment : "<<bulding<<endl;
-        cout<<"Street : "<<street<<endl;
-        cout<<"City : "<<city<<endl;
-        cout<<"State : "<<state<<endl;
-    }
-};
 
 int main(){
   int wish;
   cout<<"Welcome to our Online Store"<<endl;
-  signIn:
+  SignIn:
   printFlow();
   cout<<"1 : New User"<<endl;
   cout<<"2 : Login as Admin"<<endl;
@@ -75,27 +19,35 @@ int main(){
   cout<<"4 : Login as Vendor"<<endl;
   cin>>wish;
 
-//   string username;
-//   string password;
-  
   switch(wish){
     case 1:
-        registration:
+       
+        Registration:
+        
         printFlow();
         cout<<"1: Register as Customer"<<endl;
         cout<<"2: Register as Vendor"<<endl;
         cin>>wish;
-        string name,password,accountNumberrePassword;
-        Address address;
-
-        if(wish == 1){
-            cout<<"Enter the following details"<<endl;
-            cout<<"Enter your name(without space) : ";
-            cin>>name;
         
+        string userName,password,accountNumber,rePassword;
+        Address address;
+        enum Type = type;
+
+        if(wish == 1 || wish == 2){
+            EnterNewUserName : 
+            
+            cout<<"Enter the following details"<<endl;
+            cout<<"Enter your User Name(without space) : ";
+            cin>>userName;
+            
+            if(UserManager :: checkUserNameAvailable(userName)){
+                cout<<"This User Name already exist's"<<endl;
+                goto EnterNewUserName;
+            }
+
             do{
                 do{
-                    cout<<"Enter your password(should contain 6-10 characters,atleast 1 Upper Case,Lower Case and Digit character) : ";
+                    cout<<"Enter your Password(should contain 6-10 characters,atleast 1 Upper Case,Lower Case and Digit character) : ";
                     cin>>password;
 
                     if(Password :: checkStrength(password))
@@ -105,46 +57,80 @@ int main(){
         
                 }while(true);
 
-                cout<<"Re-Enter your password : ";
+                cout<<"Re-Enter your Password : ";
                 cin>>rePassword;
         
                 if(password == rePassword)
                     break;
         
-                cout<<"Your password didn't match"<<endl;
+                cout<<"Your Password didn't match"<<endl;
         
             }while(true);
 
-            cout<<"Enter your Account number : ";
+            cout<<"Enter your Account Number : ";
             cin>>accountNumber;
             address.storeAddress();
             unsigned long hashPassword = Password :: hashValue(string);
-
+            if(wish == 1){
+                type = CUSTOMER;
+            }else{
+                type = VENDOR;
+            }
         
-        }else if(wish == 2){
-
         }else{
             cout<<"You have entered wrong wish"<<endl;
-            goto registration;
+            goto Registration;
         }
 
+        if(UserManager :: registerUser(userName, hashPassword, accountNumber, address, type)){
+            Database :: currentUser = newUser;
+            cout<<"You have successfully created new account"<<endl;
+            cout<<"Please login into Account "<<endl;
+            goto SignIn;
+        }
+        break;
+        
     case 2:
-        cout<<"Enter your username (without spaces):";
-        cin>>username;
+        string userName,password;
+        IncorrectPassword :
+
+        cout<<"Enter your userName (without spaces):";
+        cin>>userName;
         cout<<"Enter your password:";
         cin>>password;
-        if(username == Database :: admin->username && Database :: password == admin->password){
-        
+        unsigned long hashValue = (Password :: hashValue(password))
+        if((userName == Database :: admin->userName) &&  hashValue == (Database :: admin->password)){
+               
         }else{
-            cout<<"You have entered wrong wish"<<endl;
+            if(!loginUser(username,hashValue)){
+                cout<<"You have entered wrong user name or password : "<<endl;
+                goto IncorrectPassword;
+            }
+            cout<<"You are Logged In successsfully (:"<<endl;
+            if((Database :: currentUser)->type == 1){
+
+            }
+            else{
+                int count;
+                cout<<"Enter the number of top purchased product you we to see"<<endl;
+                cin>>count;
+                ProductManager :: showTopProducts(count);
+                //Show Top Product has some Issues of how to get the top product address???
+               
+                printFlow()
+                cout<<"1 :"
+
+            }
+
         }
-    
+        break;
+
     case 3:
     
     case 4:
     
     default:
         cout<<"You have entered wrong choice"<<endl;
-        goto signIn;
+        goto SignIn;
   }
 }
