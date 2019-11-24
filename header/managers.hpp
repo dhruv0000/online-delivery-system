@@ -13,7 +13,12 @@ class ProductManager {
         Stock* newStock = new Stock((Vendor*) Database::currentUser, quantity, price);
         bool found = false;
         for(auto& product: Database::products) {
-            if(compareStringIgnoreCase(name, product->name)) {
+            if(compareStringIgnoreCase(name, product->name)) {          
+                for (auto& stock: product->stocks) {
+                    if(Database::currentUser->getUsername() == stock->vendor->getUsername()) {
+                        stock->quantity += quantity;
+                    }
+                }
                 product->stocks.push_back(newStock);
                 found = true;
                 break;
@@ -61,16 +66,22 @@ class UserManager{
 
 
 public:
-    static bool registerUser(){
-        User* newUser = new User(userName, hashPassword, accountNumber, address, type);
-        Database :: users.push_back(*newUser);
+    static bool registerUser(string username, unsigned long long hashPassword, string account, Address address, Type type){
+        User* newUser = new User(username, hashPassword, account, address, type);
+        Database :: users.push_back(newUser);
         return true;
     }
+    static bool checkUserNameAvailable(string username){
     
-    static bool loginUser(string userName, unsigned long hashPassword){
+        for(auto presentUserNameCheck : Database::users){
+            if(presentUserNameCheck->username == username) return false;
+        }
+        return true;
+    }
+    static bool loginUser(string username, unsigned long long hashPassword){
         for(auto existingUser : (Database::users)){
-            if(userName == existingUser->userName){
-                if(hashPassword == existingUser->hashPassword){
+            if(username == existingUser->username){
+                if(hashPassword == existingUser->password){
                     Database :: currentUser = existingUser;
                     return true;
                 }else{
@@ -93,7 +104,7 @@ public:
             cout<<"Following are your details :"<<endl;
             cout<<"User Name :\t\t"<<check->username<<endl;
             cout<<"Account Number :\t\t"<<check->account<<endl;
-            cout<<"Address :\t\t"endl;
+            cout<<"Address :\t\t"<<endl;
             (check->address).displayAddress();
             cout<<"Wallet balance :\t\t"<<(check->wallet).getBalance()<<endl;
             //Still we have to add show cart orders and pending orders
@@ -107,12 +118,12 @@ public:
         printSeparator();
         cout<<"Directing to Bank Gateway"<<endl;
         ((Database::currentUser)->wallet).updateBalance(amount);
-        printSeparator()
+        printSeparator();
         return true;
     }
 
     static int getWalletBalance(){
-        return ((Databse::currentUser)->wallet).getBalance();
+        return ((Database::currentUser)->wallet).getBalance();
     }
 
 };

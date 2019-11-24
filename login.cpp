@@ -1,27 +1,26 @@
 #include <bits/stdc++.h>
+#include "header/managers.hpp"
+
 using namespace std;
 
 void printFlow(){
   cout<<"Enter the number corresponding to funtion you wish to perform"<<endl;
 }
 
-
-
-
 int main(){
-  int wish;
-  cout<<"Welcome to our Online Store"<<endl;
-  SignIn:
-  printFlow();
-  cout<<"1 : New User"<<endl;
-  cout<<"2 : Login as Admin"<<endl;
-  cout<<"3 : Login as Customer"<<endl;
-  cout<<"4 : Login as Vendor"<<endl;
-  cin>>wish;
+    int wish;
+    cout<<"Welcome to our Online Store"<<endl;
+    SignIn:
+    printFlow();
+    cout<<"1 : New User"<<endl;
+    cout<<"2 : Login as Admin"<<endl;
+    cout<<"3 : Login as Customer"<<endl;
+    cout<<"4 : Login as Vendor"<<endl;
+    cin>>wish;
 
-  switch(wish){
-    case 1:
-       
+  
+    if(wish == 1) {
+        
         Registration:
         
         printFlow();
@@ -29,19 +28,20 @@ int main(){
         cout<<"2: Register as Vendor"<<endl;
         cin>>wish;
         
-        string userName,password,accountNumber,rePassword;
+        string username,password,accountNumber,rePassword;
+        unsigned long long hashPassword;
         Address address;
-        enum Type = type;
+        Type type;
 
         if(wish == 1 || wish == 2){
             EnterNewUserName : 
             
             cout<<"Enter the following details"<<endl;
             cout<<"Enter your User Name(without space) : ";
-            cin>>userName;
+            cin>>username;
             
-            if(UserManager :: checkUserNameAvailable(userName)){
-                cout<<"This User Name already exist's"<<endl;
+            if(!(UserManager :: checkUserNameAvailable(username))){
+                cout<<"This User Name already exists"<<endl;
                 goto EnterNewUserName;
             }
 
@@ -70,7 +70,7 @@ int main(){
             cout<<"Enter your Account Number : ";
             cin>>accountNumber;
             address.storeAddress();
-            unsigned long hashPassword = Password :: hashValue(string);
+            hashPassword = Password :: hashValue(password);
             if(wish == 1){
                 type = CUSTOMER;
             }else{
@@ -82,32 +82,30 @@ int main(){
             goto Registration;
         }
 
-        if(UserManager :: registerUser(userName, hashPassword, accountNumber, address, type)){
-            Database :: currentUser = newUser;
+        if(UserManager :: registerUser(username, hashPassword, accountNumber, address, type)){
             cout<<"You have successfully created new account"<<endl;
             cout<<"Please login into Account "<<endl;
             goto SignIn;
         }
-        break;
         
-    case 2:
-        string userName,password;
+    } else if(wish == 2) {
+        string username,password;
         IncorrectPassword :
 
-        cout<<"Enter your userName (without spaces):";
-        cin>>userName;
+        cout<<"Enter your username (without spaces):";
+        cin>>username;
         cout<<"Enter your password:";
         cin>>password;
-        unsigned long hashValue = (Password :: hashValue(password))
-        if((userName == Database :: admin->userName) &&  hashValue == (Database :: admin->password)){
-               
-        }else{
-            if(!loginUser(username,hashValue)){
+        unsigned long long hashValue = (Password :: hashValue(password));
+        // if((username == Database :: admin->getUsername()) &&  hashValue == (Database :: admin->password)){
+                
+        // }else{
+            if(!UserManager::loginUser(username,hashValue)){
                 cout<<"You have entered wrong user name or password : "<<endl;
                 goto IncorrectPassword;
             }
             cout<<"You are Logged In successsfully (:"<<endl;
-            if((Database :: currentUser)->type == 1){
+            if((Database :: currentUser)->getType() == 1){
 
             }
             else{
@@ -116,21 +114,24 @@ int main(){
                 cin>>count;
                 ProductManager :: showTopProducts(count);
                 //Show Top Product has some Issues of how to get the top product address???
-               
-                printFlow()
-                cout<<"1 :"
+                
+                printFlow();
+                cout<<"1 :";
 
             }
 
-        }
-        break;
+        // }
+        
+    }
 
-    case 3:
-    
-    case 4:
-    
-    default:
-        cout<<"You have entered wrong choice"<<endl;
-        goto SignIn;
-  }
+    // else if(wish == 3) {
+    // }
+    // else if (wish == 4) {
+    // }
+
+    // else {
+    //     cout<<"You have entered wrong choice"<<endl;
+    //     goto SignIn;
+    // }
 }
+
