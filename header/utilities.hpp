@@ -29,17 +29,17 @@ void printSeparator() {
 
 bool compareChar(char & c1, char & c2)
 {
-	if (c1 == c2)
-		return true;
-	else if (std::toupper(c1) == std::toupper(c2))
-		return true;
-	return false;
+  if (c1 == c2)
+    return true;
+  else if (std::toupper(c1) == std::toupper(c2))
+    return true;
+  return false;
 }
  
 bool compareStringIgnoreCase(std::string & str1, std::string &str2)
 {
-	return ( (str1.size() == str2.size() ) &&
-			 std::equal(str1.begin(), str1.end(), str2.begin(), &compareChar) );
+  return ( (str1.size() == str2.size() ) &&
+       std::equal(str1.begin(), str1.end(), str2.begin(), &compareChar) );
 }
 
 
@@ -191,6 +191,10 @@ public:
 class Customer : public User{
   Cart cart;
   public:
+  Customer(string username,unsigned long long password,string accountNumber,Address address) : User(username,password,accountNumber,address,CUSTOMER){
+    
+  }
+
   string getDatabaseString() {
     string db = getUserString() +  to_string(cart.cartProducts.size()) + "\n";
     for(auto product : cart.cartProducts) {
@@ -203,7 +207,12 @@ class Customer : public User{
 class Vendor : public User{
   double rating;
   int numberOfRatings;
-  string reviews;
+  vector<string> reviews;
+public:
+  Vendor(string username,unsigned long long password,string accountNumber,Address address):User(username,password,accountNumber,address,VENDOR){
+    ratings = 0;
+    numberOfRatings = 0;
+  }
 };
 
 
@@ -263,6 +272,3 @@ class Product{
     }
     friend class ProductManager;
 };
-
-
-
