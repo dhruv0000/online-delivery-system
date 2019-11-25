@@ -123,14 +123,16 @@ class CartProduct{
       this->stock = stock;
       this->quantity = quantity;
   }
-  // string getDatabaseString() {
-  //   string 
-  // }
+  string getDatabaseString() {
+    string db;
+    db = product->getProductName() + "\n" + stock->getVendorName() + "\n";
+    return db;
+  }
 };
 
 class Cart{
   vector<CartProduct> cartProducts;
-
+  friend class Customer;
 };
 
 class Order{
@@ -178,7 +180,7 @@ public:
 
   string getUserString() {
     string db = username + "\n" + to_string(password) + "\n" + to_string(wallet.getBalance()) + "\n" + account + "\n" + address.getDatabaseString() + to_string(type) + "\n" + to_string(orders.size()) + "\n";
-    for(auto& order: orders) {
+    for(auto order: orders) {
       db.append(to_string(order->getOrderID()));
       db.append("\n");
     }
@@ -189,9 +191,13 @@ public:
 class Customer : public User{
   Cart cart;
   public:
-  // string getDatabaseString() {
-  //   string db = getUserString() + 
-  // }
+  string getDatabaseString() {
+    string db = getUserString() +  to_string(cart.cartProducts.size()) + "\n";
+    for(auto product : cart.cartProducts) {
+      db.append(product.getDatabaseString());
+    }
+    return db;
+  }
 };
 
 class Vendor : public User{
@@ -211,6 +217,9 @@ class Stock{
         this->vendor = vendor;
         this->quantity = quantity;
         this->price = price;
+    }
+    string getVendorName() {
+      return vendor->getUsername();
     }
     string getDatabaseString() {
       return vendor->getUsername() + "\n" + to_string(quantity) + "\n" + to_string(price) + "\n";
@@ -248,6 +257,9 @@ class Product{
           db.append(stock->getDatabaseString());
         } 
         return db;
+    }
+    string getProductName() {
+      return name;
     }
     friend class ProductManager;
 };

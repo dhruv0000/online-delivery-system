@@ -4,21 +4,23 @@
 #include "database.hpp"
 using namespace std;
 
-
-
 class ProductManager {
     public:
-    static bool addProduct(string name, string type, string description, int quantity, double price) {
+    static bool addProduct(string name, string type, int quantity, double price, string description = "none") {
         // if(Database::currentUser->)
         Stock* newStock = new Stock((Vendor*) Database::currentUser, quantity, price);
         bool found = false;
-        for(auto& product: Database::products) {
+        for(auto product: Database::products) {
             if(compareStringIgnoreCase(name, product->name)) {          
-                for (auto& stock: product->stocks) {
+                for (auto stock: product->stocks) {
                     if(Database::currentUser->getUsername() == stock->vendor->getUsername()) {
                         stock->quantity += quantity;
+                        stock->price = price;
+                        found = true;
+                        break;
                     }
                 }
+                if(found) break;
                 product->stocks.push_back(newStock);
                 found = true;
                 break;
@@ -30,27 +32,27 @@ class ProductManager {
         return true;
     }
     
-    static void showTopProducts(int count = 10) {
-        vector<Product*> productsToShow(Database::products);
-        sort(productsToShow.begin(), productsToShow.end(), Product::compareProduct);
-        printSeparator();
-        for(int i = 0; i < min((int)productsToShow.size(), count); i++) {
-            productsToShow[i]->displayProduct();
-            printSeparator();
+    static vector<Product*> getTopProducts(int count = 10) {
+        vector<Product*> sortedProducts(Database::products);
+        vector<Product*> productsToShow;
+        sort(sortedProducts.begin(), sortedProducts.end(), Product::compareProduct);
+        for(int i = 0; i < min((int)sortedProducts.size(), count); i++) {
+            productsToShow.push_back(sortedProducts[i]);
         }
+        return productsToShow;
     }
 
-    static void searchProducts(string query, int limit = 10) {
-        vector<Product*> productsToShow(Database::products);
-        sort(productsToShow.begin(), productsToShow.end(), Product::compareProduct);
-        printSeparator();
-        for (auto& product : productsToShow)
+    static vector<Product*> searchProducts(string query, int limit = 10) {
+        vector<Product*> sortedProducts(Database::products);
+        vector<Product*> productsToShow;
+        sort(sortedProducts.begin(), sortedProducts.end(), Product::compareProduct);
+        for (auto product : sortedProducts)
         {
             if(product->name.find(query) != string::npos || product->type.find(query) != string::npos) {
-                product->displayProduct();
-                printSeparator();
+                productsToShow.push_back(product);
             }
         }
+        return productsToShow;
     }
 
     static bool setDiscount(double discount) {
