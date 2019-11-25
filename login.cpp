@@ -1,137 +1,132 @@
-#include <bits/stdc++.h>
-#include "header/managers.hpp"
-
+#include<iostream>
+#include<vector>
+#include<algorithm>
+#include "database.hpp"
 using namespace std;
 
-void printFlow(){
-  cout<<"Enter the number corresponding to funtion you wish to perform"<<endl;
-}
 
-int main(){
-    int wish;
-    cout<<"Welcome to our Online Store"<<endl;
-    SignIn:
-    printFlow();
-    cout<<"1 : New User"<<endl;
-    cout<<"2 : Login as Admin"<<endl;
-    cout<<"3 : Login as Customer"<<endl;
-    cout<<"4 : Login as Vendor"<<endl;
-    cin>>wish;
 
-  
-    if(wish == 1) {
-        
-        Registration:
-        
-        printFlow();
-        cout<<"1: Register as Customer"<<endl;
-        cout<<"2: Register as Vendor"<<endl;
-        cin>>wish;
-        
-        string username,password,accountNumber,rePassword;
-        unsigned long long hashPassword;
-        Address address;
-        Type type;
-
-        if(wish == 1 || wish == 2){
-            EnterNewUserName : 
-            
-            cout<<"Enter the following details"<<endl;
-            cout<<"Enter your User Name(without space) : ";
-            cin>>username;
-            
-            if(!(UserManager :: checkUserNameAvailable(username))){
-                cout<<"This User Name already exists"<<endl;
-                goto EnterNewUserName;
+class ProductManager {
+    public:
+    static bool addProduct(string name, string type, string description, int quantity, double price) {
+        // if(Database::currentUser->)
+        Stock* newStock = new Stock((Vendor*) Database::currentUser, quantity, price);
+        bool found = false;
+        for(auto& product: Database::products) {
+            if(compareStringIgnoreCase(name, product->name)) {          
+                for (auto& stock: product->stocks) {
+                    if(Database::currentUser->getUsername() == stock->vendor->getUsername()) {
+                        stock->quantity += quantity;
+                    }
+                }
+                product->stocks.push_back(newStock);
+                found = true;
+                break;
             }
-
-            do{
-                do{
-                    cout<<"Enter your Password(should contain 6-10 characters,atleast 1 Upper Case,Lower Case and Digit character) : ";
-                    cin>>password;
-
-                    if(Password :: checkStrength(password))
-                        break;
-
-                    cout<<"Password is not strong enough "<<endl;
-        
-                }while(true);
-
-                cout<<"Re-Enter your Password : ";
-                cin>>rePassword;
-        
-                if(password == rePassword)
-                    break;
-        
-                cout<<"Your Password didn't match"<<endl;
-        
-            }while(true);
-
-            cout<<"Enter your Account Number : ";
-            cin>>accountNumber;
-            address.storeAddress();
-            hashPassword = Password :: hashValue(password);
-            if(wish == 1){
-                type = CUSTOMER;
-            }else{
-                type = VENDOR;
-            }
-        
-        }else{
-            cout<<"You have entered wrong wish"<<endl;
-            goto Registration;
         }
-
-        if(UserManager :: registerUser(username, hashPassword, accountNumber, address, type)){
-            cout<<"You have successfully created new account"<<endl;
-            cout<<"Please login into Account "<<endl;
-            goto SignIn;
+        if(found) return true;
+        Product* newProduct = new Product(name, type, newStock, description);
+        Database::products.push_back(newProduct);
+        return true;
+    }
+    
+    static void showTopProducts(int count = 10) {
+        vector<Product*> productsToShow(Database::products);
+        sort(productsToShow.begin(), productsToShow.end(), Product::compareProduct);
+        printSeparator();
+        for(int i = 0; i < min((int)productsToShow.size(), count); i++) {
+            productsToShow[i]->displayProduct();
+            printSeparator();
         }
-        
-    } else if(wish == 2) {
-        string username,password;
-        IncorrectPassword :
-
-        cout<<"Enter your username (without spaces):";
-        cin>>username;
-        cout<<"Enter your password:";
-        cin>>password;
-        unsigned long long hashValue = (Password :: hashValue(password));
-        // if((username == Database :: admin->getUsername()) &&  hashValue == (Database :: admin->password)){
-                
-        // }else{
-            if(!UserManager::loginUser(username,hashValue)){
-                cout<<"You have entered wrong user name or password : "<<endl;
-                goto IncorrectPassword;
-            }
-            cout<<"You are Logged In successsfully (:"<<endl;
-            if((Database :: currentUser)->getType() == 1){
-
-            }
-            else{
-                int count;
-                cout<<"Enter the number of top purchased product you we to see"<<endl;
-                cin>>count;
-                ProductManager :: showTopProducts(count);
-                //Show Top Product has some Issues of how to get the top product address???
-                
-                printFlow();
-                cout<<"1 :";
-
-            }
-
-        // }
-        
     }
 
-    // else if(wish == 3) {
-    // }
-    // else if (wish == 4) {
-    // }
+    static void searchProducts(string query, int limit = 10) {
+        vector<Product*> productsToShow(Database::products);
+        sort(productsToShow.begin(), productsToShow.end(), Product::compareProduct);
+        printSeparator();
+        for (auto& product : productsToShow)
+        {
+            if(product->name.find(query) != string::npos || product->type.find(query) != string::npos) {
+                product->displayProduct();
+                printSeparator();
+            }
+        }
+    }
 
-    // else {
-    //     cout<<"You have entered wrong choice"<<endl;
-    //     goto SignIn;
-    // }
-}
+    static bool setDiscount(double discount) {
+        Database::discount = discount;
+        return true;
+    }
 
+
+};
+
+
+class UserManager{
+
+
+public:
+    static bool registerUser(string username, unsigned long long hashPassword, string account, Address address, Type type){
+        User* newUser = new User(username, hashPassword, account, address, type);
+        (Database :: users).push_back(*newUser);
+        
+        return true;
+    }
+    
+    static bool checkUserNameAvailable(string username){
+    
+        for(auto presentUserNameCheck : (Database::users)){
+            if(presentUserNameCheck->username == username) return false;
+        }
+        return true;
+    }
+
+    static bool loginUser(string username, unsigned long long hashPassword){
+        for(auto existingUser : (Database::users)){
+            if(username == existingUser->username){
+                if(hashPassword == existingUser->password){
+                    Database :: currentUser = existingUser;
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        }
+    return false;
+    }
+
+    static bool logoutUser(){
+        if(Database :: currentUser == NULL) return false;
+        Database :: currentUser = NULL;
+        return true;
+    }
+
+    static bool showUserProfile(){
+        if(Database :: currentUser){
+            User* check = Database ::currentUser;
+            cout<<"Following are your details :"<<endl;
+            cout<<"User Name :\t\t"<<check->username<<endl;
+            cout<<"Account Number :\t\t"<<check->account<<endl;
+            cout<<"Address :\t\t"<<endl;
+            (check->address).displayAddress();
+            cout<<"Wallet balance :\t\t"<<(check->wallet).getBalance()<<endl;
+            //Still we have to add show cart orders and pending orders
+            return true; 
+        }
+        return false;
+
+    }
+
+    static bool addMoneyFromAccount(double amount){
+        printSeparator();
+        cout<<"Directing to Bank Gateway"<<endl;
+        ((Database::currentUser)->wallet).updateBalance(amount);
+        printSeparator();
+        return true;
+    }
+
+    static int getWalletBalance(){
+        return ((Database::currentUser)->wallet).getBalance();
+    }
+
+};
