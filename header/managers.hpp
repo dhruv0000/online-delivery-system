@@ -69,8 +69,15 @@ class UserManager{
 
 public:
     static bool registerUser(string username, unsigned long long hashPassword, string account, Address address, Type type){
-        User* newUser = new User(username, hashPassword, account, address, type);
-        Database :: users.push_back(newUser);
+        if(type == VENDOR){
+            Vendor* newVendor = new Vendor(username,hashPassword,account,address);
+            (Database :: users).push_back((User*)newVendor);
+        }
+        else{
+            Customer* newCustomer = new Customer(username,hashPassword,account,address);
+            (Database :: users).push_back((User*)newCustomer);
+        }
+
         return true;
     }
     static bool checkUserNameAvailable(string username){
