@@ -43,6 +43,7 @@ bool compareStringIgnoreCase(std::string & str1, std::string &str2)
 }
 
 
+
 class Password{
 public:
     static bool checkStrength(string passwd){
@@ -112,29 +113,6 @@ public:
   }
 };
 
-
-class CartProduct{
-  Product *product;
-  Stock *stock;
-  int quantity;
-  public:
-  CartProduct(Product* product, Stock* stock, int quantity) {
-      this->product = product;
-      this->stock = stock;
-      this->quantity = quantity;
-  }
-  string getDatabaseString() {
-    string db;
-    db = product->getProductName() + "\n" + stock->getVendorName() + "\n";
-    return db;
-  }
-};
-
-class Cart{
-  vector<CartProduct> cartProducts;
-  friend class Customer;
-};
-
 class Order{
   int orderID;
   OrderStatus status;
@@ -148,8 +126,6 @@ class Order{
     return orderID;
   }
 };
-
-
 
 class User{
   string username;
@@ -188,33 +164,16 @@ public:
   friend class UserManager;
 };
 
-class Customer : public User{
-  Cart cart;
-  public:
-  Customer(string username,unsigned long long password,string accountNumber,Address address) : User(username,password,accountNumber,address,CUSTOMER){
-    
-  }
-
-  string getDatabaseString() {
-    string db = getUserString() +  to_string(cart.cartProducts.size()) + "\n";
-    for(auto product : cart.cartProducts) {
-      db.append(product.getDatabaseString());
-    }
-    return db;
-  }
-};
-
 class Vendor : public User{
   double rating;
   int numberOfRatings;
   vector<string> reviews;
 public:
   Vendor(string username,unsigned long long password,string accountNumber,Address address):User(username,password,accountNumber,address,VENDOR){
-    ratings = 0;
+    rating = 0;
     numberOfRatings = 0;
   }
 };
-
 
 class Stock{
     
@@ -272,3 +231,66 @@ class Product{
     }
     friend class ProductManager;
 };
+
+class CartProduct{
+  Product *product;
+  Stock *stock;
+  int quantity;
+  public:
+  CartProduct(Product* product, Stock* stock, int quantity) {
+      this->product = product;
+      this->stock = stock;
+      this->quantity = quantity;
+  }
+  string getDatabaseString() {
+    string db;
+    db = product->getProductName() + "\n" + stock->getVendorName() + "\n";
+    return db;
+  }
+};
+
+
+
+class Cart{
+  vector<CartProduct> cartProducts;
+  friend class Customer;
+};
+
+
+class Customer : public User{
+  Cart cart;
+  public:
+  Customer(string username,unsigned long long password,string accountNumber,Address address) : User(username,password,accountNumber,address,CUSTOMER){
+    
+  }
+
+  string getDatabaseString() {
+    string db = getUserString() +  to_string(cart.cartProducts.size()) + "\n";
+    for(auto product : cart.cartProducts) {
+      db.append(product.getDatabaseString());
+    }
+    return db;
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
