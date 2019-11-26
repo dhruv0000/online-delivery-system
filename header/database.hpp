@@ -119,6 +119,7 @@ class CartProduct{
   public:
   CartProduct(Product* product, Stock* stock, int quantity);
   string getDatabaseString();
+  
 };
 
 

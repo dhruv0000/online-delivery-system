@@ -125,7 +125,7 @@ Vendor::Vendor(string username,unsigned long long password,string accountNumber,
 }
 
 string Vendor::getDatabaseString() {
-  string db = getUserString() + "\n" + to_string(rating) + "\n" + to_string(numberOfRatings) + "\n" + to_string(reviews.size()) + "\n";
+  string db = getUserString() + to_string(rating) + "\n" + to_string(numberOfRatings) + "\n" + to_string(reviews.size()) + "\n";
   for(auto review : reviews) {
     db.append(review);
     db.append("\n");
