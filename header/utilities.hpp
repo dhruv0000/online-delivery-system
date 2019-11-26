@@ -1,7 +1,4 @@
-#include<iostream>
-#include<string>
-#include<vector>
-#include<fstream>
+#include <bits/stdc++.h> 
 using namespace std;
 
 enum OrderStatus {ORDERED, DISPATCHED, DELIVERED, CANCELLED};
@@ -221,11 +218,39 @@ class Product{
     }
     string getDatabaseString() {
         string db = name + "\n" + type + "\n" + description + "\n" + to_string(quantitySold) + "\n" + to_string(stocks.size()) + "\n";
-        for(auto& stock: stocks) {
+        for(auto stock: stocks) {
           db.append(stock->getDatabaseString());
         } 
         return db;
     }
+    void objectFromDatabase(Product* product, string db) {
+      stringstream str(db);
+      string attrib[5];
+      for (int i = 0; i < 5; i++)
+      {
+        getline(str, attrib[i]);
+      }
+      product->name = attrib[0];
+      product->type = attrib[1];
+      product->description = attrib[2];
+      product->quantitySold = stoi(attrib[3]);
+      int stockCnt = stoi(attrib[4]);
+      for(int i = 0; i < stockCnt; i++) {
+        string stockAttrib[3];
+        for (int j = 0; j < 3; j++)
+        {
+          getline(str, stockAttrib[j]);
+        }
+        Vendor* vendor;
+        for(auto curVendor : Database :: users) {     // users must be filled first!
+          if(curVendor->getUsername() == stockAttrib[0]) {
+            vendor = (Vendor*) curVendor;
+          }
+        }
+        Stock* new_stock = new Stock(vendor, stoi(attrib[1]), stod(attrib[2]));
+        product->stocks.push_back(new_stock);
+      }
+    } 
     string getProductName() {
       return name;
     }

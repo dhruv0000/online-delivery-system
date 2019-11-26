@@ -13,6 +13,7 @@ namespace Database {
     void writeToDatabase(vector<T*> data, string fname) {
         ofstream fout;
         fout.open(fname);
+        fout<<data.size()<<endl;
         for(auto item : data) {
             fout<<item->getDatabaseString();
         }

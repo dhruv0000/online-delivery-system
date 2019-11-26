@@ -59,7 +59,6 @@ class ProductManager {
         Database::discount = discount;
         return true;
     }
-    
 
 };
 
