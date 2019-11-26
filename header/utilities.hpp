@@ -20,13 +20,14 @@ class Order;
 
 
 void printSeparator() {
-    for(int i = 0; i < 50; i++) cout<<"*";
+    for(int i = 0; i < 50; i++)
+      cout<<"*";
     cout<<endl;
 }
 
 bool compareCharIgnoreCase(char & c1, char & c2)
 {
-  if (c1 == c2||c1 == std::toupper(c2)||std::toupper(c1)==c2||std::toupper(c1) == std::toupper(c2))
+  if (c1 == c2||c1 == std::toupper(c2)||std::toupper(c1)==c2||std::toupper(c1) == std::toupper(c2))//Updated Compare String
     return true;
   return false;
 }
@@ -95,24 +96,30 @@ public:
 
 class Wallet{
   double balance;
-public:
-  Wallet(){}
-  Wallet(double d){
-    this->balance = balance;
-  }
-  double getBalance(){
-    return this->balance;
-  }
-  void updateBalance(double increment){
-    this->balance = this->balance + increment;
-  }
+
+  public:
+    Wallet(){
+
+    }
+
+    Wallet(double d){
+      this->balance = d;  //Check Wallet balance allocation, I have changed it.
+    }
+
+    double getBalance(){
+      return this->balance;
+    }
+
+    void updateBalance(double increment){
+      this->balance = this->balance + increment;
+    }
 };
 
 class Order{
   int orderID;
   OrderStatus status;
   vector<CartProduct> cartProducts;
-  string expectedDeliveryDate;
+  string expectedDeliveryDate; //Can update to tm later if time permits
   double cost;
   string deliverySlot;
   PaymentStatus paymentStatus;
@@ -149,7 +156,7 @@ public:
     return type;
   }
 
-  string getUserString() {
+  string getDatabaseString() {
     string db = username + "\n" + to_string(password) + "\n" + to_string(wallet.getBalance()) + "\n" + account + "\n" + address.getDatabaseString() + to_string(type) + "\n" + to_string(orders.size()) + "\n";
     for(auto order: orders) {
       db.append(to_string(order->getOrderID()));

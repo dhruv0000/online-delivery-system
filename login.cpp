@@ -107,7 +107,7 @@ void showTopSearch(vecto<Product*> v){
 void showFuntionality(int i){
     cout<<i+1<<":Search products"<<endl;
     cout<<i+2<<":Show cart"<<endl;
-    cou<<i+3<<":Logout"<<endl;
+    cout<<i+3<<":Logout"<<endl;
 }
 
 int main(){
