@@ -48,7 +48,7 @@ class Order{
   int orderID;
   OrderStatus status;
   vector<CartProduct> cartProducts;
-  string expectedDeliveryDate;
+  string expectedDeliveryDate; //Can change to tm if time permites in future
   double cost;
   string deliverySlot;
   PaymentStatus paymentStatus;
@@ -67,10 +67,9 @@ class User{
 public:
   User(string username, unsigned long password, string account, Address address,Type type);
 
-  string getUsername();
   unsigned long long getPassword();
+  string getUsername();
   int getType();
-
   string getUserString();
   
   friend class UserManager;
