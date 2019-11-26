@@ -95,14 +95,7 @@ User::User(string username, unsigned long password, string account, Address addr
 
 }
 
-class Vendor : public User{
-  double rating;
-  int numberOfRatings;
-  vector<string> reviews;
-public:
-  Vendor(string username,unsigned long long password,string accountNumber,Address address):User(username,password,accountNumber,address,VENDOR){
-    rating = 0;
-    numberOfRatings = 0;
+
 string User::getUsername() {
   return username;
 }
