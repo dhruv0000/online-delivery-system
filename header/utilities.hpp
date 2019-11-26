@@ -95,16 +95,6 @@ User::User(string username, unsigned long password, string account, Address addr
 
 }
 
-  string getUserString() {
-    string db = username + "\n" + to_string(password) + "\n" + to_string(wallet.getBalance()) + "\n" + account + "\n" + address.getDatabaseString() + to_string(type) + "\n" + to_string(orders.size()) + "\n";
-    for(auto order: orders) {
-      db.append(to_string(order->getOrderID()));
-      db.append("\n");
-    }
-  }
-  friend class UserManager;
-};
-
 class Vendor : public User{
   double rating;
   int numberOfRatings;

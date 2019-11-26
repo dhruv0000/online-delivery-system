@@ -67,10 +67,9 @@ class User{
 public:
   User(string username, unsigned long password, string account, Address address,Type type);
 
-  string getUsername();
   unsigned long long getPassword();
+  string getUsername();
   int getType();
-
   string getUserString();
   
   friend class UserManager;
