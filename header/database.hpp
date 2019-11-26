@@ -71,7 +71,7 @@ public:
   string getUsername();
   int getType();
   string getUserString();
-  
+  virtual string getDatabaseString();
   friend class UserManager;
 };
 

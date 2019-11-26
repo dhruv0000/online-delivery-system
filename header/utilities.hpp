@@ -95,7 +95,6 @@ User::User(string username, unsigned long password, string account, Address addr
 
 }
 
-
 string User::getUsername() {
   return username;
 }
@@ -114,6 +113,11 @@ string User::getUserString() {
   }
   return db;
 }
+
+
+string User::getDatabaseString(){
+  
+} 
 
 Vendor::Vendor(string username,unsigned long long password,string accountNumber,Address address):User(username,password,accountNumber,address,VENDOR){
   rating = 0;

@@ -224,4 +224,8 @@ int main(){
     //     cout<<"You have entered wrong choice"<<endl;
     //     goto SignIn;
     // }
+    Database :: writeToDatabase<Product>(Database::products,"products.txt");
+    Database :: writeToDatabase<User>(Database::users,"users.txt");
+    // Database :: writeToDatabase<User>(Database::vendors,"user.txt");
+    
 }
