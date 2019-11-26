@@ -1,8 +1,5 @@
-#include<iostream>
-#include<vector>
-#include<algorithm>
-#include "database.hpp"
-using namespace std;
+
+#include "utilities.hpp"
 
 class ProductManager {
     public:
@@ -59,7 +56,6 @@ class ProductManager {
         Database::discount = discount;
         return true;
     }
-
 
 };
 

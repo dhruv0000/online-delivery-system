@@ -1,4 +1,140 @@
-#include"utilities.hpp"
+#include<bits/stdc++.h>
+
+using namespace std;
+
+enum OrderStatus {ORDERED, DISPATCHED, DELIVERED, CANCELLED};
+enum PaymentStatus {CASH_ON_DELIVERY,WALLET};
+enum Type {ADMIN,VENDOR,CUSTOMER};
+
+class ProductManager;
+class UserManager;
+class OrderManager;
+class User;
+class Vendor;
+class Customer;
+class Product;
+class Stock;
+class CartProduct;
+class Cart;
+class Wallet;
+class Order;
+
+class Password{
+public:
+    static bool checkStrength(string passwd);
+    static unsigned long long hashValue(string passwd);
+};
+
+class Address{
+private:
+    string building,street,city,state;
+
+public:
+    void storeAddress();
+    void displayAddress();
+    string getDatabaseString();
+};
+
+class Wallet{
+  double balance;
+public:
+  Wallet();
+  Wallet(double d);
+  double getBalance();
+  void updateBalance(double increment);
+};
+
+class Order{
+  int orderID;
+  OrderStatus status;
+  vector<CartProduct> cartProducts;
+  string expectedDeliveryDate;
+  double cost;
+  string deliverySlot;
+  PaymentStatus paymentStatus;
+  public:
+  int getOrderID();
+};
+
+class User{
+  string username;
+  unsigned long long password;
+  Wallet wallet;
+  vector<Order*> orders;
+  string account;
+  Address address;
+  enum Type type;
+public:
+  User(string username, unsigned long password, string account, Address address,Type type);
+
+  string getUsername();
+  unsigned long long getPassword();
+  int getType();
+
+  string getUserString();
+  
+  friend class UserManager;
+};
+
+class Vendor : public User{
+  double rating;
+  int numberOfRatings;
+  vector<string> reviews;
+public:
+  Vendor(string username,unsigned long long password,string accountNumber,Address address);
+};
+
+class Stock{
+    
+    public:
+    Vendor* vendor;
+    int quantity;
+    double price;
+    Stock(Vendor* vendor, int quantity, double price);
+    string getVendorName();
+    string getDatabaseString();
+};
+
+class Product{
+    string name;
+    string type;
+    vector<Stock*> stocks;
+    string description;
+    int quantitySold;
+    public:
+    Product(string name, string type, Stock* stock, string description);
+    static bool compareProduct(Product* prod1, Product* prod2);
+    void displayProduct();
+    string getDatabaseString();
+    void objectFromDatabase(Product* product, string db); 
+    string getProductName();
+    friend class ProductManager;
+};
+
+class CartProduct{
+  Product *product;
+  Stock *stock;
+  int quantity;
+  public:
+  CartProduct(Product* product, Stock* stock, int quantity);
+  string getDatabaseString();
+};
+
+
+
+class Cart{
+  vector<CartProduct> cartProducts;
+  friend class Customer;
+};
+
+
+class Customer : public User{
+  Cart cart;
+  public:
+  Customer(string username,unsigned long long password,string accountNumber,Address address);
+
+  string getDatabaseString();
+};
 
 namespace Database {
     vector<Order*> orders;
@@ -13,8 +149,10 @@ namespace Database {
     void writeToDatabase(vector<T*> data, string fname) {
         ofstream fout;
         fout.open(fname);
+        fout<<data.size()<<endl;
         for(auto item : data) {
             fout<<item->getDatabaseString();
         }
+        fout.close();
     }
 };

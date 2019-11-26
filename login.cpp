@@ -1,4 +1,3 @@
-#include <bits/stdc++.h>
 #include "header/managers.hpp"
 
 using namespace std;
