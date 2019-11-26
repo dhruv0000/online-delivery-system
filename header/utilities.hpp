@@ -1,15 +1,14 @@
 #include "database.hpp"
 
 void printSeparator() {
-    for(int i = 0; i < 50; i++) cout<<"*";
+    for(int i = 0; i < 50; i++) 
+      cout<<"*";
     cout<<endl;
 }
 
-bool compareChar(char & c1, char & c2)
+bool compareCharIgnoreString(char & c1, char & c2)
 {
-  if (c1 == c2)
-    return true;
-  else if (std::toupper(c1) == std::toupper(c2))
+  if (c1 == c2||std::toupper(c1) == std::toupper(c2)||std::toupper(c1) == c2||c1 == std::toupper(c2))
     return true;
   return false;
 }
@@ -17,7 +16,7 @@ bool compareChar(char & c1, char & c2)
 bool compareStringIgnoreCase(std::string & str1, std::string &str2)
 {
   return ( (str1.size() == str2.size() ) &&
-       std::equal(str1.begin(), str1.end(), str2.begin(), &compareChar) );
+       std::equal(str1.begin(), str1.end(), str2.begin(), &compareCharIgnoreString) );
 }
 
 bool Password::checkStrength(string passwd){
@@ -31,7 +30,7 @@ bool Password::checkStrength(string passwd){
         if(passwd[i] >= 48 && passwd[i] <= 57)
             countDigit++;
     }
-    if(countUpper && countLower && countDigit && length >= 6 && length <= 10)
+    if(countUpper && countLower && countDigit && length >= 6 && (length>=8))
         return true;
 
     return false;
@@ -45,7 +44,7 @@ unsigned long long Password::hashValue(string passwd){
 
 void Address::storeAddress(){
     cout<<"Enter all the details in one line each "<<endl;
-    cout<<"Enter your Building/Appartment : ";
+    cout<<"Enter your Building/Appartment :\t\t ";
     getline(std::cin,building);
     cout<<"Enter your Street :\t\t ";
     getline(std::cin,street);
@@ -96,6 +95,14 @@ User::User(string username, unsigned long password, string account, Address addr
 
 }
 
+class Vendor : public User{
+  double rating;
+  int numberOfRatings;
+  vector<string> reviews;
+public:
+  Vendor(string username,unsigned long long password,string accountNumber,Address address):User(username,password,accountNumber,address,VENDOR){
+    rating = 0;
+    numberOfRatings = 0;
 string User::getUsername() {
   return username;
 }
