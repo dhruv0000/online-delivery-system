@@ -28,8 +28,6 @@ bool compareCharIgnoreCase(char & c1, char & c2)
 {
   if (c1 == c2||c1 == std::toupper(c2)||std::toupper(c1)==c2||std::toupper(c1) == std::toupper(c2))
     return true;
-  else if (std::toupper(c1) == std::toupper(c2))//Comparing upperCase
-    return true;
   return false;
 }
  
