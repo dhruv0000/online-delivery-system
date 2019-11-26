@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-#include "managers.hpp"
+#include "header/managers.hpp"
 
 using namespace std;
 
@@ -27,7 +27,7 @@ void getDetails(string& username,string& password,unsigned long long& hashPasswo
             
         cout<<"Enter the following details"<<endl;
         cout<<"Enter your User Name(without space) : ";
-        cin>>username;
+        std :: cin>>username;
                 
         if(!(UserManager :: checkUserNameAvailable(username))){
             cout<<"This User Name already exists"<<endl;
@@ -37,7 +37,7 @@ void getDetails(string& username,string& password,unsigned long long& hashPasswo
         do{
             do{
                 cout<<"Enter your Password(should contain 6-10 characters,atleast 1 Upper Case,Lower Case and Digit character) : ";
-                cin>>password;
+                std :: cin>>password;
 
                 if(Password :: checkStrength(password))
                     break;
@@ -47,7 +47,7 @@ void getDetails(string& username,string& password,unsigned long long& hashPasswo
                 }while(true);
 
                 cout<<"Re-Enter your Password : ";
-                cin>>rePassword;
+                std :: cin>>rePassword;
             
                 if(password == rePassword)
                     break;
@@ -57,7 +57,7 @@ void getDetails(string& username,string& password,unsigned long long& hashPasswo
         }while(true);
 
         cout<<"Enter your Account Number : ";
-        cin>>accountNumber;
+        std :: cin>>accountNumber;
         address.storeAddress();
         hashPassword = Password :: hashValue(password);
         if(wish == 1){
@@ -75,29 +75,29 @@ void printAdminChoices(){
 }
 
 
-void setDeliveryCharge(){
+void setDeliveryCharges(){
     double charge;
     cout<<"Enter delivery charges : ";
-    cin>>charge;
+    std :: cin>>charge;
     Database :: deliveryCharge = charge;
 }
 
 void setDiscountPercentage(){
-    double percent;
+    double percentage;
     cout<<"Enter the percentage : ";
-    cin>>percentage;
-    Database :: discount = percent;
+    std :: cin>>percentage;
+    Database :: discount = percentage;
 }
 
-void getUserDetails(string &username,string &password,unigned long long &hashValue){
+void getUserDetails(string &username,string &password,unsigned long long &value){
     cout<<"Enter your username(without spaces) :";
-    cin>>username;
+    std :: cin>>username;
     cout<<"Enter your password :";
-    cin>>password;
-    hashValue = Password :: hashValue(password);
+    std :: cin>>password;
+    value = Password :: hashValue(password);
 }
 
-void showTopSearch(vecto<Product*> v){
+void showTopSearch(vector<Product*> v){
     for(int i=0;i<v.size();i++){
         cout<<i+1<<endl;
         v[i]->displayProduct();
@@ -117,14 +117,14 @@ int main(){
     
     SignIn: 
     printLoginChoice();
-    cin>>wish;
+    std :: cin>>wish;
 
 
     if(wish == 1) {
         
         Registration:
         printUserChoice();
-        cin>>wish;
+        std :: cin>>wish;
         
         string username,password,accountNumber,rePassword;
         unsigned long long hashPassword;
@@ -150,9 +150,9 @@ int main(){
         
         
         cout<<"Enter your username (without spaces):";
-        cin>>username;
+        std :: cin>>username;
         cout<<"Enter your password:";
-        cin>>password;
+        std :: cin>>password;
         unsigned long long hashValue = (Password :: hashValue(password));
         
         if((username == Database :: admin->getUsername()) &&  hashValue == (Database :: admin->getPassword())){
@@ -160,7 +160,7 @@ int main(){
             
             printAdminChoices();
             int adminWish;
-            cin>>adminWish;
+            std :: cin>>adminWish;
             if(adminWish == 1)setDeliveryCharges();
             else if(adminWish == 2)setDiscountPercentage();
             else if(adminWish == 3)UserManager :: logoutUser();
@@ -193,20 +193,20 @@ int main(){
         if((Database :: currentUser)->getType() == CUSTOMER){
             int count;
             cout<<"Enter the number of top purchased product you we to see"<<endl;
-            cin>>count;
-            vector<Product*> topSearch = ProductManager :: showTopProducts(count);
+            std :: cin>>count;
+            vector<Product*> topSearch = ProductManager :: getTopProducts(count);
                 //Show Top Product has some Issues of how to get the top product address???
             int customerWish;
 
             UserChoices:
 
             printFlow();
-            showFuntionality(topSearch);
-            showTopSearch(topSearch.size());
-            cin>>customerWish;
+            showFuntionality(topSearch.size());
+            showTopSearch(topSearch);
+            std :: cin>>customerWish;
 
             if(customerWish<1 || customerWish>(topSearch.size()+3)){
-                cout<<"User please enter correct"
+                cout<<"User please enter correct";
             }
 
 
