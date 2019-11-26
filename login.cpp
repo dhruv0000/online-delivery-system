@@ -1,9 +1,22 @@
 #include "header/managers.hpp"
+#include <conio.h>
 
 using namespace std;
 
 void printFlow(){
   cout<<"Enter the number corresponding to funtion you wish to perform"<<endl;
+}
+
+void getPassword(string *password) {
+    char ch;
+    ch = _getch();
+    while (ch!=13)
+    {
+        password->push_back(ch);
+        cout<<"*";
+        ch = _getch();
+    }
+    
 }
 
 void printLoginChoice(){
@@ -36,7 +49,8 @@ void getDetails(string& username,string& password,unsigned long long& hashPasswo
         do{
             do{
                 cout<<"Enter your Password(should contain  at least 6 characters,atleast 1 Upper Case,Lower Case and Digit character and should not contain  spaces) : ";
-                std :: cin>>password;
+                // std :: cin>>password;
+                getPassword(&password);
 
                 if(Password :: checkStrength(password))
                     break;
