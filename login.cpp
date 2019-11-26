@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 #include "managers.hpp"
 
-
 using namespace std;
 
 void printFlow(){
@@ -90,6 +89,27 @@ void setDiscountPercentage(){
     Database :: discount = percent;
 }
 
+void getUserDetails(string &username,string &password,unigned long long &hashValue){
+    cout<<"Enter your username(without spaces) :";
+    cin>>username;
+    cout<<"Enter your password :";
+    cin>>password;
+    hashValue = Password :: hashValue(password);
+}
+
+void showTopSearch(vecto<Product*> v){
+    for(int i=0;i<v.size();i++){
+        cout<<i+1<<endl;
+        v[i]->displayProduct();
+    }
+}
+
+void showFuntionality(int i){
+    cout<<i+1<<":Search products"<<endl;
+    cout<<i+2<<":Show cart"<<endl;
+    cou<<i+3<<":Logout"<<endl;
+}
+
 int main(){
    
     int wish;
@@ -128,7 +148,6 @@ int main(){
         // For Login as Admin
         string username,password;
         
-        IncorrectPassword :
         
         cout<<"Enter your username (without spaces):";
         cin>>username;
@@ -157,29 +176,46 @@ int main(){
         
     }
 
-    else if(wish == 3) {
-        // else{`
-        //     if(!UserManager::loginUser(username,hashValue)){
-        //         cout<<"You have entered wrong user name or password : "<<endl;
-        //         goto IncorrectPassword;
-        //     }
-        //     cout<<"You are Logged In successsfully (:"<<endl;
-        //     if((Database :: currentUser)->getType() == 1){
+    else if(wish == 3){
+       
+        string username,password;
+        unsigned long long hashValue;
 
-        //     }
-        //     else{
-        //         int count;
-        //         cout<<"Enter the number of top purchased product you we to see"<<endl;
-        //         cin>>count;
-        //         ProductManager :: showTopProducts(count);
-        //         //Show Top Product has some Issues of how to get the top product address???
-                
-        //         printFlow();
-        //         cout<<"1 :";
+        getUserDetails(username,password,hashValue);
 
-        //     }
+        if(!UserManager::loginUser(username,hashValue)){
+            cout<<"You have entered wrong username or password"<<endl;
+            goto SignIn;
+        }
 
-        // }
+        cout<<"You are Logged In successsfully (:"<<endl;
+
+        if((Database :: currentUser)->getType() == CUSTOMER){
+            int count;
+            cout<<"Enter the number of top purchased product you we to see"<<endl;
+            cin>>count;
+            vector<Product*> topSearch = ProductManager :: showTopProducts(count);
+                //Show Top Product has some Issues of how to get the top product address???
+            int customerWish;
+
+            UserChoices:
+
+            printFlow();
+            showFuntionality(topSearch);
+            showTopSearch(topSearch.size());
+            cin>>customerWish;
+
+            if(customerWish<1 || customerWish>(topSearch.size()+3)){
+                cout<<"User please enter correct"
+            }
+
+
+        }
+        else{
+            
+        }
+
+       
 
     }
     // else if (wish == 4) {
