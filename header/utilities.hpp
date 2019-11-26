@@ -27,11 +27,11 @@ void printSeparator() {
     cout<<endl;
 }
 
-bool compareChar(char & c1, char & c2)
+bool compareCharIgnoreCase(char & c1, char & c2)
 {
-  if (c1 == c2)
+  if (c1 == c2||c1 == std::toupper(c2)||std::toupper(c1)==c2||std::toupper(c1) == std::toupper(c2))
     return true;
-  else if (std::toupper(c1) == std::toupper(c2))
+  else if (std::toupper(c1) == std::toupper(c2))//Comparing upperCase
     return true;
   return false;
 }
@@ -39,7 +39,7 @@ bool compareChar(char & c1, char & c2)
 bool compareStringIgnoreCase(std::string & str1, std::string &str2)
 {
   return ( (str1.size() == str2.size() ) &&
-       std::equal(str1.begin(), str1.end(), str2.begin(), &compareChar) );
+       std::equal(str1.begin(), str1.end(), str2.begin(), &compareCharIgnoreCase) );
 }
 
 
