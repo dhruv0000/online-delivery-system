@@ -115,20 +115,17 @@ string User::getUserString() {
 }
 
 
-<<<<<<< HEAD
-=======
 string User::getDatabaseString(){
   
 } 
 
->>>>>>> d580607ac3a96259aa36274f7ff4550147666d5e
 Vendor::Vendor(string username,unsigned long long password,string accountNumber,Address address):User(username,password,accountNumber,address,VENDOR){
   rating = 0;
   numberOfRatings = 0;
 }
 
 string Vendor::getDatabaseString() {
-  string db = getUserString() + "\n" + to_string(rating) + "\n" + to_string(numberOfRatings) + "\n" + to_string(reviews.size()) + "\n";
+  string db = getUserString() + to_string(rating) + "\n" + to_string(numberOfRatings) + "\n" + to_string(reviews.size()) + "\n";
   for(auto review : reviews) {
     db.append(review);
     db.append("\n");
