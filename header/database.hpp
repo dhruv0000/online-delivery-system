@@ -48,7 +48,7 @@ class Order{
   int orderID;
   OrderStatus status;
   vector<CartProduct> cartProducts;
-  string expectedDeliveryDate;
+  string expectedDeliveryDate; //Can change to tm if time permites in future
   double cost;
   string deliverySlot;
   PaymentStatus paymentStatus;
