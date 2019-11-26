@@ -115,6 +115,7 @@ string User::getUserString() {
   return db;
 }
 
+
 Vendor::Vendor(string username,unsigned long long password,string accountNumber,Address address):User(username,password,accountNumber,address,VENDOR){
   rating = 0;
   numberOfRatings = 0;
