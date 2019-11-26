@@ -35,7 +35,7 @@ void getDetails(string& username,string& password,unsigned long long& hashPasswo
 
         do{
             do{
-                cout<<"Enter your Password(should contain 6-10 characters,atleast 1 Upper Case,Lower Case and Digit character) : ";
+                cout<<"Enter your Password(should contain  at least 6 characters,atleast 1 Upper Case,Lower Case and Digit character and should not contain  spaces) : ";
                 std :: cin>>password;
 
                 if(Password :: checkStrength(password))

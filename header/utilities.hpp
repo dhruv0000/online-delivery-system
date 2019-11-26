@@ -31,7 +31,7 @@ bool Password::checkStrength(string passwd){
         if(passwd[i] >= 48 && passwd[i] <= 57)
             countDigit++;
     }
-    if(countUpper && countLower && countDigit && length >= 6 && length <= 10)
+    if(countUpper && countLower && countDigit && length >= 6 )
         return true;
 
     return false;
@@ -45,7 +45,7 @@ unsigned long long Password::hashValue(string passwd){
 
 void Address::storeAddress(){
     cout<<"Enter all the details in one line each "<<endl;
-    cout<<"Enter your Building/Appartment : ";
+    cout<<"Enter your Building/Appartment :\t\t ";
     getline(std::cin,building);
     cout<<"Enter your Street :\t\t ";
     getline(std::cin,street);
