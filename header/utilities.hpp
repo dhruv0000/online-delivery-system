@@ -30,7 +30,7 @@ bool Password::checkStrength(string passwd){
         if(passwd[i] >= 48 && passwd[i] <= 57)
             countDigit++;
     }
-    if(countUpper && countLower && countDigit && length >= 6 )
+    if(countUpper && countLower && countDigit && length >= 6 && (length>=8))
         return true;
 
     return false;
