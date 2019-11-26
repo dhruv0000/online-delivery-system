@@ -82,6 +82,7 @@ class Vendor : public User{
   vector<string> reviews;
 public:
   Vendor(string username,unsigned long long password,string accountNumber,Address address);
+  string getDatabaseString();
 };
 
 class Stock{

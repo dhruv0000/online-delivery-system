@@ -112,11 +112,21 @@ string User::getUserString() {
     db.append(to_string(order->getOrderID()));
     db.append("\n");
   }
+  return db;
 }
 
 Vendor::Vendor(string username,unsigned long long password,string accountNumber,Address address):User(username,password,accountNumber,address,VENDOR){
   rating = 0;
   numberOfRatings = 0;
+}
+
+string Vendor::getDatabaseString() {
+  string db = getUserString() + "\n" + to_string(rating) + "\n" + to_string(numberOfRatings) + "\n" + to_string(reviews.size()) + "\n";
+  for(auto review : reviews) {
+    db.append(review);
+    db.append("\n");
+  }
+  return db;
 }
 
 
