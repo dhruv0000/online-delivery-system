@@ -95,7 +95,6 @@ User::User(string username, unsigned long password, string account, Address addr
 
 }
 
-
 string User::getUsername() {
   return username;
 }
@@ -116,6 +115,13 @@ string User::getUserString() {
 }
 
 
+<<<<<<< HEAD
+=======
+string User::getDatabaseString(){
+  
+} 
+
+>>>>>>> d580607ac3a96259aa36274f7ff4550147666d5e
 Vendor::Vendor(string username,unsigned long long password,string accountNumber,Address address):User(username,password,accountNumber,address,VENDOR){
   rating = 0;
   numberOfRatings = 0;
