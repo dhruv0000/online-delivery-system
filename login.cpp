@@ -37,14 +37,16 @@ void printUserChoice(){
 }
 
 void getDetails(string& username,string& password,unsigned long long& hashPassword,string& rePassword,
-    string& accountNumber,Address& address,Type& type,int wish){
+    string& accountNumber,Address& address,Type& type,char wish){
+    
     EnterNewUserName : 
-            
+        cout<<endl;  
         cout<<"Enter the following details"<<endl;
         cout<<"Enter your User Name(without space) : ";
         std :: cin>>username;
                 
         if(!(UserManager :: checkUserNameAvailable(username))){
+            cout<<endl;
             cout<<"This User Name already exists"<<endl;
             goto EnterNewUserName;
         }
@@ -67,21 +69,25 @@ void getDetails(string& username,string& password,unsigned long long& hashPasswo
             
                 if(password == rePassword)
                     break;
-            
+                cout<<endl;
                 cout<<"Your Password didn't match"<<endl;
-            
+                cout<<endl;
+
         }while(true);
 
         cout<<"Enter your Account Number : ";
         std :: cin>>accountNumber;
         address.storeAddress();
         hashPassword = Password :: hashValue(password);
-        if(wish == 1){
+        if(wish == '1'){
             type = CUSTOMER;
         }else{
              type = VENDOR;
         }
         
+}
+void displayUsername(){
+    cout<<"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"<<Database :: currentUser -> getUsername()<<endl;
 }
 
 void printAdminChoices(){
@@ -106,16 +112,18 @@ void setDiscountPercentage(){
 }
 
 void getUserDetails(string &username,string &password,unsigned long long &value){
+    
     cout<<"Enter your username(without spaces) :";
     std :: cin>>username;
     cout<<"Enter your password :";
     std :: cin>>password;
     value = Password :: hashValue(password);
+
 }
 
 void showTopSearch(vector<Product*> v){
     for(int i=0;i<v.size();i++){
-        cout<<i+1<<endl;
+        cout<<"Product "<<i+1<<endl;
         v[i]->displayProduct();
     }
 }
@@ -123,9 +131,19 @@ void showTopSearch(vector<Product*> v){
 void showFuntionality(int i){
     cout<<i+1<<":Search products"<<endl;
     cout<<i+2<<":Show cart"<<endl;
-    cout<<i+3<<":Logout"<<endl;
+    cout<<i+3<<":Add money to wallet"<<endl;
+    cout<<i+4<<":Logout"<<endl;
 }
 
+void displaySearchProduct(vector<Product*> searchedProduct){
+    cout<<"Enter the number of the product which you are liking"<<endl;
+    int i=0;
+    for(auto presentProduct : searchedProduct){
+        cout<<i<<endl;
+        presentProduct->displayProduct();
+        i++;
+    }
+}
 
 int main(){
    
@@ -140,12 +158,13 @@ int main(){
     if(wish == '1') {
         
         Registration:
+        char userWish;
         printUserChoice();
         
-        std :: cin>>wish;
+        std :: cin>>userWish;
         
         
-        if(wish == '3')
+        if(userWish == '3')
             goto SignIn;
 
 
@@ -154,14 +173,15 @@ int main(){
         Address address;
         Type type;
 
-        if(wish ==  '1' || wish == '2'){
-            getDetails(username,password,hashPassword,rePassword,accountNumber,address,type,wish);
+        if(userWish ==  '1' || userWish == '2'){
+            getDetails(username,password,hashPassword,rePassword,accountNumber,address,type,userWish);
         }else{
             cout<<"You have entered wrong wish"<<endl;
             goto Registration;
         }
 
         if(UserManager :: registerUser(username, hashPassword, accountNumber, address, type)){
+            cout<<endl;
             cout<<"You have successfully created new account (:"<<endl;
             cout<<"Please login into account to purchase our products"<<endl;
             cout<<endl;
@@ -199,7 +219,6 @@ int main(){
         }
         
     }
-
     else if(wish == '3'){
        
         string username,password;
@@ -208,33 +227,58 @@ int main(){
         getUserDetails(username,password,hashValue);
 
         if(!UserManager::loginUser(username,hashValue)){
+            cout<<endl;
             cout<<"You have entered wrong username or password"<<endl;
+            goto SignIn;
+        }
+        cout<<(Database :: currentUser)->getType()<<endl;
+        if((Database :: currentUser)->getType() != CUSTOMER){
+            cout<<endl;
+            cout<<"Oops you adisplaySearchProduct(searchProduct);re not CUSTOMER"<<endl;
+            cout<<"Please select proper category"<<endl;
             goto SignIn;
         }
 
         cout<<"You are Logged In successsfully (:"<<endl;
+        displayUsername();
+        int count;
+        cout<<"Enter the number of top purchased product you want to see"<<endl;
+        std :: cin>>count;
+            
+        vector<Product*> topSearch = ProductManager :: getTopProducts(count);
+        char customerWish;
 
-        if((Database :: currentUser)->getType() == CUSTOMER){
-            int count;
-            cout<<"Enter the number of top purchased product you we to see"<<endl;
-            std :: cin>>count;
-            vector<Product*> topSearch = ProductManager :: getTopProducts(count);
-                //Show Top Product has some Issues of how to get the top product address???
-            char customerWish;
+        CustomerChoices:
 
-            UserChoices:
+        printFlow();
+        showTopSearch(topSearch);
+        showFuntionality(topSearch.size());
+        std :: cin>>customerWish;
 
-            printFlow();
-            showFuntionality(topSearch.size());
-            showTopSearch(topSearch);
-            std :: cin>>customerWish;
+        if((customerWish - '0') == topSearch.size()+1){
+            string searchString;
+            cout<<"Enter about product which you wish to search :";
+            cin>>searchString;
+            vector<Product*>  searchProduct= ProductManager :: searchProducts(searchString);
 
-            if(customerWish<'1' || customerWish>((char)(topSearch.size()+3))){
-                cout<<"User please enter correct";
+            if(searchProduct.size() == 0){
+                cout<<"\nSorry, Presently we don't have the required product.You can search for it afterwards at our store\n\n";
+                goto CustomerChoices; 
+            }
+
+            int productWish;
+            SearchProductDisplay:
+            displaySearchProduct(searchProduct);
+           if(productWish<1 ||productWish>searchProduct.size()){
+                cout<<"\nMatch not found\n\n";
+                goto SearchProductDisplay;
             }
 
 
         }
+
+
+        
         else{
             
         }
@@ -248,6 +292,7 @@ int main(){
         cout<<"You have entered wrong choice"<<endl;
         goto SignIn;
     }
+
     Database :: writeToDatabase<Product>(Database::products,"products.txt");
     Database :: writeToDatabase<User>(Database::users,"users.txt");
     // Database :: writeToDatabase<User>(Database::vendors,"user.txt");
