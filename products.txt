@@ -1,1 +1,9 @@
+1
+Shirt
+clothes
+clothes
 0
+1
+Manul1
+1
+2.000000

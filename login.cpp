@@ -176,9 +176,11 @@ void getProductDetails(string &name,string &type,int &quantity,double &price,str
 
 }
 
-void displayProductAcceptance()[
-    
-]
+void displayProductAcceptance(){
+    printFlow();
+    cout<<"1:Add to Cart"<<endl;
+    cout<<"2:Buy Product"<<endl;
+}
 
 int main(){
    
@@ -313,7 +315,9 @@ int main(){
             //     goto SearchProductDisplay;
             // }
             if(productWish >= '1' && productWish <= (char)(searchProduct.size()+(int)'0')){
+                int productNumber;
                 displayProductAcceptance();
+                cin>>productNumber;
             }
 
 
