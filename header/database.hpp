@@ -30,6 +30,8 @@ private:
     string building,street,city,state;
 
 public:
+    Address();
+    Address(string building, string street, string city, string state);
     void storeAddress();
     void displayAddress();
     string getDatabaseString();
@@ -57,6 +59,7 @@ class Order{
 };
 
 class User{
+protected:
   string username;
   unsigned long long password;
   Wallet wallet;
@@ -71,6 +74,7 @@ public:
   string getUsername();
   int getType();
   string getUserString();
+  void userFromDatabase(User* user, string db);
   virtual string getDatabaseString();
   friend class UserManager;
 };
@@ -82,7 +86,7 @@ class Vendor : public User{
 public:
   Vendor(string username,unsigned long long password,string accountNumber,Address address);
   string getDatabaseString();
-  
+  void objectFromDatabase(Vendor* vendor, string db);
 };
 
 class Stock{
