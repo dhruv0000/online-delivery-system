@@ -68,13 +68,14 @@ protected:
   Address address;
   enum Type type;
 public:
+  User();
   User(string username, unsigned long password, string account, Address address,Type type);
 
   unsigned long long getPassword();
   string getUsername();
   int getType();
   string getUserString();
-  void userFromDatabase(User* user, string db);
+  void userFromDatabase(User* user, ifstream& fin);
   virtual string getDatabaseString();
   friend class UserManager;
 };
@@ -84,9 +85,10 @@ class Vendor : public User{
   int numberOfRatings;
   vector<string> reviews;
 public:
+  Vendor();
   Vendor(string username,unsigned long long password,string accountNumber,Address address);
   string getDatabaseString();
-  void objectFromDatabase(Vendor* vendor, string db);
+  Vendor* objectFromDatabase(ifstream& fin);
 };
 
 class Stock{
@@ -106,12 +108,13 @@ class Product{
     vector<Stock*> stocks;
     string description;
     int quantitySold;
-    public:
+  public:
+    Product();
     Product(string name, string type, Stock* stock, string description);
     static bool compareProduct(Product* prod1, Product* prod2);
     void displayProduct();
     string getDatabaseString();
-    void objectFromDatabase(Product* product, string db); 
+    Product* objectFromDatabase(ifstream& fin); 
     string getProductName();
     friend class ProductManager;
 };
@@ -136,10 +139,12 @@ class Cart{
 
 class Customer : public User{
   Cart cart;
-  public:
+public:
+  Customer();
   Customer(string username,unsigned long long password,string accountNumber,Address address);
 
   string getDatabaseString();
+  Customer* objectFromDatabase(ifstream& fin);
 };
 
 namespace Database {

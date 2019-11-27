@@ -91,6 +91,7 @@ int Order::getOrderID() {
   return orderID;
 }
 
+User::User() {}
 
 User::User(string username, unsigned long password, string account, Address address,Type type){
   this->username = username;
@@ -122,11 +123,10 @@ string User::getUserString() {
   return db;
 }
 
-void User::userFromDatabase(User* user, string db) {
-  stringstream str(db);
+void User::userFromDatabase(User* user, ifstream& fin) {
   string attrib[10];
   for(int i = 0; i < 10; i++) {
-    getline(str, attrib[i]);
+    getline(fin, attrib[i]);
   }
   user->username = attrib[0];
   user->password = stoull(attrib[1]);
@@ -137,12 +137,14 @@ void User::userFromDatabase(User* user, string db) {
   int orderSize = stoi(attrib[9]);
   for(int i = 0; i < orderSize; i++) {
     string orderId;
-    getline(str, orderId);
+    getline(fin, orderId);
     user->orders.push_back(Database::orders[stoi(orderId)]);
   }
 }
 
 string User::getDatabaseString(){}
+
+Vendor::Vendor() : User() {}
 
 Vendor::Vendor(string username,unsigned long long password,string accountNumber,Address address):User(username,password,accountNumber,address,VENDOR){
   rating = 0;
@@ -158,19 +160,19 @@ string Vendor::getDatabaseString() {
   return db;
 }
 
-void Vendor::objectFromDatabase(Vendor* vendor, string db) {
-  stringstream str(db);
-  userFromDatabase(vendor, db);
+Vendor* Vendor::objectFromDatabase(ifstream& fin) {
+  Vendor* vendor = new Vendor();
+  userFromDatabase(vendor, fin);
   string attrib[3];
   for(int i = 0; i < 3; i++) {
-    getline(str, attrib[i]);
+    getline(fin, attrib[i]);
   }
   vendor->rating = stod(attrib[0]);
   vendor->numberOfRatings = stoi(attrib[1]);
   int numberOfReviews = stoi(attrib[2]);
   for(int i = 0; i < numberOfReviews; i++) {
     string review;
-    getline(str, review);
+    getline(fin, review);
     vendor->reviews.push_back(review);
   }
 }
@@ -186,6 +188,8 @@ string Stock::getVendorName() {
 string Stock::getDatabaseString() {
   return vendor->getUsername() + "\n" + to_string(quantity) + "\n" + to_string(price) + "\n";
 }
+
+Product::Product() {}
 
 Product::Product(string name, string type, Stock* stock, string description) {
     this->quantitySold = 0;
@@ -212,12 +216,12 @@ string Product::getDatabaseString() {
     } 
     return db;
 }
-void Product::objectFromDatabase(Product* product, string db) {
-  stringstream str(db);
+Product* Product::objectFromDatabase(ifstream& fin) {
+  Product* product = new Product();
   string attrib[5];
   for (int i = 0; i < 5; i++)
   {
-    getline(str, attrib[i]);
+    getline(fin, attrib[i]);
   }
   product->name = attrib[0];
   product->type = attrib[1];
@@ -228,7 +232,7 @@ void Product::objectFromDatabase(Product* product, string db) {
     string stockAttrib[3];
     for (int j = 0; j < 3; j++)
     {
-      getline(str, stockAttrib[j]);
+      getline(fin, stockAttrib[j]);
     }
     Vendor* vendor;
     for(auto curVendor : Database :: users) {     // users must be filled first!
@@ -258,10 +262,10 @@ string CartProduct::getDatabaseString() {
   return db;
 }
 
+Customer::Customer() : User() {}
 
-Customer::Customer(string username,unsigned long long password,string accountNumber,Address address) : User(username,password,accountNumber,address,CUSTOMER){
-  
-}
+Customer::Customer(string username,unsigned long long password,string accountNumber,Address address) : User(username,password,accountNumber,address,CUSTOMER){}
+
 
 string Customer::getDatabaseString() {
   string db = getUserString() +  to_string(cart.cartProducts.size()) + "\n";
@@ -271,6 +275,11 @@ string Customer::getDatabaseString() {
   return db;
 }
 
+Customer* Customer::objectFromDatabase(ifstream& fin) {
+  Customer* customer = new Customer();
+  userFromDatabase(customer, fin);
+  return customer;
+}
 
 
 
