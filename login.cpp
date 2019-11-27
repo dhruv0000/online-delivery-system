@@ -377,7 +377,7 @@ int main(){
         else if(vendorWish == '3'){
             
             printSeparator();
-            cout<<"Your wallet has "<<(Database :: currentUser)->getWalletBalance()<<endl;
+            cout<<"Your wallet has "<<UserManager :: getWalletBalance()<<endl;
             goto VendorChoices;
 
         }else if(vendorWish == '4'){
@@ -390,7 +390,7 @@ int main(){
         else if(vendorWish == '5'){
            
             printSeparator();
-            cout<<"Your wallet has "<<(Database :: currentUser)->getWalletBalance()<<endl;
+            cout<<"Your wallet has "<<UserManager :: getWalletBalance()<<endl;
             cout<<"Enter the amount you wish to add to your bank account"<<endl;
             double amount;
             cin>>amount;
@@ -399,7 +399,7 @@ int main(){
             // if((Database :: currentUser)->getWalletBalance()<0){
             //     cout<<"You don't have enough money in account"
             // }
-            cout<<"Now your wallet has "<<(Database :: currentUser)->getWalletBalance()<<endl;
+            cout<<"Now your wallet has "<<UserManager :: getWalletBalance()<<endl;
 
         }
         else if(vendorWish == '6')

@@ -113,13 +113,7 @@ unsigned long long User::getPassword() {
 int User::getType() {
   return type;
 }
-int User::getWalletBalance(){
-  return wallet.getBalance();
-}
 
-void User :: updateWalletBalance(double increment){
-  wallet.updateBalance(increment);
-}
 string User::getUserString() {
   string db = username + "\n" + to_string(password) + "\n" + to_string(wallet.getBalance()) + "\n" + account + "\n" + address.getDatabaseString() + to_string(type) + "\n" + to_string(orders.size()) + "\n";
   for(auto order: orders) {
