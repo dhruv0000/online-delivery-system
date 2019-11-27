@@ -219,10 +219,10 @@ bool Product::compareProduct(Product* prod1, Product* prod2) {
     return prod1->quantitySold > prod2->quantitySold;
 }
 void Product::displayProduct() {
-    cout<<"Name:\t\t"<<name<<endl;
-    cout<<"Type:\t\t"<<type<<endl;
-    cout<<"Description:\t\t"<<description<<endl;
-    cout<<"Quantity Sold:\t\t"<<quantitySold<<endl;
+    cout<<"Name:"<<name<<endl;
+    cout<<"Type:"<<type<<endl;
+    cout<<"Description:"<<description<<endl;
+    cout<<"Quantity Sold:"<<quantitySold<<endl;
     if(stocks.size() == 0) cout<<"Product is currently out of stock.\n";
     else cout<<"Product in stock. "<<stocks.size()<<" vendors available.\n";
 }

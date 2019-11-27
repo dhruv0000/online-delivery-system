@@ -64,9 +64,8 @@ class ProductManager {
 };
 
 
+
 class UserManager{
-
-
 public:
     static bool registerUser(string username, unsigned long long hashPassword, string account, Address address, Type type){
         if(type == VENDOR){
@@ -142,3 +141,6 @@ public:
 };
 
 // in order manager, remember to update order id
+class orderManager {
+    static bool placeOrder()
+}
