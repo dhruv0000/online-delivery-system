@@ -57,6 +57,7 @@ class Order{
   public:
   int getOrderID();
   string getDatabaseString();
+  static void objectFromDatabase(Order* order, ifstream& fin);
 };
 
 class User{
@@ -81,7 +82,7 @@ public:
   int getUserID();
   int getUserType();
   virtual string getDatabaseString();
-  virtual void objectFromDatabase(User* user, ifstream& fin);
+  static void objectFromDatabase(User* user, ifstream& fin);
   friend class UserManager;
 };
 
@@ -103,7 +104,7 @@ class Stock{
     int quantity;
     double price;
     Stock(Vendor* vendor, int quantity, double price);
-    string getVendorName();
+    int getVendorID();
     string getDatabaseString();
 };
 
@@ -164,13 +165,22 @@ namespace Database {
     double deliveryCharge;
 
     template<typename T>
+    int getType(T* record) {
+      return -1;
+    }
+    template<>
+    int getType<User>(User* user) {
+      return user->getType();
+    }
+
+    template<typename T>
     void writeEntityToDatabase(vector<T*> data, string fname) {
         ofstream fout;
         fout.open(fname);
         fout<<data.size()<<endl;
         if(typeid(T) == typeid(User)) {
           for(auto user : data) {
-            fout<<user->getUserType();
+            fout<<getType<T>(user);
           }
           fout<<endl;
         }
@@ -180,24 +190,38 @@ namespace Database {
         fout.close();
     }
     template<typename T>
-    void initializeDataVectors(vector<T*> data, string fname) {
+    T* newRecord(int type) {
+      return NULL;
+    } 
+    template<>
+    User* newRecord<User>(int type) {
+      // cout<<"GGG"<<endl;
+      User* user;
+      if(type == CUSTOMER) user = new Customer();
+      else user = new Vendor();
+      return user;
+    }
+
+    template<typename T>
+    void initializeDataVectors(vector<T*>& data, string fname) {
       ifstream fin;
       fin.open(fname);
       int size;
       fin>>size;
+      string userTypes;
+      if(typeid(T) == typeid(User)) {
+        
+        fin>>userTypes;
+        // cout<<userTypes<<endl;
+      }
+      // cout<<size<<endl;
       for (int i = 0; i < size; i++)
       {
         T* record;
         if(typeid(T) == typeid(User)) {
-          string userTypes;
-          fin>>userTypes;
-          for(auto type : userTypes) {
-            if(type-'0' == CUSTOMER) {
-              record = new Customer();
-            } else {
-              record = new Vendor();
-            }
-          }
+          // cout<<userTypes[i]-'0'<<endl;
+          record = newRecord<T>(userTypes[i]-'0');
+        
         } else {
           record = new T();
         }
@@ -206,18 +230,45 @@ namespace Database {
       fin.close();
     }
     template<typename T>
-    void readEntityFromDatabase(vector<T*> data, string fname) {
-      
+    void getObjectFromFile(T* record, ifstream& fin) {
+
+    }
+    template<>
+    void getObjectFromFile<User>(User* user, ifstream& fin) {
+      if(user->getType() == CUSTOMER) {
+        
+        Customer::objectFromDatabase((Customer*)user, fin);
+      } else {
+        // cout<<"done"<<endl;
+        Vendor::objectFromDatabase((Vendor*)user, fin);
+      }
+      // cout<<"done"<<endl;
+    }
+    template<typename T>
+    void readEntityFromDatabase(vector<T*>& data, string fname) {
+      // cout<<data.size()<<endl;
       ifstream fin;
       fin.open(fname);
-      int size;
-      fin>>size;
+      string sizeStr;
+      getline(fin, sizeStr);
+      // cout<<sizeStr.length()<<endl;
+      int size = stoi(sizeStr);
+      // cout<<size<<endl;
+      // fin>>size;
       if(typeid(T) == typeid(User)) {
         string typeString;
-        fin>>typeString;
+        getline(fin, typeString);
+        // cout<<typeString<<endl;
       }
+      // int i = 0;
       for(auto record : data) {
+        if(typeid(T) == typeid(User)) {
+          // cout<<"done"<<endl;
+          getObjectFromFile<T>(record, fin);
+          
+        }
         T::objectFromDatabase(record, fin);
+        // cout<<"Fff"<<endl;
       }
       fin.close();
     }

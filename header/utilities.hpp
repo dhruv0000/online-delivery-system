@@ -99,6 +99,8 @@ string Order::getDatabaseString() {
   return db;
 }
 
+void Order::objectFromDatabase(Order* order, ifstream& fin) {}
+
 User::User() {}
 
 User::User(string username, unsigned long password, string account, Address address,Type type){
@@ -136,13 +138,16 @@ void User::userFromDatabase(User* user, ifstream& fin) {
   for(int i = 0; i < 10; i++) {
     getline(fin, attrib[i]);
   }
+  // cout<<attrib[0]<<endl;
   user->username = attrib[0];
   user->password = stoull(attrib[1]);
   user->wallet = Wallet(stod(attrib[2]));
   user->account = attrib[3];
   user->address = Address(attrib[4], attrib[5], attrib[6], attrib[7]);
   user->type = static_cast<Type>(stoi(attrib[8]));
+  // cout<<attrib[8]<<endl;
   int orderSize = stoi(attrib[9]);
+  
   for(int i = 0; i < orderSize; i++) {
     string orderId;
     getline(fin, orderId);
@@ -162,7 +167,7 @@ string User::getDatabaseString(){}
 
 void User::objectFromDatabase(User* user, ifstream& fin){}
 
-Vendor::Vendor() : User() {}
+Vendor::Vendor() : User() {type = VENDOR;}
 
 Vendor::Vendor(string username,unsigned long long password,string accountNumber,Address address):User(username,password,accountNumber,address,VENDOR){
   rating = 0;
@@ -184,6 +189,7 @@ void Vendor::objectFromDatabase(Vendor* vendor, ifstream& fin) {
   for(int i = 0; i < 3; i++) {
     getline(fin, attrib[i]);
   }
+  // cout<<attrib[0]<<endl;
   vendor->rating = stod(attrib[0]);
   vendor->numberOfRatings = stoi(attrib[1]);
   int numberOfReviews = stoi(attrib[2]);
@@ -199,8 +205,8 @@ Stock::Stock(Vendor* vendor, int quantity, double price) {
     this->quantity = quantity;
     this->price = price;
 }
-string Stock::getVendorName() {
-  return vendor->getUsername();
+int Stock::getVendorID() {
+  return vendor->getUserID();
 }
 string Stock::getDatabaseString() {
   return to_string(vendor->getUserID()) + "\n" + to_string(quantity) + "\n" + to_string(price) + "\n";
@@ -271,11 +277,11 @@ CartProduct::CartProduct(Product* product, Stock* stock, int quantity) {
 }
 string CartProduct::getDatabaseString() {
   string db;
-  db = to_string(product->getProductID()) + "\n" + stock->getVendorName() + "\n";
+  db = to_string(product->getProductID()) + "\n" + to_string(stock->getVendorID()) + "\n" + to_string(quantity) + "\n";
   return db;
 }
 
-Customer::Customer() : User() {}
+Customer::Customer() : User() {type = CUSTOMER;}
 
 Customer::Customer(string username,unsigned long long password,string accountNumber,Address address) : User(username,password,accountNumber,address,CUSTOMER){}
 
@@ -290,7 +296,17 @@ string Customer::getDatabaseString() {
 
 void Customer::objectFromDatabase(Customer* customer, ifstream& fin) {
   userFromDatabase(customer, fin);
-  Cart cart;
+  string cartSizeStr;
+  getline(fin, cartSizeStr);
+  int cartSize = stoi(cartSizeStr);
+  for (int i = 0; i < cartSize; i++)
+  {
+    string cartAttrib[3];
+    for(int j = 0; j < 3; j++) {
+      getline(fin, cartAttrib[j]);
+    }
+    CartProduct cartProduct(Database::products[stoi(cartAttrib[0])], (Vendor*)Database::users[stoi(cartAttrib[1])], stoi(cartAttrib[2]));
+    customer->cart.cartProducts.push_back(cartProduct);
+  }
   
 }
-

@@ -142,5 +142,5 @@ public:
 
 // in order manager, remember to update order id
 class orderManager {
-    static bool placeOrder()
-}
+    static bool placeOrder();
+};
