@@ -40,7 +40,14 @@ unsigned long long Password::hashValue(string passwd){
     return h(passwd);
 }
 
+Address::Address() {}
 
+Address::Address(string building, string street, string city, string state) {
+  this->building = building;
+  this->street = street;
+  this->city = city;
+  this->state = state;
+}
 
 void Address::storeAddress(){
     cout<<"Enter all the details in one line each "<<endl;
@@ -91,7 +98,7 @@ User::User(string username, unsigned long password, string account, Address addr
   this->account = account;
   this->address = address;
   this->type = type;
-  Wallet* newWallet = new Wallet(0);      //why allocation?
+  Wallet* newWallet = new Wallet(0);      // TODO: why allocation?
   this->wallet = *newWallet;
 
 }
@@ -115,10 +122,27 @@ string User::getUserString() {
   return db;
 }
 
-
-string User::getDatabaseString(){
-  
+void User::userFromDatabase(User* user, string db) {
+  stringstream str(db);
+  string attrib[10];
+  for(int i = 0; i < 10; i++) {
+    getline(str, attrib[i]);
+  }
+  user->username = attrib[0];
+  user->password = stoull(attrib[1]);
+  user->wallet = Wallet(stod(attrib[2]));
+  user->account = attrib[3];
+  user->address = Address(attrib[4], attrib[5], attrib[6], attrib[7]);
+  user->type = static_cast<Type>(stoi(attrib[8]));
+  int orderSize = stoi(attrib[9]);
+  for(int i = 0; i < orderSize; i++) {
+    string orderId;
+    getline(str, orderId);
+    user->orders.push_back(Database::orders[stoi(orderId)]);
+  }
 }
+
+string User::getDatabaseString(){}
 
 Vendor::Vendor(string username,unsigned long long password,string accountNumber,Address address):User(username,password,accountNumber,address,VENDOR){
   rating = 0;
@@ -134,6 +158,22 @@ string Vendor::getDatabaseString() {
   return db;
 }
 
+void Vendor::objectFromDatabase(Vendor* vendor, string db) {
+  stringstream str(db);
+  userFromDatabase(vendor, db);
+  string attrib[3];
+  for(int i = 0; i < 3; i++) {
+    getline(str, attrib[i]);
+  }
+  vendor->rating = stod(attrib[0]);
+  vendor->numberOfRatings = stoi(attrib[1]);
+  int numberOfReviews = stoi(attrib[2]);
+  for(int i = 0; i < numberOfReviews; i++) {
+    string review;
+    getline(str, review);
+    vendor->reviews.push_back(review);
+  }
+}
 
 Stock::Stock(Vendor* vendor, int quantity, double price) {
     this->vendor = vendor;
@@ -146,7 +186,6 @@ string Stock::getVendorName() {
 string Stock::getDatabaseString() {
   return vendor->getUsername() + "\n" + to_string(quantity) + "\n" + to_string(price) + "\n";
 }
-
 
 Product::Product(string name, string type, Stock* stock, string description) {
     this->quantitySold = 0;
