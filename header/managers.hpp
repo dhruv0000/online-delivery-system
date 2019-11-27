@@ -25,6 +25,7 @@ class ProductManager {
         }
         if(found) return true;
         Product* newProduct = new Product(name, type, newStock, description);
+        newProduct->productID = Database::products.size();
         Database::products.push_back(newProduct);
         return true;
     }
@@ -70,10 +71,12 @@ public:
     static bool registerUser(string username, unsigned long long hashPassword, string account, Address address, Type type){
         if(type == VENDOR){
             User* newVendor = new Vendor(username,hashPassword,account,address);
+            newVendor->userID = Database::users.size();
             (Database :: users).push_back(newVendor);
         }
         else{
             User* newCustomer = new Customer(username,hashPassword,account,address);
+            newCustomer->userID = Database::users.size();
             (Database :: users).push_back(newCustomer);
         }
 
@@ -137,3 +140,5 @@ public:
     }
 
 };
+
+// in order manager, remember to update order id

@@ -91,6 +91,14 @@ int Order::getOrderID() {
   return orderID;
 }
 
+string Order::getDatabaseString() {
+  string db = to_string(orderID) + "\n" + to_string(status) + "\n" + expectedDeliveryDate + "\n" + to_string(cost) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(cartProducts.size()) + "\n";
+  for(auto cartProduct : cartProducts) {
+    db.append(cartProduct.getDatabaseString());
+  }
+  return db;
+}
+
 User::User() {}
 
 User::User(string username, unsigned long password, string account, Address address,Type type){
@@ -142,7 +150,17 @@ void User::userFromDatabase(User* user, ifstream& fin) {
   }
 }
 
+int User::getUserID() {
+  return userID;
+}
+
+int User::getUserType() {
+  return type;
+}
+
 string User::getDatabaseString(){}
+
+void User::objectFromDatabase(User* user, ifstream& fin){}
 
 Vendor::Vendor() : User() {}
 
@@ -160,8 +178,7 @@ string Vendor::getDatabaseString() {
   return db;
 }
 
-Vendor* Vendor::objectFromDatabase(ifstream& fin) {
-  Vendor* vendor = new Vendor();
+void Vendor::objectFromDatabase(Vendor* vendor, ifstream& fin) {
   userFromDatabase(vendor, fin);
   string attrib[3];
   for(int i = 0; i < 3; i++) {
@@ -186,7 +203,7 @@ string Stock::getVendorName() {
   return vendor->getUsername();
 }
 string Stock::getDatabaseString() {
-  return vendor->getUsername() + "\n" + to_string(quantity) + "\n" + to_string(price) + "\n";
+  return to_string(vendor->getUserID()) + "\n" + to_string(quantity) + "\n" + to_string(price) + "\n";
 }
 
 Product::Product() {}
@@ -216,8 +233,7 @@ string Product::getDatabaseString() {
     } 
     return db;
 }
-Product* Product::objectFromDatabase(ifstream& fin) {
-  Product* product = new Product();
+void Product::objectFromDatabase(Product* product, ifstream& fin) {
   string attrib[5];
   for (int i = 0; i < 5; i++)
   {
@@ -234,12 +250,7 @@ Product* Product::objectFromDatabase(ifstream& fin) {
     {
       getline(fin, stockAttrib[j]);
     }
-    Vendor* vendor;
-    for(auto curVendor : Database :: users) {     // users must be filled first!
-      if(curVendor->getUsername() == stockAttrib[0]) {
-        vendor = (Vendor*) curVendor;
-      }
-    }
+    Vendor* vendor = (Vendor *) Database::users[stoi(stockAttrib[0])];
     Stock* new_stock = new Stock(vendor, stoi(attrib[1]), stod(attrib[2]));
     product->stocks.push_back(new_stock);
   }
@@ -249,7 +260,9 @@ string Product::getProductName() {
   return name;
 }
 
-
+int Product::getProductID() {
+  return productID;
+}
 
 CartProduct::CartProduct(Product* product, Stock* stock, int quantity) {
     this->product = product;
@@ -258,7 +271,7 @@ CartProduct::CartProduct(Product* product, Stock* stock, int quantity) {
 }
 string CartProduct::getDatabaseString() {
   string db;
-  db = product->getProductName() + "\n" + stock->getVendorName() + "\n";
+  db = to_string(product->getProductID()) + "\n" + stock->getVendorName() + "\n";
   return db;
 }
 
@@ -275,30 +288,9 @@ string Customer::getDatabaseString() {
   return db;
 }
 
-Customer* Customer::objectFromDatabase(ifstream& fin) {
-  Customer* customer = new Customer();
+void Customer::objectFromDatabase(Customer* customer, ifstream& fin) {
   userFromDatabase(customer, fin);
-  return customer;
+  Cart cart;
+  
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

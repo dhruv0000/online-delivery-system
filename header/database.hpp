@@ -56,10 +56,12 @@ class Order{
   PaymentStatus paymentStatus;
   public:
   int getOrderID();
+  string getDatabaseString();
 };
 
 class User{
 protected:
+  int userID;
   string username;
   unsigned long long password;
   Wallet wallet;
@@ -75,8 +77,11 @@ public:
   string getUsername();
   int getType();
   string getUserString();
-  void userFromDatabase(User* user, ifstream& fin);
+  static void userFromDatabase(User* user, ifstream& fin);
+  int getUserID();
+  int getUserType();
   virtual string getDatabaseString();
+  virtual void objectFromDatabase(User* user, ifstream& fin);
   friend class UserManager;
 };
 
@@ -88,7 +93,7 @@ public:
   Vendor();
   Vendor(string username,unsigned long long password,string accountNumber,Address address);
   string getDatabaseString();
-  Vendor* objectFromDatabase(ifstream& fin);
+  static void objectFromDatabase(Vendor* vendor, ifstream& fin);
 };
 
 class Stock{
@@ -103,6 +108,7 @@ class Stock{
 };
 
 class Product{
+    int productID;
     string name;
     string type;
     vector<Stock*> stocks;
@@ -114,8 +120,9 @@ class Product{
     static bool compareProduct(Product* prod1, Product* prod2);
     void displayProduct();
     string getDatabaseString();
-    Product* objectFromDatabase(ifstream& fin); 
+    static void objectFromDatabase(Product* product, ifstream& fin); 
     string getProductName();
+    int getProductID();
     friend class ProductManager;
 };
 
@@ -144,7 +151,7 @@ public:
   Customer(string username,unsigned long long password,string accountNumber,Address address);
 
   string getDatabaseString();
-  Customer* objectFromDatabase(ifstream& fin);
+  static void objectFromDatabase(Customer* customer, ifstream& fin);
 };
 
 namespace Database {
@@ -157,13 +164,76 @@ namespace Database {
     double deliveryCharge;
 
     template<typename T>
-    void writeToDatabase(vector<T*> data, string fname) {
+    void writeEntityToDatabase(vector<T*> data, string fname) {
         ofstream fout;
         fout.open(fname);
         fout<<data.size()<<endl;
+        if(typeid(T) == typeid(User)) {
+          for(auto user : data) {
+            fout<<user->getUserType();
+          }
+          fout<<endl;
+        }
         for(auto item : data) {
             fout<<item->getDatabaseString();
         }
         fout.close();
+    }
+    template<typename T>
+    void initializeDataVectors(vector<T*> data, string fname) {
+      ifstream fin;
+      fin.open(fname);
+      int size;
+      fin>>size;
+      for (int i = 0; i < size; i++)
+      {
+        T* record;
+        if(typeid(T) == typeid(User)) {
+          string userTypes;
+          fin>>userTypes;
+          for(auto type : userTypes) {
+            if(type-'0' == CUSTOMER) {
+              record = new Customer();
+            } else {
+              record = new Vendor();
+            }
+          }
+        } else {
+          record = new T();
+        }
+        data.push_back(record);
+      }
+      fin.close();
+    }
+    template<typename T>
+    void readEntityFromDatabase(vector<T*> data, string fname) {
+      
+      ifstream fin;
+      fin.open(fname);
+      int size;
+      fin>>size;
+      if(typeid(T) == typeid(User)) {
+        string typeString;
+        fin>>typeString;
+      }
+      for(auto record : data) {
+        T::objectFromDatabase(record, fin);
+      }
+      fin.close();
+    }
+    void writeToDatabase() {
+      writeEntityToDatabase<User>(Database::users, "users.txt");
+      writeEntityToDatabase<Product>(Database::products, "products.txt");
+      writeEntityToDatabase<Order>(Database::orders, "orders.txt");
+
+    }
+    void readFromDatabase() {
+      initializeDataVectors<User>(Database::users, "users.txt");
+      initializeDataVectors<Product>(Database::products, "products.txt");
+      initializeDataVectors<Order>(Database::orders, "orders.txt");
+      
+      readEntityFromDatabase<User>(Database::users, "users.txt");
+      readEntityFromDatabase<Product>(Database::products, "products.txt");
+      readEntityFromDatabase<Order>(Database::orders, "orders.txt");
     }
 };
