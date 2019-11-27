@@ -55,6 +55,7 @@ class Order{
   string deliverySlot;
   PaymentStatus paymentStatus;
   public:
+  Order();
   int getOrderID();
 };
 
@@ -119,7 +120,7 @@ class Product{
     friend class ProductManager;
 };
 
-class CartProduct{
+class DCartProduct{
   Product *product;
   Stock *stock;
   int quantity;

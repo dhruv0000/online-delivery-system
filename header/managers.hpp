@@ -138,5 +138,12 @@ public:
 };
 
 class orderManager {
-    static bool placeOrder()
+
+    static bool placeOrder(Product* product,Stock* stock,int qty,PaymentStatus status) { //For single product
+        Order* order = new Order();
+    }
+
+    static bool addToCart(Product* product,Stock* stock,int qty,PaymentStatus status) {
+        (Database :: orders).push_
+    }
 }
