@@ -29,7 +29,7 @@ class ProductManager {
         return true;
     }
     
-    static vector<Product*> getTopProducts(int count = 10) {
+    static vector<Product*> getTopProducts(int count = 5) {
         vector<Product*> sortedProducts(Database::products);
         vector<Product*> productsToShow;
         sort(sortedProducts.begin(), sortedProducts.end(), Product::compareProduct);
@@ -39,14 +39,17 @@ class ProductManager {
         return productsToShow;
     }
 
-    static vector<Product*> searchProducts(string query, int limit = 10) {
+    static vector<Product*> searchProducts(string query, int limit = 5) {
         vector<Product*> sortedProducts(Database::products);
         vector<Product*> productsToShow;
         sort(sortedProducts.begin(), sortedProducts.end(), Product::compareProduct);
         for (auto product : sortedProducts)
         {
             if(product->name.find(query) != string::npos || product->type.find(query) != string::npos) {
-                productsToShow.push_back(product);
+                if(productsToShow.size() < limit)
+                    productsToShow.push_back(product);
+                else
+                    break;
             }
         }
         return productsToShow;
@@ -66,16 +69,17 @@ class UserManager{
 public:
     static bool registerUser(string username, unsigned long long hashPassword, string account, Address address, Type type){
         if(type == VENDOR){
-            Vendor* newVendor = new Vendor(username,hashPassword,account,address);
-            (Database :: users).push_back((User*)newVendor);
+            User* newVendor = new Vendor(username,hashPassword,account,address);
+            (Database :: users).push_back(newVendor);
         }
         else{
-            Customer* newCustomer = new Customer(username,hashPassword,account,address);
-            (Database :: users).push_back((User*)newCustomer);
+            User* newCustomer = new Customer(username,hashPassword,account,address);
+            (Database :: users).push_back(newCustomer);
         }
 
         return true;
     }
+
     static bool checkUserNameAvailable(string username){
     
         for(auto presentUserNameCheck : Database::users){
@@ -83,6 +87,7 @@ public:
         }
         return true;
     }
+    
     static bool loginUser(string username, unsigned long long hashPassword){
         for(auto existingUser : (Database::users)){
             if(username == existingUser->username){
