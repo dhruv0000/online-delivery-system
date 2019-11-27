@@ -1,5 +1,5 @@
 #include "header/managers.hpp"
-#include <conio.h>
+// #include <conio.h>
 
 using namespace std;
 
@@ -9,12 +9,14 @@ void printFlow(){
 
 void getPassword(string *password) {
     char ch;
-    ch = _getch();
-    while (ch!=13)
+    ch = getchar();
+    cout<<"\b ";
+
+    while (ch!='\n')
     {
         password->push_back(ch);
-        cout<<"*";
-        ch = _getch();
+        cout<<"\b ";
+        ch = getchar();
     }
     
 }
@@ -25,12 +27,13 @@ void printLoginChoice(){
     cout<<"2 : Login as Admin"<<endl;
     cout<<"3 : Login as Customer"<<endl;
     cout<<"4 : Login as Vendor"<<endl;
-    // cout<<"5 : Exit Store"<<endl;
+    cout<<"5 : Exit Store"<<endl;
 }
 void printUserChoice(){
     printFlow();
     cout<<"1: Register as Customer"<<endl;
     cout<<"2: Register as Vendor"<<endl;
+    cout<<"3: Go to start menu"<<endl;
 }
 
 void getDetails(string& username,string& password,unsigned long long& hashPassword,string& rePassword,
@@ -49,8 +52,8 @@ void getDetails(string& username,string& password,unsigned long long& hashPasswo
         do{
             do{
                 cout<<"Enter your Password(should contain  at least 6 characters,atleast 1 Upper Case,Lower Case and Digit character and should not contain  spaces) : ";
-                // std :: cin>>password;
-                getPassword(&password);
+                std :: cin>>password;
+                // getPassword(&password);
 
                 if(Password :: checkStrength(password))
                     break;
@@ -123,9 +126,10 @@ void showFuntionality(int i){
     cout<<i+3<<":Logout"<<endl;
 }
 
+
 int main(){
    
-    int wish;
+    char wish;
     cout<<"Welcome to our Online Store"<<endl;
     
     SignIn: 
@@ -133,18 +137,24 @@ int main(){
     std :: cin>>wish;
 
 
-    if(wish == 1) {
+    if(wish == '1') {
         
         Registration:
         printUserChoice();
+        
         std :: cin>>wish;
         
+        
+        if(wish == '3')
+            goto SignIn;
+
+
         string username,password,accountNumber,rePassword;
         unsigned long long hashPassword;
         Address address;
         Type type;
 
-        if(wish == 1 || wish == 2){
+        if(wish ==  '1' || wish == '2'){
             getDetails(username,password,hashPassword,rePassword,accountNumber,address,type,wish);
         }else{
             cout<<"You have entered wrong wish"<<endl;
@@ -152,12 +162,13 @@ int main(){
         }
 
         if(UserManager :: registerUser(username, hashPassword, accountNumber, address, type)){
-            cout<<"You have successfully created new account"<<endl;
-            cout<<"Please login into Account "<<endl;
+            cout<<"You have successfully created new account (:"<<endl;
+            cout<<"Please login into account to purchase our products"<<endl;
+            cout<<endl;
             goto SignIn;
         }
         
-    }else if(wish == 2) {
+    }else if(wish == '2') {
         // For Login as Admin
         string username,password;
         
@@ -172,11 +183,11 @@ int main(){
             AdminRun:
             
             printAdminChoices();
-            int adminWish;
+            char adminWish;
             std :: cin>>adminWish;
-            if(adminWish == 1)setDeliveryCharges();
-            else if(adminWish == 2)setDiscountPercentage();
-            else if(adminWish == 3)UserManager :: logoutUser();
+            if(adminWish == '1')setDeliveryCharges();
+            else if(adminWish == '2')setDiscountPercentage();
+            else if(adminWish == '3')UserManager :: logoutUser();
             else{
                  cout<<"Admin Please enter correct choice"<<endl;
                  goto AdminRun;
@@ -189,7 +200,7 @@ int main(){
         
     }
 
-    else if(wish == 3){
+    else if(wish == '3'){
        
         string username,password;
         unsigned long long hashValue;
@@ -209,7 +220,7 @@ int main(){
             std :: cin>>count;
             vector<Product*> topSearch = ProductManager :: getTopProducts(count);
                 //Show Top Product has some Issues of how to get the top product address???
-            int customerWish;
+            char customerWish;
 
             UserChoices:
 
@@ -218,7 +229,7 @@ int main(){
             showTopSearch(topSearch);
             std :: cin>>customerWish;
 
-            if(customerWish<1 || customerWish>(topSearch.size()+3)){
+            if(customerWish<'1' || customerWish>((char)(topSearch.size()+3))){
                 cout<<"User please enter correct";
             }
 
@@ -233,11 +244,10 @@ int main(){
     }
     // else if (wish == 4) {
     // }
-
-    // else {
-    //     cout<<"You have entered wrong choice"<<endl;
-    //     goto SignIn;
-    // }
+    else if (wish != '5'){
+        cout<<"You have entered wrong choice"<<endl;
+        goto SignIn;
+    }
     Database :: writeToDatabase<Product>(Database::products,"products.txt");
     Database :: writeToDatabase<User>(Database::users,"users.txt");
     // Database :: writeToDatabase<User>(Database::vendors,"user.txt");

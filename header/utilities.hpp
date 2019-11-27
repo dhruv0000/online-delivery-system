@@ -44,13 +44,14 @@ unsigned long long Password::hashValue(string passwd){
 
 void Address::storeAddress(){
     cout<<"Enter all the details in one line each "<<endl;
-    cout<<"Enter your Building/Appartment :\t\t ";
+    cout<<"Enter your Building/Appartment :";
+    getchar();
     getline(std::cin,building);
-    cout<<"Enter your Street :\t\t ";
+    cout<<"Enter your Street :";
     getline(std::cin,street);
-    cout<<"Enter your City :\t\t ";
+    cout<<"Enter your City :";
     getline(std::cin,city);
-    cout<<"Enter your State :\t\t ";
+    cout<<"Enter your State :";
     getline(std::cin,state);
 }
 
