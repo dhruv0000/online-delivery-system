@@ -75,8 +75,6 @@ public:
   unsigned long long getPassword();
   string getUsername();
   int getType();
-  int getWalletBalance();
-  void updateWalletBalance(double increment);
   string getUserString();
   void userFromDatabase(User* user, ifstream& fin);
   virtual string getDatabaseString();
