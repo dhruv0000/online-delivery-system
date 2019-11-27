@@ -65,8 +65,6 @@ class ProductManager {
 
 
 class UserManager{
-
-
 public:
     static bool registerUser(string username, unsigned long long hashPassword, string account, Address address, Type type){
         if(type == VENDOR){
@@ -133,8 +131,22 @@ public:
         return true;
     }
 
+    static bool addMoneyToAccount(double amount){
+        
+        printSeparator();
+        cout<<"Directing to Bank Gateway"<<endl;
+        ((Database::currentUser)->wallet).updateBalance(-amount);
+        printSeparator();
+        return true;
+    
+    }
+
     static int getWalletBalance(){
         return ((Database::currentUser)->wallet).getBalance();
     }
 
 };
+
+// class orderManager {
+//     static bool placeOrder();
+// }

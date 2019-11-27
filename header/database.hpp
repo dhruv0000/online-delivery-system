@@ -74,6 +74,8 @@ public:
   unsigned long long getPassword();
   string getUsername();
   int getType();
+  int getWalletBalance();
+  void updateWalletBalance(double increment);
   string getUserString();
   void userFromDatabase(User* user, ifstream& fin);
   virtual string getDatabaseString();
@@ -87,6 +89,8 @@ class Vendor : public User{
 public:
   Vendor();
   Vendor(string username,unsigned long long password,string accountNumber,Address address);
+  double getRatings();
+  void displayVendorRatings();
   string getDatabaseString();
   Vendor* objectFromDatabase(ifstream& fin);
 };

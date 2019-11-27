@@ -148,11 +148,12 @@ void displaySearchProduct(vector<Product*> searchedProduct){
 
 void displayVendorChoices(){
     printFlow();
-    cout<<"1:Add Product to our Shop"<<endl;
-    cout<<"2:Show Pending Orders"<<endl;
-    cout<<"3:Show Wallet Balance"<<endl;
-    cout<<"4:See Reviews and Ratings"<<endl;
-    cout<<"5:Logout"<<endl;
+    cout<<"1:Add product to our shop"<<endl;
+    cout<<"2:Show Pending orders"<<endl;
+    cout<<"3:Show wallet balance"<<endl;
+    cout<<"4:See reviews and ratings"<<endl;
+    cout<<"5:Add money from wallet to Bank Account"<<endl;
+    cout<<"6:Logout"<<endl;
 }
 
 void getProductDetails(string &name,string &type,int &quantity,double &price,string &description){
@@ -263,14 +264,14 @@ int main(){
        
         string username,password;
         unsigned long long hashValue;
-
+        printSeparator();
         getUserDetails(username,password,hashValue);
-
+        printSeparator();
+        
         if(!UserManager::loginUser(username,hashValue)){
             cout<<"\nYou have entered wrong username or password\n\n";
             goto SignIn;
         }
-        
         if((Database :: currentUser)->getType() != CUSTOMER){
             cout<<"\nOops you are not CUSTOMER\n";
             cout<<"Please select proper category\n"<<endl;
@@ -288,7 +289,6 @@ int main(){
 
         CustomerChoices:
 
-        printFlow();
         showTopSearch(topSearch);
         showFuntionality(topSearch.size());
         std :: cin>>customerWish;
@@ -369,8 +369,47 @@ int main(){
             cout<<"Your product have been added succesfully (:"<<endl;
             goto VendorChoices;
 
-        }else if(vendorWish == '5')
+        }else if (vendorWish == '2'){
+
+
+
+        }
+        else if(vendorWish == '3'){
+            
+            printSeparator();
+            cout<<"Your wallet has "<<(Database :: currentUser)->getWalletBalance()<<endl;
+            goto VendorChoices;
+
+        }else if(vendorWish == '4'){
+
+            printSeparator();
+            ((Vendor*)Database :: currentUser)->displayVendorRatings();
+            goto VendorChoices;
+        
+        }
+        else if(vendorWish == '5'){
+           
+            printSeparator();
+            cout<<"Your wallet has "<<(Database :: currentUser)->getWalletBalance()<<endl;
+            cout<<"Enter the amount you wish to add to your bank account"<<endl;
+            double amount;
+            cin>>amount;
+            UserManager :: addMoneyToAccount(amount);
+            //Last mai dekhege...
+            // if((Database :: currentUser)->getWalletBalance()<0){
+            //     cout<<"You don't have enough money in account"
+            // }
+            cout<<"Now your wallet has "<<(Database :: currentUser)->getWalletBalance()<<endl;
+
+        }
+        else if(vendorWish == '6')
             goto SignIn;
+        else{
+            printSeparator();
+            cout<<"You have entered wrong choice"<<endl;
+            printSeparator();
+            goto VendorChoices;
+        }
 
     }
     else if (wish != '5'){
