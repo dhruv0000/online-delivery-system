@@ -87,7 +87,7 @@ void getDetails(string& username,string& password,unsigned long long& hashPasswo
         
 }
 void displayUsername(){
-    cout<<"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"<<Database :: currentUser -> getUsername()<<endl;
+    cout<<"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tLogged In:"<<Database :: currentUser -> getUsername()<<endl;
 }
 
 void printAdminChoices(){
@@ -166,19 +166,19 @@ void getProductDetails(string &name,string &type,int &quantity,double &price,str
     cin>>quantity;
     cout<<"Enter price(must be decimal value):";
     cin>>price;
-    cout<<"Would you liketo add description of your product?Y/N";
+    cout<<"Would you like to add description of your product?Y/N";
     char check;
     cin>>check;
-    if(check == 'Y'){
+    if(check == 'Y'||check == 'y'||check == 'Yes'){
         cout<<"Enter description in one line :";
         getline(cin,description);
     }
 
 }
 
-void displayProductAcceptance()[
+void displayProductAcceptance(){
     
-]
+}
 
 int main(){
    
@@ -285,8 +285,6 @@ int main(){
         char customerWish;
 
         CustomerChoices:
-
-        printFlow();
         showTopSearch(topSearch);
         showFuntionality(topSearch.size());
         std :: cin>>customerWish;
