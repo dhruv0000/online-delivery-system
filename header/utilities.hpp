@@ -113,7 +113,13 @@ unsigned long long User::getPassword() {
 int User::getType() {
   return type;
 }
+int User::getWalletBalance(){
+  return wallet.getBalance();
+}
 
+void User :: updateWalletBalance(double increment){
+  wallet.updateBalance(increment);
+}
 string User::getUserString() {
   string db = username + "\n" + to_string(password) + "\n" + to_string(wallet.getBalance()) + "\n" + account + "\n" + address.getDatabaseString() + to_string(type) + "\n" + to_string(orders.size()) + "\n";
   for(auto order: orders) {
@@ -144,11 +150,20 @@ void User::userFromDatabase(User* user, ifstream& fin) {
 
 string User::getDatabaseString(){}
 
-Vendor::Vendor() : User() {}
 
+Vendor::Vendor() : User() {}
 Vendor::Vendor(string username,unsigned long long password,string accountNumber,Address address):User(username,password,accountNumber,address,VENDOR){
   rating = 0;
   numberOfRatings = 0;
+}
+
+void Vendor:: displayVendorRatings() {
+  cout<<"Rating :"<<rating<<endl;
+  cout<<"Number of ratings :"<<numberOfRatings<<endl;
+  for(int i=0;i< min(3,(int)reviews.size());i++){
+    cout<<"Review " <<i<< ":" <<reviews[i] <<endl;
+  }
+
 }
 
 string Vendor::getDatabaseString() {

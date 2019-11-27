@@ -131,6 +131,16 @@ public:
         return true;
     }
 
+    static bool addMoneyToAccount(double amount){
+        
+        printSeparator();
+        cout<<"Directing to Bank Gateway"<<endl;
+        ((Database::currentUser)->wallet).updateBalance(-amount);
+        printSeparator();
+        return true;
+    
+    }
+
     static int getWalletBalance(){
         return ((Database::currentUser)->wallet).getBalance();
     }
@@ -144,6 +154,6 @@ class orderManager {
     }
 
     static bool addToCart(Product* product,Stock* stock,int qty,PaymentStatus status) {
-        (Database :: orders).push_
+        if((Database :: orders).back()
     }
 }
