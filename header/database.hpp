@@ -2,7 +2,7 @@
 
 using namespace std;
 
-enum OrderStatus {PENDING,ORDERED, DISPATCHED, DELIVERED, CANCELLED};
+enum OrderStatus {PENDING, ORDERED, DISPATCHED, DELIVERED, CANCELLED};
 enum PaymentStatus {CASH_ON_DELIVERY,WALLET};
 enum Type {ADMIN,VENDOR,CUSTOMER};
 

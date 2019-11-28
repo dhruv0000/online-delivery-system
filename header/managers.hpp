@@ -35,7 +35,7 @@ class ProductManager {
         vector<Product*> sortedProducts(Database::products);
         vector<Product*> productsToShow;
         sort(sortedProducts.begin(), sortedProducts.end(), Product::compareProduct);
-        for(int i = 0; i < min((int)sortedProducts.size(), count); i++) {
+        for(int i = 0; i < min((int)(sortedProducts.size()), count); i++) {
             productsToShow.push_back(sortedProducts[i]);
         }
         return productsToShow;
@@ -47,7 +47,12 @@ class ProductManager {
         sort(sortedProducts.begin(), sortedProducts.end(), Product::compareProduct);
         for (auto product : sortedProducts)
         {
-            if(product->name.find(query) != string::npos || product->type.find(query) != string::npos) {
+            string lname, lquery, ltype;
+            std::transform(product->name.begin(), product->name.end(), lname.begin(),[](unsigned char c){ return std::tolower(c); });
+            std::transform(query.begin(), query.end(), lquery.begin(),[](unsigned char c){ return std::tolower(c); });
+            std::transform(product->type.begin(), product->type.end(), ltype.begin(),[](unsigned char c){ return std::tolower(c); });
+            
+            if(lname.find(lquery) != string::npos || ltype.find(lquery) != string::npos) {
                 if(productsToShow.size() < limit)
                     productsToShow.push_back(product);
                 else
@@ -66,7 +71,7 @@ class ProductManager {
         printSeparator();
         // printFlow();
         cout<<"Vendor Details :"<<endl;
-        for(int i=0;i<(int)(product->stocks).size();i++){
+        for(int i=0;i<(product->stocks).size();i++){
             cout<<i<<":"<<endl;
             product->stocks[i]->vendor->displayUserInformation();
             cout<<"Quantity available :"<<product->stocks[i]->quantity<<endl;
@@ -76,7 +81,7 @@ class ProductManager {
     }
     static Stock* getStockPointer(Product *product,int vendorSelection){
         Stock* chossenStock;
-        for(int i=0;i<min((int)product->stocks.size(),vendorSelection);i++){
+        for(int i=0;i<min((int)(product->stocks.size()),vendorSelection);i++){
             chossenStock = product->stocks[i];
         }
         return chossenStock;
@@ -233,7 +238,7 @@ public:
     //     (Database :: admin)->updateWalletBalance(Database::deliveryCharge - quantity * stock->price*(Database::discount));
 
     // }
-    static void makePayment(Order* order, PaymentStatus paymentStatus){
+    static void makePayment(Order* order){
         Vendor* vendor = order->cartProducts[0].stock->vendor;
         double amountToPay = 0;
         for(auto cartProduct : order->cartProducts) {
@@ -241,7 +246,7 @@ public:
         }
         double discount = amountToPay*Database::discount;
         vendor->updateWalletBalance(amountToPay);
-        if(paymentStatus == CASH_ON_DELIVERY)return;
+        if(order->paymentStatus == CASH_ON_DELIVERY)return;
         (Database :: currentUser)->updateWalletBalance(-(amountToPay - discount) + (Database :: deliveryCharge));
         (Database :: admin)->updateWalletBalance(Database::deliveryCharge - discount);
 
@@ -256,7 +261,7 @@ public:
         int id = (Database :: orders).size();
         
         Order* newOrder = new Order(id,*newCartPoduct,amountToPay,deliverySlot,paymentStatus);
-        makePayment(newOrder, paymentStatus);
+        makePayment(newOrder);
         (Database :: currentUser)->orders.push_back(newOrder);
         (Database :: orders).push_back(newOrder);
         (stock->vendor)->orders.push_back(newOrder);
@@ -266,7 +271,7 @@ public:
 
     static void addToCart(Product* product,Stock* stock,int quantity){
         CartProduct* newCartProduct = new CartProduct(product,stock,quantity);
-        ((Customer*)Database :: currentUser)->addCartProduct(*newCartProduct);
+        ((Customer*)(Database :: currentUser))->addCartProduct(*newCartProduct);
         
 
     }
@@ -312,11 +317,19 @@ public:
             order->second->cost -= Database::discount*order->second->cost;
             order->second->cost += Database::deliveryCharge;
             order->second->orderID = Database::orders.size();
-            makePayment(order->second, paymentStatus);
+            makePayment(order->second);
             customer->orders.push_back(order->second);
             order->second->cartProducts[0].stock->vendor->orders.push_back(order->second);
             Database::orders.push_back(order->second);
         }
+        return true;
     } 
 
+    
+    static void cancelOrder(Order* order) {
+        order->status = CANCELLED;
+        for(auto cartProducts : order->cartProducts) {
+
+        }
+    }
 };
