@@ -60,12 +60,15 @@ class Order{
   Order(int id);
   Order(int id,CartProduct newCartProduct,double cost,string delivrySlot,PaymentStatus paymentStatus);
   int getOrderID();
+  string getDatabaseString();
+  static void objectFromDatabase(Order* order, ifstream& fin);
   OrderStatus getOrderStatus();
   friend class OrderManager;
 };
 
 class User{
 protected:
+  int userID;
   string username;
   unsigned long long password;
   Wallet wallet;
@@ -82,8 +85,11 @@ public:
   int getType();
   void updateWalletBalance(double);
   string getUserString();
-  void userFromDatabase(User* user, ifstream& fin);
+  static void userFromDatabase(User* user, ifstream& fin);
+  int getUserID();
+  int getUserType();
   virtual string getDatabaseString();
+  static void objectFromDatabase(User* user, ifstream& fin);
   friend class UserManager;
   friend class ProductManager;
   friend class OrderManager;
@@ -99,7 +105,7 @@ public:
   double getRatings();
   void displayVendorRatings();
   string getDatabaseString();
-  Vendor* objectFromDatabase(ifstream& fin);
+  static void objectFromDatabase(Vendor* vendor, ifstream& fin);
 };
 
 class Stock{
@@ -109,11 +115,12 @@ class Stock{
     int quantity;
     double price;
     Stock(Vendor* vendor, int quantity, double price);
-    string getVendorName();
+    int getVendorID();
     string getDatabaseString();
 };
 
 class Product{
+    int productID;
     string name;
     string type;
     vector<Stock*> stocks;
@@ -125,8 +132,9 @@ class Product{
     static bool compareProduct(Product* prod1, Product* prod2);
     void displayProduct();
     string getDatabaseString();
-    Product* objectFromDatabase(ifstream& fin); 
+    static void objectFromDatabase(Product* product, ifstream& fin); 
     string getProductName();
+    int getProductID();
     friend class ProductManager;
 };
 
@@ -159,7 +167,7 @@ public:
   void addCartProduct(CartProduct);
   void removeCartProduct(int);
   string getDatabaseString();
-  Customer* objectFromDatabase(ifstream& fin);
+  static void objectFromDatabase(Customer* customer, ifstream& fin);
 };
 
 namespace Database {
@@ -172,13 +180,126 @@ namespace Database {
     double deliveryCharge;
 
     template<typename T>
-    void writeToDatabase(vector<T*> data, string fname) {
+    int getType(T* record) {
+      return -1;
+    }
+    template<>
+    int getType<User>(User* user) {
+      return user->getType();
+    }
+
+    template<typename T>
+    void writeEntityToDatabase(vector<T*> data, string fname) {
         ofstream fout;
         fout.open(fname);
         fout<<data.size()<<endl;
+        if(typeid(T) == typeid(User)) {
+          for(auto user : data) {
+            fout<<getType<T>(user);
+          }
+          fout<<endl;
+        }
         for(auto item : data) {
             fout<<item->getDatabaseString();
         }
         fout.close();
+    }
+    template<typename T>
+    T* newRecord(int type) {
+      return NULL;
+    } 
+    template<>
+    User* newRecord<User>(int type) {
+      // cout<<"GGG"<<endl;
+      User* user;
+      if(type == CUSTOMER) user = new Customer();
+      else user = new Vendor();
+      return user;
+    }
+
+    template<typename T>
+    void initializeDataVectors(vector<T*>& data, string fname) {
+      ifstream fin;
+      fin.open(fname);
+      int size;
+      fin>>size;
+      string userTypes;
+      if(typeid(T) == typeid(User)) {
+        
+        fin>>userTypes;
+        // cout<<userTypes<<endl;
+      }
+      // cout<<size<<endl;
+      for (int i = 0; i < size; i++)
+      {
+        T* record;
+        if(typeid(T) == typeid(User)) {
+          // cout<<userTypes[i]-'0'<<endl;
+          record = newRecord<T>(userTypes[i]-'0');
+        
+        } else {
+          record = new T();
+        }
+        data.push_back(record);
+      }
+      fin.close();
+    }
+    template<typename T>
+    void getObjectFromFile(T* record, ifstream& fin) {
+
+    }
+    template<>
+    void getObjectFromFile<User>(User* user, ifstream& fin) {
+      if(user->getType() == CUSTOMER) {
+        
+        Customer::objectFromDatabase((Customer*)user, fin);
+      } else {
+        // cout<<"done"<<endl;
+        Vendor::objectFromDatabase((Vendor*)user, fin);
+      }
+      // cout<<"done"<<endl;
+    }
+    template<typename T>
+    void readEntityFromDatabase(vector<T*>& data, string fname) {
+      // cout<<data.size()<<endl;
+      ifstream fin;
+      fin.open(fname);
+      string sizeStr;
+      getline(fin, sizeStr);
+      // cout<<sizeStr.length()<<endl;
+      int size = stoi(sizeStr);
+      // cout<<size<<endl;
+      // fin>>size;
+      if(typeid(T) == typeid(User)) {
+        string typeString;
+        getline(fin, typeString);
+        // cout<<typeString<<endl;
+      }
+      // int i = 0;
+      for(auto record : data) {
+        if(typeid(T) == typeid(User)) {
+          // cout<<"done"<<endl;
+          getObjectFromFile<T>(record, fin);
+          
+        }
+        T::objectFromDatabase(record, fin);
+        // cout<<"Fff"<<endl;
+      }
+      fin.close();
+    }
+    void writeToDatabase() {
+      writeEntityToDatabase<User>(Database::users, "users.txt");
+      writeEntityToDatabase<Product>(Database::products, "products.txt");
+      writeEntityToDatabase<Order>(Database::orders, "orders.txt");
+
+    }
+    void readFromDatabase() {
+      initializeDataVectors<User>(Database::users, "users.txt");
+      initializeDataVectors<Product>(Database::products, "products.txt");
+      initializeDataVectors<Order>(Database::orders, "orders.txt");
+      
+      readEntityFromDatabase<User>(Database::users, "users.txt");
+      readEntityFromDatabase<Product>(Database::products, "products.txt");
+      readEntityFromDatabase<Order>(Database::orders, "orders.txt");
     }
 };
