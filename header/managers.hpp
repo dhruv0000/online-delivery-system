@@ -233,7 +233,7 @@ public:
     //     (Database :: admin)->updateWalletBalance(Database::deliveryCharge - quantity * stock->price*(Database::discount));
 
     // }
-    static void makePayment(Order* order){
+    static void makePayment(Order* order, PaymentStatus paymentStatus){
         Vendor* vendor = order->cartProducts[0].stock->vendor;
         double amountToPay = 0;
         for(auto cartProduct : order->cartProducts) {
@@ -241,7 +241,7 @@ public:
         }
         double discount = amountToPay*Database::discount;
         vendor->updateWalletBalance(amountToPay);
-        if(order->status == CASH_ON_DELIVERY)return;
+        if(paymentStatus == CASH_ON_DELIVERY)return;
         (Database :: currentUser)->updateWalletBalance(-(amountToPay - discount) + (Database :: deliveryCharge));
         (Database :: admin)->updateWalletBalance(Database::deliveryCharge - discount);
 
@@ -256,7 +256,7 @@ public:
         int id = (Database :: orders).size();
         
         Order* newOrder = new Order(id,*newCartPoduct,amountToPay,deliverySlot,paymentStatus);
-        makePayment(newOrder);
+        makePayment(newOrder, paymentStatus);
         (Database :: currentUser)->orders.push_back(newOrder);
         (Database :: orders).push_back(newOrder);
         (stock->vendor)->orders.push_back(newOrder);
@@ -312,7 +312,7 @@ public:
             order->second->cost -= Database::discount*order->second->cost;
             order->second->cost += Database::deliveryCharge;
             order->second->orderID = Database::orders.size();
-            makePayment(order->second);
+            makePayment(order->second, paymentStatus);
             customer->orders.push_back(order->second);
             order->second->cartProducts[0].stock->vendor->orders.push_back(order->second);
             Database::orders.push_back(order->second);
