@@ -107,6 +107,7 @@ public:
   void displayVendorRatings();
   string getDatabaseString();
   static void objectFromDatabase(Vendor* vendor, ifstream& fin);
+  friend class OrderManager;
 };
 
 class Stock{
@@ -119,6 +120,7 @@ class Stock{
     Stock(int id, Vendor* vendor, int quantity, double price);
     int getVendorID();
     string getDatabaseString();
+    friend class OrderManager;
 };
 
 class Product{
@@ -149,7 +151,7 @@ class CartProduct{
   CartProduct(Product* product, Stock* stock, int quantity);
   void displayCartProduct();
   string getDatabaseString();
-  
+  friend class OrderManager;
 };
 
 
@@ -160,6 +162,7 @@ class Cart{
   void removeCartProductFromCart(int);
   void displayCartFromCart();
   friend class Customer;
+  friend class OrderManager;
 };
 
 
@@ -173,6 +176,7 @@ public:
   void removeCartProduct(int);
   string getDatabaseString();
   static void objectFromDatabase(Customer* customer, ifstream& fin);
+  friend class OrderManager;
 };
 
 namespace Database {

@@ -61,6 +61,27 @@ class ProductManager {
         Database::discount = discount;
         return true;
     }
+
+    static void searchAndDisplayVendor(Product* product){
+        printSeparator();
+        // printFlow();
+        cout<<"Vendor Details :"<<endl;
+        for(int i=0;i<(int)(product->stocks).size();i++){
+            cout<<i<<":"<<endl;
+            product->stocks[i]->vendor->displayUserInformation();
+            cout<<"Quantity available :"<<product->stocks[i]->quantity<<endl;
+            product->stocks[i]->vendor->displayVendorRatings();
+        }
+        
+    }
+    static Stock* getStockPointer(Product *product,int vendorSelection){
+        Stock* chossenStock;
+        for(int i=0;i<min((int)product->stocks.size(),vendorSelection);i++){
+            chossenStock = product->stocks[i];
+        }
+        return chossenStock;
+    }
+    
     
     
 };
@@ -204,23 +225,38 @@ public:
 
     
     //For payment
-    static void makePayment(Stock* stock,int quantity,PaymentStatus status){
-        Vendor* temp = stock->vendor;
-        temp->updateWalletBalance(quantity * stock->price);
-        if(status == CASH_ON_DELIVERY)return;
-        ((Database :: currentUser))->updateWalletBalance(-(quantity * stock->price*(1-(Database::discount)) + (Database :: deliveryCharge)));
-        (Database :: admin)->updateWalletBalance(Database::deliveryCharge - quantity * stock->price*(Database::discount));
+    // static void makePayment(Stock* stock,int quantity,PaymentStatus status){
+    //     Vendor* temp = stock->vendor;
+    //     temp->updateWalletBalance(quantity * stock->price);
+    //     if(status == CASH_ON_DELIVERY)return;
+    //     ((Database :: currentUser))->updateWalletBalance(-(quantity * stock->price*(1-(Database::discount)) + (Database :: deliveryCharge)));
+    //     (Database :: admin)->updateWalletBalance(Database::deliveryCharge - quantity * stock->price*(Database::discount));
+
+    // }
+    static void makePayment(Order* order){
+        Vendor* vendor = order->cartProducts[0].stock->vendor;
+        double amountToPay = 0;
+        for(auto cartProduct : order->cartProducts) {
+            amountToPay += cartProduct.quantity * cartProduct.stock->price;
+        }
+        double discount = amountToPay*Database::discount;
+        vendor->updateWalletBalance(amountToPay);
+        if(order->status == CASH_ON_DELIVERY)return;
+        (Database :: currentUser)->updateWalletBalance(-(amountToPay - discount) + (Database :: deliveryCharge));
+        (Database :: admin)->updateWalletBalance(Database::deliveryCharge - discount);
 
     }
 
     static bool placeOrder(Product* product,Stock* stock,int quantity,string deliverySlot,PaymentStatus paymentStatus){
-
+        double amountToPay = ((stock->price*quantity)*(1-(Database :: discount)) + (Database :: deliveryCharge));
+        if(quantity > stock->quantity || amountToPay > Database::currentUser->wallet.getBalance()) return false;
         stock->quantity = stock->quantity - quantity;
-        makePayment(stock,quantity,paymentStatus);
+        // makePayment(stock,quantity,paymentStatus);
         CartProduct* newCartPoduct = new CartProduct(product,stock,quantity);
         int id = (Database :: orders).size();
-        double amountToPay = ((stock->price*quantity)*(1-(Database :: discount)) + (Database :: deliveryCharge));
+        
         Order* newOrder = new Order(id,*newCartPoduct,amountToPay,deliverySlot,paymentStatus);
+        makePayment(newOrder);
         (Database :: currentUser)->orders.push_back(newOrder);
         (Database :: orders).push_back(newOrder);
         (stock->vendor)->orders.push_back(newOrder);
@@ -241,6 +277,46 @@ public:
     static void showCart(){
         ((Customer*)Database::currentUser)->displayCart();
     }
-    
+    static bool checkCartOrderValidity() {
+        double amountToPay = 0;
+        unordered_map<int, bool> vendorPresent;
+        int totalVendors = 0;
+        for(auto cartProduct : ((Customer*)Database::currentUser)->cart.cartProducts) {
+            if (cartProduct.stock->quantity < cartProduct.quantity) return false;
+            amountToPay += cartProduct.quantity*cartProduct.stock->price;
+            if(vendorPresent.find(cartProduct.stock->getVendorID())==vendorPresent.end()) {
+                totalVendors++;
+                vendorPresent[cartProduct.stock->getVendorID()] = true;
+            }
+        }
+        amountToPay = amountToPay - amountToPay*Database::discount + totalVendors*Database::deliveryCharge;
+        if(Database::currentUser->wallet.getBalance() < amountToPay) return false;
+        return true;
+    }
+    static bool placeOrderFromCart(string deliverySlot, PaymentStatus paymentStatus) {
+        if(!checkCartOrderValidity()) return false;
+        unordered_map<int, Order*> orders;
+        Customer* customer = (Customer*) Database::currentUser;
+        for(auto cartProduct : customer->cart.cartProducts) {
+            cartProduct.stock->quantity -= cartProduct.quantity;
+            int vendorID = cartProduct.stock->getVendorID();
+            if(orders.find(vendorID) == orders.end()) {
+                orders[vendorID] = new Order(0, cartProduct, cartProduct.quantity*cartProduct.stock->price, deliverySlot, paymentStatus);
+            }
+            else {
+                orders[vendorID]->cartProducts.push_back(cartProduct);
+                orders[vendorID]->cost += cartProduct.quantity*cartProduct.stock->price;
+            }
+        }
+        for(auto order = orders.begin(); order!=orders.end(); order++) {
+            order->second->cost -= Database::discount*order->second->cost;
+            order->second->cost += Database::deliveryCharge;
+            order->second->orderID = Database::orders.size();
+            makePayment(order->second);
+            customer->orders.push_back(order->second);
+            order->second->cartProducts[0].stock->vendor->orders.push_back(order->second);
+            Database::orders.push_back(order->second);
+        }
+    } 
 
 };

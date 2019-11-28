@@ -16,4 +16,4 @@ compile:login.cpp
 .PHONY: all run clear
 
 clean:
-	rm -rf login
+	rm -rf login 
