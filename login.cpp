@@ -415,8 +415,7 @@ int main(){
         goto SignIn;
     }
 
-    Database :: writeToDatabase<Product>(Database::products,"products.txt");
-    Database :: writeToDatabase<User>(Database::users,"users.txt");
+    Database::writeToDatabase();
     // Database :: writeToDatabase<User>(Database::vendors,"user.txt");
     
 }

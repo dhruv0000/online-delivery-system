@@ -295,9 +295,9 @@ namespace Database {
       fin.close();
     }
     void writeToDatabase() {
-      writeEntityToDatabase<Product>(Database::products, "products1.txt");
-      writeEntityToDatabase<User>(Database::users, "users1.txt");
-      // writeEntityToDatabase<Order>(Database::orders, "orders.txt");
+      writeEntityToDatabase<Product>(Database::products, "products.txt");
+      writeEntityToDatabase<User>(Database::users, "users.txt");
+      writeEntityToDatabase<Order>(Database::orders, "orders.txt");
 
     }
     void readFromDatabase() {
@@ -307,6 +307,6 @@ namespace Database {
       
       readEntityFromDatabase<Product>(Database::products, "products.txt");
       readEntityFromDatabase<User>(Database::users, "users.txt");
-      // readEntityFromDatabase<Order>(Database::orders, "orders.txt");
+      readEntityFromDatabase<Order>(Database::orders, "orders.txt");
     }
 };

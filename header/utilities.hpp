@@ -102,14 +102,39 @@ int Order::getOrderID() {
 }
 
 string Order::getDatabaseString() {
-  string db = to_string(orderID) + "\n" + to_string(status) + "\n" + expectedDeliveryDate + "\n" + to_string(cost) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(cartProducts.size()) + "\n";
+  string db = to_string(status) + "\n" + expectedDeliveryDate + "\n" + to_string(cost) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(cartProducts.size()) + "\n";
   for(auto cartProduct : cartProducts) {
     db.append(cartProduct.getDatabaseString());
   }
   return db;
 }
 
-void Order::objectFromDatabase(Order* order, ifstream& fin) {}
+void Order::objectFromDatabase(Order* order, ifstream& fin) {
+  string attrib[6];
+  for (int i = 0; i < 6; i++)
+  {
+    getline(fin, attrib[i]);
+  }
+  order->status = static_cast<OrderStatus>(stoi(attrib[0]));
+  order->expectedDeliveryDate = attrib[1];
+  order->cost = stod(attrib[2]);
+  order->deliverySlot = attrib[3];
+  order->paymentStatus = static_cast<PaymentStatus>(stoi(attrib[4]));
+  int cartSize = stoi(attrib[5]);
+  for (int i = 0; i < cartSize; i++)
+  {
+    string cartAttrib[3];
+    for (int j = 0; j < 3; j++)
+    {
+      getline(fin, cartAttrib[j]);
+    }
+    CartProduct cartProduct(Database::products[stoi(cartAttrib[0])], Database::products[stoi(cartAttrib[0])]->getStock(stoi(cartAttrib[1])), stoi(cartAttrib[2]));
+    order->cartProducts.push_back(cartProduct);
+  }
+  
+  
+}
+
 OrderStatus Order::getOrderStatus() {
   return status;
 }
