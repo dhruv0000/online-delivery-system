@@ -5,7 +5,7 @@ class ProductManager {
     public:
     static bool addProduct(string name, string type, int quantity, double price, string description = "none") {
         // if(Database::currentUser->)
-        Stock* newStock = new Stock((Vendor*) Database::currentUser, quantity, price);
+        Stock* newStock = new Stock(0, (Vendor*) Database::currentUser, quantity, price);
         bool found = false;
         for(auto product: Database::products) {
             if(compareStringIgnoreCase(name, product->name)) {          
@@ -18,6 +18,7 @@ class ProductManager {
                     }
                 }
                 if(found) break;
+                newStock->stockID = product->stocks.size();
                 product->stocks.push_back(newStock);
                 found = true;
                 break;

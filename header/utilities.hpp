@@ -231,7 +231,8 @@ void Vendor::objectFromDatabase(Vendor* vendor, ifstream& fin) {
   }
 }
 
-Stock::Stock(Vendor* vendor, int quantity, double price) {
+Stock::Stock(int id, Vendor* vendor, int quantity, double price) {
+    this->stockID = id;
     this->vendor = vendor;
     this->quantity = quantity;
     this->price = price;
@@ -288,7 +289,7 @@ void Product::objectFromDatabase(Product* product, ifstream& fin) {
       getline(fin, stockAttrib[j]);
     }
     Vendor* vendor = (Vendor *) Database::users[stoi(stockAttrib[0])];
-    Stock* new_stock = new Stock(vendor, stoi(attrib[1]), stod(attrib[2]));
+    Stock* new_stock = new Stock(i, vendor, stoi(attrib[1]), stod(attrib[2]));
     product->stocks.push_back(new_stock);
   }
   
@@ -301,6 +302,10 @@ int Product::getProductID() {
   return productID;
 }
 
+Stock* Product::getStock(int id) {
+  return stocks[id];
+}
+
 CartProduct::CartProduct(Product* product, Stock* stock, int quantity) {
     this->product = product;
     this->stock = stock;
@@ -308,7 +313,7 @@ CartProduct::CartProduct(Product* product, Stock* stock, int quantity) {
 }
 string CartProduct::getDatabaseString() {
   string db;
-  db = to_string(product->getProductID()) + "\n" + to_string(stock->getVendorID()) + "\n" + to_string(quantity) + "\n";
+  db = to_string(product->getProductID()) + "\n" + to_string(stock->stockID) + "\n" + to_string(quantity) + "\n";
   return db;
 }
 
@@ -343,7 +348,7 @@ void Customer::objectFromDatabase(Customer* customer, ifstream& fin) {
     for(int j = 0; j < 3; j++) {
       getline(fin, cartAttrib[j]);
     }
-    CartProduct cartProduct(Database::products[stoi(cartAttrib[0])], (Vendor*)Database::users[stoi(cartAttrib[1])], stoi(cartAttrib[2]));
+    CartProduct cartProduct(Database::products[stoi(cartAttrib[0])], Database::products[stoi(cartAttrib[0])]->getStock(stoi(cartAttrib[1])), stoi(cartAttrib[2]));
     customer->cart.cartProducts.push_back(cartProduct);
   }
   
