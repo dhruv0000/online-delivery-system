@@ -70,21 +70,22 @@ class ProductManager {
     static void searchAndDisplayVendor(Product* product){
         printSeparator();
         // printFlow();
-        cout<<"Vendor Details :"<<endl;
+        cout<<"Vendor Details Selling this product :"<<endl;
         for(int i=0;i<(product->stocks).size();i++){
-            cout<<i<<":"<<endl;
+            cout<<i+1<<":"<<endl;
             product->stocks[i]->vendor->displayUserInformation();
             cout<<"Quantity available :"<<product->stocks[i]->quantity<<endl;
+            cout<<"Price offered by this vendor :"<<product->stocks[i]->price<<endl;
             product->stocks[i]->vendor->displayVendorRatings();
+            
+            
+            printSeparator();
         }
         
     }
     static Stock* getStockPointer(Product *product,int vendorSelection){
-        Stock* chossenStock;
-        for(int i=0;i<min((int)(product->stocks.size()),vendorSelection);i++){
-            chossenStock = product->stocks[i];
-        }
-        return chossenStock;
+        
+        return product->stocks[min((int)(product->stocks.size()),vendorSelection)];
     }
     
     
@@ -252,20 +253,25 @@ public:
 
     }
 
-    static bool placeOrder(Product* product,Stock* stock,int quantity,string deliverySlot,PaymentStatus paymentStatus){
+    static void placeOrder(Product* product,Stock* stock,int quantity,string deliverySlot,PaymentStatus paymentStatus){
+         cout<<"Fuck";
         double amountToPay = ((stock->price*quantity)*(1-(Database :: discount)) + (Database :: deliveryCharge));
-        if(quantity > stock->quantity || amountToPay > Database::currentUser->wallet.getBalance()) return false;
+         cout<<"Fuck";
+        if(quantity > stock->quantity || amountToPay > Database::currentUser->wallet.getBalance()) return;
+               
         stock->quantity = stock->quantity - quantity;
+ cout<<"Fuck";
         // makePayment(stock,quantity,paymentStatus);
         CartProduct* newCartPoduct = new CartProduct(product,stock,quantity);
         int id = (Database :: orders).size();
-        
         Order* newOrder = new Order(id,*newCartPoduct,amountToPay,deliverySlot,paymentStatus);
+        cout<<"Fuck";
         makePayment(newOrder);
+        cout<<"Fuck";
         (Database :: currentUser)->orders.push_back(newOrder);
         (Database :: orders).push_back(newOrder);
         (stock->vendor)->orders.push_back(newOrder);
-        return true;
+        return ;
 
     }
 

@@ -164,7 +164,7 @@ User::User(string username, unsigned long password, string account, Address addr
 
 void User :: displayUserInformation(){
   cout<<"Name: "<<username<<endl;
-  cout<<"Address: "<<endl;
+  cout<<"Address of the Vendor: "<<endl;
   address.displayAddress();
 }
 string User::getUsername() {
