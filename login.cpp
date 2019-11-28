@@ -215,7 +215,7 @@ void getOrderInformation(string &slot,PaymentStatus &status){
 }
 
 int main(){
-   
+    Database :: readFromDatabase();
     char wish;
     cout<<"Welcome to our Online Store"<<endl;
     
@@ -520,12 +520,18 @@ int main(){
             cout<<"Enter the amount you wish to add to your bank account"<<endl;
             double amount;
             cin>>amount;
+            if(amount > UserManager :: getWalletBalance()){
+                printSeparator();
+                cout<<"Sorry you don't haveenough balance"<<endl;
+                goto VendorChoices;
+            }
             UserManager :: addMoneyToAccount(amount);
             //Last mai dekhege...
             // if((Database :: currentUser)->getWalletBalance()<0){
             //     cout<<"You don't have enough money in account"
             // }
             cout<<"Now your wallet has "<<UserManager :: getWalletBalance()<<endl;
+            goto VendorChoices;
 
         }
         else if(vendorWish == '6')

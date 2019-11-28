@@ -7,10 +7,10 @@ all: compile run
 run: login
 	./login
 
-compile:login.cpp database.hpp managers.hpp utilities.hpp
+vpath %.h /header
+compile:login.cpp
 	$(CC) $(CFLAGS) login.cpp -o login
 
-vpath %.h /header
 .PHONY: all run
 clean:
 	rm -rf login
