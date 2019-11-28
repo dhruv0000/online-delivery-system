@@ -215,7 +215,7 @@ void getOrderInformation(string &slot,PaymentStatus &status){
 }
 
 int main(){
-   
+    Database :: readFromDatabase();
     char wish;
     cout<<"Welcome to our Online Store"<<endl;
     
@@ -294,18 +294,7 @@ int main(){
         unsigned long long hashValue;
         printSeparator();
         getUserDetails(username,password,hashValue);
-        printSeparator();void displayVendorList(Stock* stock)or(Product* product){
-//         printSeparator();
-//         cout<<"Vendor Details :"<<endl;
-//         for(int i=0;i<(int)(product->stocks).size();i++){
-//             cout<<i<<":"<<endl;
-//             product->stocks[i]->vendor->displayUserInformation();
-//             cout<<"Quantity available :"<<product->stocks[i]->quantity<<endl;
-//             product->stocks[i]->vendor->displayVendorRatings();
-//         }   
-        
-//     }
-// }
+        printSeparator();
         
         if(!UserManager::loginUser(username,hashValue)){
             cout<<"\nYou have entered wrong username or password\n\n";
@@ -531,12 +520,18 @@ int main(){
             cout<<"Enter the amount you wish to add to your bank account"<<endl;
             double amount;
             cin>>amount;
+            if(amount > UserManager :: getWalletBalance()){
+                printSeparator();
+                cout<<"Sorry you don't haveenough balance"<<endl;
+                goto VendorChoices;
+            }
             UserManager :: addMoneyToAccount(amount);
             //Last mai dekhege...
             // if((Database :: currentUser)->getWalletBalance()<0){
             //     cout<<"You don't have enough money in account"
             // }
             cout<<"Now your wallet has "<<UserManager :: getWalletBalance()<<endl;
+            goto VendorChoices;
 
         }
         else if(vendorWish == '6')
