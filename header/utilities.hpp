@@ -294,8 +294,24 @@ string CartProduct::getDatabaseString() {
   return db;
 }
 
+void CartProduct :: displayCartProduct(){
+    product->displayProduct();
+    cout<<"Vendor Name :"<<stock->vendor->getUsername();
+    cout<<"Quantity in Cart :"<<stock->quantity;
+}
+
 void Cart :: addCartProductToCart(CartProduct newCartProduct){
     cartProducts.push_back(newCartProduct);
+}
+
+void Cart :: displayCart(){
+  int i = 1;
+  for(auto presentCartProduct : cartProducts){
+   printSeparator();
+   cout<<"Product "<<i<<endl;
+   presentCartProduct.displayCartProduct();
+    i++;
+  }
 }
 
 Customer::Customer() : User() {}
