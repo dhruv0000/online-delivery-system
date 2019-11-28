@@ -241,6 +241,27 @@ public:
     static void showCart(){
         ((Customer*)Database::currentUser)->displayCart();
     }
-    
+    static void placeOrderFromCart(string deliverySlot, PaymentStatus paymentStatus) {
+        unordered_map<int, Order*> orders;
+        Customer* customer = (Customer*) Database::currentUser;
+        for(auto cartProduct : customer->cart.cartProducts) {
+            int vendorID = cartProduct.stock->getVendorID();
+            if(orders.find(vendorID) == orders.end()) {
+                orders[vendorID] = new Order(0, cartProduct, cartProduct.quantity*cartProduct.stock->price, deliverySlot, paymentStatus);
+            }
+            else {
+                orders[vendorID]->cartProducts.push_back(cartProduct);
+                orders[vendorID]->cost += cartProduct.quantity*cartProduct.stock->price;
+            }
+        }
+        for(auto order = orders.begin(); order!=orders.end(); order++) {
+            order->second->cost -= Database::discount*order->second->cost;
+            order->second->cost += Database::deliveryCharge;
+            order->second->orderID = Database::orders.size();
+            customer->orders.push_back(order->second);
+            order->second->cartProducts[0].stock->vendor->orders.push_back(order->second);
+            Database::orders.push_back(order->second);
+        }
+    } 
 
 };

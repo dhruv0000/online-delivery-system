@@ -184,18 +184,18 @@ void displayProductAcceptance(){
     cout<<"1:Add to Cart"<<endl;
     cout<<"2:Buy Product"<<endl;
 }
-void displayVendorList(Stock* stock)or(Product* product){
-        printSeparator();
-        cout<<"Vendor Details :"<<endl;
-        for(int i=0;i<(int)(product->stocks).size();i++){
-            cout<<i<<":"<<endl;
-            product->stocks[i]->vendor->displayUserInformation();
-            cout<<"Quantity available :"<<product->stocks[i]->quantity<<endl;
-            product->stocks[i]->vendor->displayVendorRatings();
-        }   
+// void displayVendorList(Stock* stock)or(Product* product){
+//         printSeparator();
+//         cout<<"Vendor Details :"<<endl;
+//         for(int i=0;i<(int)(product->stocks).size();i++){
+//             cout<<i<<":"<<endl;
+//             product->stocks[i]->vendor->displayUserInformation();
+//             cout<<"Quantity available :"<<product->stocks[i]->quantity<<endl;
+//             product->stocks[i]->vendor->displayVendorRatings();
+//         }   
         
-    }
-}
+//     }
+// }
 
 int main(){
    
@@ -277,7 +277,18 @@ int main(){
         unsigned long long hashValue;
         printSeparator();
         getUserDetails(username,password,hashValue);
-        printSeparator();
+        printSeparator();void displayVendorList(Stock* stock)or(Product* product){
+//         printSeparator();
+//         cout<<"Vendor Details :"<<endl;
+//         for(int i=0;i<(int)(product->stocks).size();i++){
+//             cout<<i<<":"<<endl;
+//             product->stocks[i]->vendor->displayUserInformation();
+//             cout<<"Quantity available :"<<product->stocks[i]->quantity<<endl;
+//             product->stocks[i]->vendor->displayVendorRatings();
+//         }   
+        
+//     }
+// }
         
         if(!UserManager::loginUser(username,hashValue)){
             cout<<"\nYou have entered wrong username or password\n\n";
@@ -326,8 +337,8 @@ int main(){
             // }
 
             if(productWish >= '1' && productWish <= (char)(searchProduct.size()+(int)'0')){
-                vector<Stock*> availableVendors = ProductManager :: searchVendor(searchProduct[(int)(productWish-'0')]);
-                displayVendorList(availableVendors);
+                // vector<Stock*> availableVendors = ProductManager :: searchVendor(searchProduct[(int)(productWish-'0')]);
+                // displayVendorList(availableVendors);
                 int productAcceptance;
                 displayProductAcceptance();
                 cin>>productAcceptance;
