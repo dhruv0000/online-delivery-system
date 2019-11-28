@@ -322,11 +322,20 @@ void Cart :: addCartProductToCart(CartProduct newCartProduct){
     cartProducts.push_back(newCartProduct);
 }
 
+void Cart :: removeCartProductToCart(int index){
+    cartProducts.erase(index);
+}
+
+Customer::Customer() : User() {}
 
 Customer::Customer(string username,unsigned long long password,string accountNumber,Address address) : User(username,password,accountNumber,address,CUSTOMER){}
 
 void Customer :: addCartProduct(CartProduct newCartProduct){
   cart.addCartProductToCart(newCartProduct);
+}
+
+void Customer :: removerCartProduct(int index){
+  cart.addCartProductToCart(index);
 }
 
 string Customer::getDatabaseString() {
