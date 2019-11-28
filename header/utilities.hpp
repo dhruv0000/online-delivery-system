@@ -331,7 +331,6 @@ string CartProduct::getDatabaseString() {
   return db;
 }
 
-Customer::Customer(int id) : User(id) {type = CUSTOMER;}
 void CartProduct :: displayCartProduct(){
     product->displayProduct();
     cout<<"Vendor Name :"<<stock->vendor->getUsername();
