@@ -246,8 +246,11 @@ public:
         }
         double discount = amountToPay*Database::discount;
         vendor->updateWalletBalance(amountToPay);
-        if(order->paymentStatus == CASH_ON_DELIVERY)return;
-        (Database :: currentUser)->updateWalletBalance(-(amountToPay - discount) + (Database :: deliveryCharge));
+        if(order->paymentStatus == CASH_ON_DELIVERY) {
+            Database::admin->updateWalletBalance(-amountToPay);
+            return;
+        }
+        (Database :: currentUser)->updateWalletBalance(-(amountToPay - discount) - (Database :: deliveryCharge));
         (Database :: admin)->updateWalletBalance(Database::deliveryCharge - discount);
 
     }
@@ -277,16 +280,16 @@ public:
     }
 
     static void removeFromCart(int index){
-        ((Customer*)Database :: currentUser)->removeCartProduct(index);
+        ((Customer*)(Database :: currentUser))->removeCartProduct(index);
     }
     static void showCart(){
-        ((Customer*)Database::currentUser)->displayCart();
+        ((Customer*)(Database::currentUser))->displayCart();
     }
     static bool checkCartOrderValidity() {
         double amountToPay = 0;
         unordered_map<int, bool> vendorPresent;
         int totalVendors = 0;
-        for(auto cartProduct : ((Customer*)Database::currentUser)->cart.cartProducts) {
+        for(auto cartProduct : ((Customer*)(Database::currentUser))->cart.cartProducts) {
             if (cartProduct.stock->quantity < cartProduct.quantity) return false;
             amountToPay += cartProduct.quantity*cartProduct.stock->price;
             if(vendorPresent.find(cartProduct.stock->getVendorID())==vendorPresent.end()) {
@@ -301,7 +304,7 @@ public:
     static bool placeOrderFromCart(string deliverySlot, PaymentStatus paymentStatus) {
         if(!checkCartOrderValidity()) return false;
         unordered_map<int, Order*> orders;
-        Customer* customer = (Customer*) Database::currentUser;
+        Customer* customer = (Customer*) (Database::currentUser);
         for(auto cartProduct : customer->cart.cartProducts) {
             cartProduct.stock->quantity -= cartProduct.quantity;
             int vendorID = cartProduct.stock->getVendorID();
@@ -326,10 +329,19 @@ public:
     } 
 
     
-    static void cancelOrder(Order* order) {
-        order->status = CANCELLED;
-        for(auto cartProducts : order->cartProducts) {
-
+    static bool cancelOrder(Order* order) {
+        if(order->status == DELIVERED || order->status == CANCELLED) return false;
+        if(order->paymentStatus == CASH_ON_DELIVERY) {
+            order->cartProducts
         }
+        if(order->paymentStatus == WALLET && (order->status == PENDING || order->status == ORDERED)) {
+            Database::admin->wallet.updateBalance(-Database::deliveryCharge);
+            ((Customer*)(Database::currentUser))->wallet.updateBalance(Database::deliveryCharge);
+        }
+
+        for(auto cartProduct : order->cartProducts) {
+            
+        }
+        order->status = CANCELLED;
     }
 };
