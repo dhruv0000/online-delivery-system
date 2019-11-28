@@ -157,6 +157,7 @@ public:
   Customer();
   Customer(string username,unsigned long long password,string accountNumber,Address address);
   void addCartProduct(CartProduct);
+  void removeCartProduct(int);
   string getDatabaseString();
   Customer* objectFromDatabase(ifstream& fin);
 };
