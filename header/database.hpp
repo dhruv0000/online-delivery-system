@@ -147,6 +147,7 @@ class CartProduct{
   int quantity;
   public:
   CartProduct(Product* product, Stock* stock, int quantity);
+  void displayCartProduct();
   string getDatabaseString();
   
 };
@@ -157,7 +158,7 @@ class Cart{
   vector<CartProduct> cartProducts;
   void addCartProductToCart(CartProduct);
   void removeCartProductFromCart(int);
-  void displayCartProduct();
+  void displayCartFromCart();
   friend class Customer;
 };
 
@@ -168,6 +169,7 @@ public:
   Customer(int id);
   Customer(string username,unsigned long long password,string accountNumber,Address address);
   void addCartProduct(CartProduct);
+  void displayCart();
   void removeCartProduct(int);
   string getDatabaseString();
   static void objectFromDatabase(Customer* customer, ifstream& fin);

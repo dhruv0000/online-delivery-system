@@ -40,6 +40,8 @@ unsigned long long Password::hashValue(string passwd){
     return h(passwd);
 }
 
+////////////////////////////////////////////////////////////////////////////
+
 Address::Address() {}
 
 Address::Address(string building, string street, string city, string state) {
@@ -73,6 +75,7 @@ string Address::getDatabaseString() {
   return building + "\n" + street + "\n" + city + "\n" + state + "\n";
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Wallet::Wallet(){}
 Wallet::Wallet(double balance){
@@ -85,6 +88,7 @@ void Wallet::updateBalance(double increment){
   this->balance = this->balance + increment;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Order::Order(int id) {
   orderID = id;
@@ -119,7 +123,7 @@ Order ::Order(int id,CartProduct newCartProduct,double cost,string deliverySlot,
   (this->cartProducts).push_back(newCartProduct);
 }
   
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 User::User(int id) {userID = id;}
 
@@ -233,6 +237,8 @@ void Vendor::objectFromDatabase(Vendor* vendor, ifstream& fin) {
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////
+
 Stock::Stock(int id, Vendor* vendor, int quantity, double price) {
     this->stockID = id;
     this->vendor = vendor;
@@ -307,6 +313,7 @@ string Product::getProductName() {
 int Product::getProductID() {
   return productID;
 }
+//////////////////////////////////////////////////////////////////////////////////
 
 Stock* Product::getStock(int id) {
   return stocks[id];
@@ -317,6 +324,7 @@ CartProduct::CartProduct(Product* product, Stock* stock, int quantity) {
     this->stock = stock;
     this->quantity = quantity;
 }
+
 string CartProduct::getDatabaseString() {
   string db;
   db = to_string(product->getProductID()) + "\n" + to_string(stock->stockID) + "\n" + to_string(quantity) + "\n";
@@ -324,14 +332,40 @@ string CartProduct::getDatabaseString() {
 }
 
 Customer::Customer(int id) : User(id) {type = CUSTOMER;}
+void CartProduct :: displayCartProduct(){
+    product->displayProduct();
+    cout<<"Vendor Name :"<<stock->vendor->getUsername();
+    cout<<"Quantity in Cart :"<<stock->quantity;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
 void Cart :: addCartProductToCart(CartProduct newCartProduct){
     cartProducts.push_back(newCartProduct);
 }
 
-// void Cart :: removeCartProductToCart(int index){
-//     cartProducts.erase(index);
-// }
+void Cart :: displayCartFromCart(){
+  int i = 1;
+  for(auto presentCartProduct : cartProducts){
+   printSeparator();
+   cout<<"Product "<<i<<endl;
+   presentCartProduct.displayCartProduct();
+    i++;
+  }
 
+}
+
+void Cart :: removeCartProductFromCart(int index){
+    vector<CartProduct> :: iterator itr = cartProducts.begin(); 
+    for(int i=0;i<min((int)cartProducts.size(),index);i++){
+      itr++;
+    }
+    cartProducts.erase(itr);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Customer::Customer(int id) : User(id) {type = CUSTOMER;}
 
 Customer::Customer(string username,unsigned long long password,string accountNumber,Address address) : User(username,password,accountNumber,address,CUSTOMER){}
 
@@ -339,9 +373,13 @@ void Customer :: addCartProduct(CartProduct newCartProduct){
   cart.addCartProductToCart(newCartProduct);
 }
 
-// void Customer :: removerCartProduct(int index){
-//   cart.addCartProductToCart(index);
-// }
+void Customer :: removeCartProduct(int index){
+  cart.removeCartProductFromCart(index);
+}
+
+void Customer :: displayCart(){
+  cart.displayCartFromCart();
+}
 
 string Customer::getDatabaseString() {
   string db = getUserString() +  to_string(cart.cartProducts.size()) + "\n";
