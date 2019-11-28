@@ -278,6 +278,7 @@ int main(){
         unsigned long long hashValue = (Password :: hashValue(password));
         
         if((username == Database :: admin->getUsername()) &&  hashValue == (Database :: admin->getPassword())){
+            
             AdminRun:
             
             printAdminChoices();
@@ -285,16 +286,19 @@ int main(){
             std :: cin>>adminWish;
             if(adminWish == '1')setDeliveryCharges();
             else if(adminWish == '2')setDiscountPercentage();
-            else if(adminWish == '3')UserManager :: logoutUser();
-            else{
+            else if(adminWish == '3'){
+                UserManager :: logoutUser();
+                goto SignIn;
+            }else{
                  cout<<"Admin Please enter correct choice"<<endl;
                  goto AdminRun;
             }
 
         }else{
             cout<<"You have entered wrong password"<<endl;
-            goto SignIn;
+            goto AdminRun;
         }
+        goto AdminRun;
         
     }
     else if(wish == '3'){

@@ -96,13 +96,14 @@ class ProductManager {
 
 class UserManager{
 public:
+
     static bool registerUser(string username, unsigned long long hashPassword, string account, Address address, Type type){
         if(type == VENDOR){
             User* newVendor = new Vendor(username,hashPassword,account,address);
             newVendor->userID = Database::users.size();
             (Database :: users).push_back(newVendor);
         }
-        else{
+        else if(type == CUSTOMER){
             User* newCustomer = new Customer(username,hashPassword,account,address);
             newCustomer->userID = Database::users.size();
             (Database :: users).push_back(newCustomer);
@@ -240,38 +241,43 @@ public:
 
     // }
     static void makePayment(Order* order){
+        cout<<"Fuck"<<endl;
         Vendor* vendor = order->cartProducts[0].stock->vendor;
         double amountToPay = 0;
+        cout<<"Fuck"<<endl;
         for(auto cartProduct : order->cartProducts) {
             amountToPay += cartProduct.quantity * cartProduct.stock->price;
         }
+        cout<<"Fuck"<<endl;
         double discount = amountToPay*Database::discount;
         vendor->updateWalletBalance(amountToPay);
         if(order->paymentStatus == CASH_ON_DELIVERY)return;
+        cout<<"Fuck"<<endl;
         (Database :: currentUser)->updateWalletBalance(-(amountToPay - discount) + (Database :: deliveryCharge));
+        cout<<"Fuck"<<endl;
         (Database :: admin)->updateWalletBalance(Database::deliveryCharge - discount);
-
+        cout<<"Fuck"<<endl;
     }
 
-    static void placeOrder(Product* product,Stock* stock,int quantity,string deliverySlot,PaymentStatus paymentStatus){
-         cout<<"Fuck";
+    static bool placeOrder(Product* product,Stock* stock,int quantity,string deliverySlot,PaymentStatus paymentStatus){
+        //  cout<<"Fuck"<<endl;
         double amountToPay = ((stock->price*quantity)*(1-(Database :: discount)) + (Database :: deliveryCharge));
-         cout<<"Fuck";
-        if(quantity > stock->quantity || amountToPay > Database::currentUser->wallet.getBalance()) return;
+        //  cout<<"Fuck"<<endl;
+        if(quantity > stock->quantity || amountToPay > Database::currentUser->wallet.getBalance()) return false;
                
         stock->quantity = stock->quantity - quantity;
- cout<<"Fuck";
+//  cout<<"Fuck"<<endl;
         // makePayment(stock,quantity,paymentStatus);
         CartProduct* newCartPoduct = new CartProduct(product,stock,quantity);
         int id = (Database :: orders).size();
         Order* newOrder = new Order(id,*newCartPoduct,amountToPay,deliverySlot,paymentStatus);
-        cout<<"Fuck";
+        // cout<<"Fuck"<<endl;
         makePayment(newOrder);
-        cout<<"Fuck";
+        cout<<"AfterrMakePaymentFuck"<<endl;
         (Database :: currentUser)->orders.push_back(newOrder);
         (Database :: orders).push_back(newOrder);
         (stock->vendor)->orders.push_back(newOrder);
-        return ;
+        return true;
 
     }
 
