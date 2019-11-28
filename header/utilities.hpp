@@ -295,7 +295,7 @@ string CartProduct::getDatabaseString() {
 }
 
 void Cart :: addCartProductToCart(CartProduct newCartProduct){
-  
+    cartProducts.push_back(newCartProduct);
 }
 
 Customer::Customer() : User() {}
@@ -303,7 +303,7 @@ Customer::Customer() : User() {}
 Customer::Customer(string username,unsigned long long password,string accountNumber,Address address) : User(username,password,accountNumber,address,CUSTOMER){}
 
 void Customer :: addCartProduct(CartProduct newCartProduct){
-  cart.
+  cart.addCartProductToCart(newCartProduct);
 }
 
 string Customer::getDatabaseString() {

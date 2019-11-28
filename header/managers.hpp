@@ -227,7 +227,8 @@ class OrderManager {
 
     static void addToCart(Product* product,Stock* stock,int quantity){
         CartProduct* newCartProduct = new CartProduct(product,stock,quantity);
-        ((Customer*)Database :: currentUser)->addCartProduct();
+        ((Customer*)Database :: currentUser)->addCartProduct(*newCartProduct);
+        
 
     }
 

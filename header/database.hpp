@@ -145,6 +145,8 @@ class CartProduct{
 class Cart{
   vector<CartProduct> cartProducts;
   void addCartProductToCart(CartProduct);
+  void removeCartProductFromCart(int);
+  void displayCartProduct();
   friend class Customer;
 };
 

@@ -290,8 +290,6 @@ int main(){
         CustomerChoices:
 
         showTopSearch(topSearch);
-        showFuntionality(topSearch.size());
-        std :: cin>>customerWish;
 
         if((customerWish - '0') == topSearch.size()+1){
             string searchString;
