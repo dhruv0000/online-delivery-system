@@ -100,6 +100,17 @@ OrderStatus Order::getOrderStatus() {
   return status;
 }
 
+Order ::Order(int id,CartProduct newCartProduct,double cost,string deliverySlot,PaymentStatus paymentStatus){
+  this->orderID = id;
+  this->status = ORDERED;
+  this->cost = cost;
+  this->deliverySlot = deliverySlot;
+  this->paymentStatus = paymentStatus;
+  (this->cartProducts).push_back(newCartProduct);
+}
+  
+
+
 User::User() {}
 
 User::User(string username, unsigned long password, string account, Address address,Type type){
@@ -123,6 +134,9 @@ int User::getType() {
   return type;
 }
 
+void User::updateWalletBalance(double amount){
+  wallet.updateBalance(amount);
+}
 string User::getUserString() {
   string db = username + "\n" + to_string(password) + "\n" + to_string(wallet.getBalance()) + "\n" + account + "\n" + address.getDatabaseString() + to_string(type) + "\n" + to_string(orders.size()) + "\n";
   for(auto order: orders) {
@@ -280,10 +294,17 @@ string CartProduct::getDatabaseString() {
   return db;
 }
 
+void Cart :: addCartProductToCart(CartProduct newCartProduct){
+  
+}
+
 Customer::Customer() : User() {}
 
 Customer::Customer(string username,unsigned long long password,string accountNumber,Address address) : User(username,password,accountNumber,address,CUSTOMER){}
 
+void Customer :: addCartProduct(CartProduct newCartProduct){
+  cart.
+}
 
 string Customer::getDatabaseString() {
   string db = getUserString() +  to_string(cart.cartProducts.size()) + "\n";

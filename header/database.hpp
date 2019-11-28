@@ -39,11 +39,11 @@ public:
 
 class Wallet{
   double balance;
-  void updateBalance(double increment);
 public:
   Wallet();
   Wallet(double d);
   double getBalance();
+  void updateBalance(double increment);
   friend class UserManager;
   friend class OrderManager;
 };
@@ -58,6 +58,7 @@ class Order{
   PaymentStatus paymentStatus;
   public:
   Order(int id);
+  Order(int id,CartProduct newCartProduct,double cost,string delivrySlot,PaymentStatus paymentStatus);
   int getOrderID();
   OrderStatus getOrderStatus();
   friend class OrderManager;
@@ -79,10 +80,12 @@ public:
   unsigned long long getPassword();
   string getUsername();
   int getType();
+  void updateWalletBalance(double);
   string getUserString();
   void userFromDatabase(User* user, ifstream& fin);
   virtual string getDatabaseString();
   friend class UserManager;
+  friend class ProductManager;
   friend class OrderManager;
 };
 
@@ -141,6 +144,7 @@ class CartProduct{
 
 class Cart{
   vector<CartProduct> cartProducts;
+  void addCartProductToCart(CartProduct);
   friend class Customer;
 };
 
@@ -150,7 +154,7 @@ class Customer : public User{
 public:
   Customer();
   Customer(string username,unsigned long long password,string accountNumber,Address address);
-
+  void addCartProduct(CartProduct);
   string getDatabaseString();
   Customer* objectFromDatabase(ifstream& fin);
 };

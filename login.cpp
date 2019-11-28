@@ -87,7 +87,7 @@ void getDetails(string& username,string& password,unsigned long long& hashPasswo
         
 }
 void displayUsername(){
-    cout<<"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"<<Database :: currentUser -> getUsername()<<endl;
+    cout<<"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"<<Database :: currentUser -> getUsername()<<endl;
 }
 
 void printAdminChoices(){
