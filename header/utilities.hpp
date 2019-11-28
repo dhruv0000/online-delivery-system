@@ -40,6 +40,8 @@ unsigned long long Password::hashValue(string passwd){
     return h(passwd);
 }
 
+////////////////////////////////////////////////////////////////////////////
+
 Address::Address() {}
 
 Address::Address(string building, string street, string city, string state) {
@@ -73,6 +75,7 @@ string Address::getDatabaseString() {
   return building + "\n" + street + "\n" + city + "\n" + state + "\n";
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Wallet::Wallet(){}
 Wallet::Wallet(double d){
@@ -85,6 +88,8 @@ void Wallet::updateBalance(double increment){
   this->balance = this->balance + increment;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 Order::Order(int id) {
   orderID = id;
   status = PENDING;
@@ -96,6 +101,15 @@ int Order::getOrderID() {
   return orderID;
 }
 
+string Order::getDatabaseString() {
+  string db = to_string(orderID) + "\n" + to_string(status) + "\n" + expectedDeliveryDate + "\n" + to_string(cost) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(cartProducts.size()) + "\n";
+  for(auto cartProduct : cartProducts) {
+    db.append(cartProduct.getDatabaseString());
+  }
+  return db;
+}
+
+void Order::objectFromDatabase(Order* order, ifstream& fin) {}
 OrderStatus Order::getOrderStatus() {
   return status;
 }
@@ -109,7 +123,7 @@ Order ::Order(int id,CartProduct newCartProduct,double cost,string deliverySlot,
   (this->cartProducts).push_back(newCartProduct);
 }
   
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 User::User() {}
 
@@ -151,13 +165,16 @@ void User::userFromDatabase(User* user, ifstream& fin) {
   for(int i = 0; i < 10; i++) {
     getline(fin, attrib[i]);
   }
+  // cout<<attrib[0]<<endl;
   user->username = attrib[0];
   user->password = stoull(attrib[1]);
   user->wallet = Wallet(stod(attrib[2]));
   user->account = attrib[3];
   user->address = Address(attrib[4], attrib[5], attrib[6], attrib[7]);
   user->type = static_cast<Type>(stoi(attrib[8]));
+  // cout<<attrib[8]<<endl;
   int orderSize = stoi(attrib[9]);
+  
   for(int i = 0; i < orderSize; i++) {
     string orderId;
     getline(fin, orderId);
@@ -165,10 +182,22 @@ void User::userFromDatabase(User* user, ifstream& fin) {
   }
 }
 
+int User::getUserID() {
+  return userID;
+}
+
+int User::getUserType() {
+  return type;
+}
+
 string User::getDatabaseString(){}
 
+void User::objectFromDatabase(User* user, ifstream& fin){}
 
-Vendor::Vendor() : User() {}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Vendor::Vendor() : User() {type = VENDOR;}
+
 Vendor::Vendor(string username,unsigned long long password,string accountNumber,Address address):User(username,password,accountNumber,address,VENDOR){
   rating = 0;
   numberOfRatings = 0;
@@ -192,13 +221,13 @@ string Vendor::getDatabaseString() {
   return db;
 }
 
-Vendor* Vendor::objectFromDatabase(ifstream& fin) {
-  Vendor* vendor = new Vendor();
+void Vendor::objectFromDatabase(Vendor* vendor, ifstream& fin) {
   userFromDatabase(vendor, fin);
   string attrib[3];
   for(int i = 0; i < 3; i++) {
     getline(fin, attrib[i]);
   }
+  // cout<<attrib[0]<<endl;
   vendor->rating = stod(attrib[0]);
   vendor->numberOfRatings = stoi(attrib[1]);
   int numberOfReviews = stoi(attrib[2]);
@@ -209,18 +238,20 @@ Vendor* Vendor::objectFromDatabase(ifstream& fin) {
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////
+
 Stock::Stock(Vendor* vendor, int quantity, double price) {
     this->vendor = vendor;
     this->quantity = quantity;
     this->price = price;
 }
-string Stock::getVendorName() {
-  return vendor->getUsername();
+int Stock::getVendorID() {
+  return vendor->getUserID();
 }
 string Stock::getDatabaseString() {
-  return vendor->getUsername() + "\n" + to_string(quantity) + "\n" + to_string(price) + "\n";
+  return to_string(vendor->getUserID()) + "\n" + to_string(quantity) + "\n" + to_string(price) + "\n";
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 Product::Product() {}
 
 Product::Product(string name, string type, Stock* stock, string description) {
@@ -248,8 +279,7 @@ string Product::getDatabaseString() {
     } 
     return db;
 }
-Product* Product::objectFromDatabase(ifstream& fin) {
-  Product* product = new Product();
+void Product::objectFromDatabase(Product* product, ifstream& fin) {
   string attrib[5];
   for (int i = 0; i < 5; i++)
   {
@@ -266,12 +296,7 @@ Product* Product::objectFromDatabase(ifstream& fin) {
     {
       getline(fin, stockAttrib[j]);
     }
-    Vendor* vendor;
-    for(auto curVendor : Database :: users) {     // users must be filled first!
-      if(curVendor->getUsername() == stockAttrib[0]) {
-        vendor = (Vendor*) curVendor;
-      }
-    }
+    Vendor* vendor = (Vendor *) Database::users[stoi(stockAttrib[0])];
     Stock* new_stock = new Stock(vendor, stoi(attrib[1]), stod(attrib[2]));
     product->stocks.push_back(new_stock);
   }
@@ -281,16 +306,19 @@ string Product::getProductName() {
   return name;
 }
 
-
-
+int Product::getProductID() {
+  return productID;
+}
+//////////////////////////////////////////////////////////////////////////////////
 CartProduct::CartProduct(Product* product, Stock* stock, int quantity) {
     this->product = product;
     this->stock = stock;
     this->quantity = quantity;
 }
+
 string CartProduct::getDatabaseString() {
   string db;
-  db = product->getProductName() + "\n" + stock->getVendorName() + "\n";
+  db = to_string(product->getProductID()) + "\n" + to_string(stock->getVendorID()) + "\n" + to_string(quantity) + "\n";
   return db;
 }
 
@@ -300,11 +328,12 @@ void CartProduct :: displayCartProduct(){
     cout<<"Quantity in Cart :"<<stock->quantity;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////
 void Cart :: addCartProductToCart(CartProduct newCartProduct){
     cartProducts.push_back(newCartProduct);
 }
 
-void Cart :: displayCart(){
+void Cart :: displayCartFromCart(){
   int i = 1;
   for(auto presentCartProduct : cartProducts){
    printSeparator();
@@ -312,14 +341,34 @@ void Cart :: displayCart(){
    presentCartProduct.displayCartProduct();
     i++;
   }
+
 }
 
+void Cart :: removeCartProductFromCart(int index){
+    vector<CartProduct> :: iterator itr = cartProducts.begin(); 
+    for(int i=0;i<min((int)cartProducts.size(),index);i++){
+      itr++;
+    }
+    cartProducts.erase(itr);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 Customer::Customer() : User() {}
+
+Customer::Customer() : User() {type = CUSTOMER;}
 
 Customer::Customer(string username,unsigned long long password,string accountNumber,Address address) : User(username,password,accountNumber,address,CUSTOMER){}
 
 void Customer :: addCartProduct(CartProduct newCartProduct){
   cart.addCartProductToCart(newCartProduct);
+}
+
+void Customer :: removeCartProduct(int index){
+  cart.removeCartProductFromCart(index);
+}
+
+void Customer :: displayCart(){
+  cart.displayCartFromCart();
 }
 
 string Customer::getDatabaseString() {
@@ -330,30 +379,19 @@ string Customer::getDatabaseString() {
   return db;
 }
 
-Customer* Customer::objectFromDatabase(ifstream& fin) {
-  Customer* customer = new Customer();
+void Customer::objectFromDatabase(Customer* customer, ifstream& fin) {
   userFromDatabase(customer, fin);
-  return customer;
+  string cartSizeStr;
+  getline(fin, cartSizeStr);
+  int cartSize = stoi(cartSizeStr);
+  for (int i = 0; i < cartSize; i++)
+  {
+    string cartAttrib[3];
+    for(int j = 0; j < 3; j++) {
+      getline(fin, cartAttrib[j]);
+    }
+    CartProduct cartProduct= new CartProduct(Database::products[stoi(cartAttrib[0])], (Vendor*)Database::users[stoi(cartAttrib[1])], stoi(cartAttrib[2]));
+    customer->cart.cartProducts.push_back(cartProduct);
+  }
+  
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
