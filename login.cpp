@@ -124,7 +124,8 @@ void getUserDetails(string &username,string &password,unsigned long long &value)
 void showTopSearch(vector<Product*> v){
     printFlow();
     for(int i=0;i<v.size();i++){
-        cout<<"Product "<<i+1<<endl;
+        printSeparator();
+        cout<<"Product "<<i+1<<":"<<endl;
         v[i]->displayProduct();
     }
 }
@@ -140,7 +141,7 @@ void showFuntionality(int i){
 void displaySearchProduct(vector<Product*> searchedProduct){
     printSeparator();
     cout<<"Enter the number of the product which you are liking"<<endl;
-    int i=0;
+    int i=1;
     for(auto presentProduct : searchedProduct){
         cout<<i<<endl;
         presentProduct->displayProduct();
@@ -203,15 +204,23 @@ void getOrderInformation(string &slot,PaymentStatus &status){
     else if(time==2)slot = "Afternoon";
     else if(time == 3)slot = "Evening";
     else slot = "Night";
-    
+    cout<<time<<endl;
     printSeparator();
     cout<<"Enter the payment mode"<<endl;
     cout<<"1:Cash On Delivery"<<endl;
     cout<<"2:Wallet Money"<<endl;
-    cin>>time;
-
-    if(time==1)status = CASH_ON_DELIVERY;
-    else status = WALLET; 
+    // status=WALLET;
+    int t;
+    cout<<"Fuck final"<<endl;
+    cin>>t;
+    cout<<"dfgg"<<endl;
+    if(t==1){
+        status = CASH_ON_DELIVERY;
+    cout<<"Fuck0"<<endl;}
+    else {
+        status = WALLET;
+    cout<<"Fuck1"<<endl;    } 
+    cout<<"Fuck2"<<endl;
 }
 
 int main(){
@@ -269,6 +278,7 @@ int main(){
         unsigned long long hashValue = (Password :: hashValue(password));
         
         if((username == Database :: admin->getUsername()) &&  hashValue == (Database :: admin->getPassword())){
+            
             AdminRun:
             
             printAdminChoices();
@@ -276,16 +286,19 @@ int main(){
             std :: cin>>adminWish;
             if(adminWish == '1')setDeliveryCharges();
             else if(adminWish == '2')setDiscountPercentage();
-            else if(adminWish == '3')UserManager :: logoutUser();
-            else{
+            else if(adminWish == '3'){
+                UserManager :: logoutUser();
+                goto SignIn;
+            }else{
                  cout<<"Admin Please enter correct choice"<<endl;
                  goto AdminRun;
             }
 
         }else{
             cout<<"You have entered wrong password"<<endl;
-            goto SignIn;
+            goto AdminRun;
         }
+        goto AdminRun;
         
     }
     else if(wish == '3'){
@@ -318,13 +331,16 @@ int main(){
         showTopSearch(topSearch);
         showFuntionality(topSearch.size());
         cin>>customerWish;
-
-        if(customerWish>=1 || customerWish <=(int)(topSearch.size())){
+        
+        if(customerWish>=1 && customerWish <=(int)(topSearch.size())){
             ProductManager :: searchAndDisplayVendor(topSearch[--customerWish]);
             int vendorSelection;
             cin>>vendorSelection;
+            vendorSelection--;
             Stock* stock = ProductManager :: getStockPointer(topSearch[customerWish],vendorSelection);
-
+            // cout<<"Manan"<<endl;
+            // cout<<stock->price<<endl;
+            // cout<<"Manan"<<endl;
             TopProductAcceptance:
 
             int productAcceptance;
@@ -351,8 +367,11 @@ int main(){
                 cin>>quantity;    
                 string deliverySlot;
                 PaymentStatus paymentStatus;
+                cout<<"Fuck0";
                 getOrderInformation(deliverySlot,paymentStatus);
+                cout<<"Fuck"<<endl;
                 OrderManager :: placeOrder(topSearch[customerWish],stock,quantity,deliverySlot,paymentStatus);
+                goto CustomerChoices;
 
             }else if(productAcceptance == 3){
                 goto CustomerChoices;
@@ -379,38 +398,50 @@ int main(){
             
 
             if(productWish >= 1 && productWish <= (int)(searchProduct.size())){
+                productWish--;
                 ProductManager :: searchAndDisplayVendor(searchProduct[productWish]);
                 // displayVendorList(availableVendors);
                 int vendorSelection;
                 cin>>vendorSelection;
+                vendorSelection--;
                 Stock* stock = ProductManager :: getStockPointer(searchProduct[productWish],vendorSelection);
-
+                cout<<"Manan"<<endl;
+                cout<<stock->price<<endl;
                 ProductAcceptance:
 
                 int productAcceptance;
                 displayProductAcceptance();
                 cin>>productAcceptance;
                 
-                int quantity;
-                cout<<"Number of quantity you want to purchase :";
-                cin>>quantity;
-                if(quantity>stock->quantity){
-                    cout<<"Vendor does not have enough supply"<<endl;
-                    goto ProductAcceptance;
-                }
+                
+                // if(quantity>stock->quantity){
+                //     cout<<"Vendor does not have enough supply"<<endl;
+                //     goto ProductAcceptance;
+                // }
                 
                 if(productAcceptance == 1){
-                    
+                    int quantity;
+                    cout<<"Number of quantity you want to purchase :";
+                    cin>>quantity;
                     OrderManager :: addToCart(searchProduct[productWish],stock,quantity);
                     cout<<"Your Product has bee added into cart (:"<<endl;
                     goto CustomerChoices;
                 
                 }else if(productAcceptance == 2){
                     
+                    int quantity;
+                    cout<<"Number of quantity you want to purchase :";
+                    cin>>quantity;
                     string deliverySlot;
                     PaymentStatus paymentStatus;
+                    cout<<"Fff"<<endl;
                     getOrderInformation(deliverySlot,paymentStatus);
-                    OrderManager :: placeOrder(searchProduct[productWish],stock,quantity,deliverySlot,paymentStatus);
+                    // cout<<paymentStatus<<" "<<deliverySlot<<endl;
+                    cout<<stock->price<<endl;
+                    cout<<searchProduct[0]->getProductName()<<endl;
+                    OrderManager :: placeOrder(searchProduct[0],stock,quantity,deliverySlot,paymentStatus);
+                    cout<<"Your order have been place successfully(:"<<endl;
+                    printSeparator();
 
                 }else if(productAcceptance == 3){
                     goto CustomerChoices;
@@ -424,15 +455,16 @@ int main(){
             }
 
 
-        }else if((customerWish == (int)(topSearch.size())+2)){
+        }else if((customerWish == (topSearch.size()+2))){
             //For Cart Department
             OrderManager :: showCart();
 
 
-        }else if(customerWish == (int)(topSearch.size())+3){
+        }else if(customerWish == (topSearch.size()+3)){
             char operation;
             cout<<"Your Wallet has "<<UserManager :: getWalletBalance()<<"rupees"<<endl;
             cout<<"Do you want to add money to your wallet from bank account(y/n)? ";
+            cin>>operation;
             if(operation == 'y' ||operation == 'Y'){
                 double amt;
                 cout<<"Enter the amount you want to add: "<<endl;
@@ -440,6 +472,7 @@ int main(){
                 UserManager :: addMoneyFromAccount(amt);
             }
             cout<<"Do you want to extract money from your wallet to bank account(y/n)? ";
+            cin>>operation;
             if(operation == 'y' ||operation == 'Y'){
                 double amt;
                 cout<<"Enter the amount you want to extract: "<<endl;
@@ -447,7 +480,7 @@ int main(){
                 UserManager :: addMoneyToAccount(amt);
             }
             cout<<"Your Wallet has "<<UserManager :: getWalletBalance()<<"rupees"<<endl;
-            
+            goto CustomerChoices;
         }
         else if(customerWish == (int)(topSearch.size())+5){
             UserManager :: logoutUser();

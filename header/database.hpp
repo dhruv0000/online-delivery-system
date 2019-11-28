@@ -230,6 +230,10 @@ namespace Database {
     void initializeDataVectors(vector<T*>& data, string fname) {
       ifstream fin;
       fin.open(fname);
+      if(fin.peek() == ifstream::traits_type::eof()) {
+        fin.close();
+        return;
+      }
       int size;
       fin>>size;
       string userTypes;
@@ -273,6 +277,10 @@ namespace Database {
       // cout<<data.size()<<endl;
       ifstream fin;
       fin.open(fname);
+      if(fin.peek() == ifstream::traits_type::eof()) {
+        fin.close();
+        return;
+      }
       string sizeStr;
       getline(fin, sizeStr);
       // cout<<sizeStr.length()<<endl;
@@ -305,6 +313,8 @@ namespace Database {
 
     }
     void readFromDatabase() {
+      Database::admin = new User("admin", Password::hashValue("admin"), "AdminAccount", Address("Hostel G6", "IIT Jodhpur", "Jodhpur", "Rajasthan"), ADMIN);
+      
       initializeDataVectors<Product>(Database::products, "products.txt");
       initializeDataVectors<User>(Database::users, "users.txt");
       initializeDataVectors<Order>(Database::orders, "orders.txt");
