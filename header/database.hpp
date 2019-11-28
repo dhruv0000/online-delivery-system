@@ -111,10 +111,11 @@ public:
 class Stock{
     
     public:
+    int stockID;
     Vendor* vendor;
     int quantity;
     double price;
-    Stock(Vendor* vendor, int quantity, double price);
+    Stock(int id, Vendor* vendor, int quantity, double price);
     int getVendorID();
     string getDatabaseString();
 };
@@ -135,6 +136,7 @@ class Product{
     static void objectFromDatabase(Product* product, ifstream& fin); 
     string getProductName();
     int getProductID();
+    Stock* getStock(int id);
     friend class ProductManager;
 };
 
@@ -300,8 +302,8 @@ namespace Database {
       initializeDataVectors<Product>(Database::products, "products.txt");
       initializeDataVectors<Order>(Database::orders, "orders.txt");
       
-      readEntityFromDatabase<User>(Database::users, "users.txt");
       readEntityFromDatabase<Product>(Database::products, "products.txt");
+      readEntityFromDatabase<User>(Database::users, "users.txt");
       readEntityFromDatabase<Order>(Database::orders, "orders.txt");
     }
 };
