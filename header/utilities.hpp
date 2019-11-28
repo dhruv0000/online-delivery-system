@@ -78,7 +78,7 @@ string Address::getDatabaseString() {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Wallet::Wallet(){}
-Wallet::Wallet(double d){
+Wallet::Wallet(double balance){
   this->balance = balance;
 }
 double Wallet::getBalance(){
@@ -102,14 +102,39 @@ int Order::getOrderID() {
 }
 
 string Order::getDatabaseString() {
-  string db = to_string(orderID) + "\n" + to_string(status) + "\n" + expectedDeliveryDate + "\n" + to_string(cost) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(cartProducts.size()) + "\n";
+  string db = to_string(status) + "\n" + expectedDeliveryDate + "\n" + to_string(cost) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(cartProducts.size()) + "\n";
   for(auto cartProduct : cartProducts) {
     db.append(cartProduct.getDatabaseString());
   }
   return db;
 }
 
-void Order::objectFromDatabase(Order* order, ifstream& fin) {}
+void Order::objectFromDatabase(Order* order, ifstream& fin) {
+  string attrib[6];
+  for (int i = 0; i < 6; i++)
+  {
+    getline(fin, attrib[i]);
+  }
+  order->status = static_cast<OrderStatus>(stoi(attrib[0]));
+  order->expectedDeliveryDate = attrib[1];
+  order->cost = stod(attrib[2]);
+  order->deliverySlot = attrib[3];
+  order->paymentStatus = static_cast<PaymentStatus>(stoi(attrib[4]));
+  int cartSize = stoi(attrib[5]);
+  for (int i = 0; i < cartSize; i++)
+  {
+    string cartAttrib[3];
+    for (int j = 0; j < 3; j++)
+    {
+      getline(fin, cartAttrib[j]);
+    }
+    CartProduct cartProduct(Database::products[stoi(cartAttrib[0])], Database::products[stoi(cartAttrib[0])]->getStock(stoi(cartAttrib[1])), stoi(cartAttrib[2]));
+    order->cartProducts.push_back(cartProduct);
+  }
+  
+  
+}
+
 OrderStatus Order::getOrderStatus() {
   return status;
 }
@@ -125,7 +150,7 @@ Order ::Order(int id,CartProduct newCartProduct,double cost,string deliverySlot,
   
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-User::User() {}
+User::User(int id) {userID = id;}
 
 User::User(string username, unsigned long password, string account, Address address,Type type){
   this->username = username;
@@ -133,8 +158,7 @@ User::User(string username, unsigned long password, string account, Address addr
   this->account = account;
   this->address = address;
   this->type = type;
-  Wallet* newWallet = new Wallet(0);      // TODO: why allocation?
-  this->wallet = *newWallet;
+  this->wallet = Wallet(0);
 
 }
 
@@ -173,7 +197,9 @@ void User::userFromDatabase(User* user, ifstream& fin) {
   // cout<<attrib[0]<<endl;
   user->username = attrib[0];
   user->password = stoull(attrib[1]);
+  // cout<<attrib[2]<<endl;
   user->wallet = Wallet(stod(attrib[2]));
+  // cout<<user->wallet.getBalance()<<endl;
   user->account = attrib[3];
   user->address = Address(attrib[4], attrib[5], attrib[6], attrib[7]);
   user->type = static_cast<Type>(stoi(attrib[8]));
@@ -199,9 +225,7 @@ string User::getDatabaseString(){}
 
 void User::objectFromDatabase(User* user, ifstream& fin){}
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-Vendor::Vendor() : User() {type = VENDOR;}
+Vendor::Vendor(int id) : User(id) {type = VENDOR;}
 
 Vendor::Vendor(string username,unsigned long long password,string accountNumber,Address address):User(username,password,accountNumber,address,VENDOR){
   rating = 0;
@@ -245,7 +269,8 @@ void Vendor::objectFromDatabase(Vendor* vendor, ifstream& fin) {
 
 //////////////////////////////////////////////////////////////////////////////////
 
-Stock::Stock(Vendor* vendor, int quantity, double price) {
+Stock::Stock(int id, Vendor* vendor, int quantity, double price) {
+    this->stockID = id;
     this->vendor = vendor;
     this->quantity = quantity;
     this->price = price;
@@ -256,8 +281,10 @@ int Stock::getVendorID() {
 string Stock::getDatabaseString() {
   return to_string(vendor->getUserID()) + "\n" + to_string(quantity) + "\n" + to_string(price) + "\n";
 }
-//////////////////////////////////////////////////////////////////////////////////
-Product::Product() {}
+
+Product::Product(int id) {
+  productID = id;
+}
 
 Product::Product(string name, string type, Stock* stock, string description) {
     this->quantitySold = 0;
@@ -290,11 +317,13 @@ void Product::objectFromDatabase(Product* product, ifstream& fin) {
   {
     getline(fin, attrib[i]);
   }
+  // cout<<attrib[3]<<endl;
   product->name = attrib[0];
   product->type = attrib[1];
   product->description = attrib[2];
   product->quantitySold = stoi(attrib[3]);
   int stockCnt = stoi(attrib[4]);
+  // cout<<"yay"<<endl;
   for(int i = 0; i < stockCnt; i++) {
     string stockAttrib[3];
     for (int j = 0; j < 3; j++)
@@ -302,10 +331,10 @@ void Product::objectFromDatabase(Product* product, ifstream& fin) {
       getline(fin, stockAttrib[j]);
     }
     Vendor* vendor = (Vendor *) Database::users[stoi(stockAttrib[0])];
-    Stock* new_stock = new Stock(i, vendor, stoi(attrib[1]), stod(attrib[2]));
+    Stock* new_stock = new Stock(i, vendor, stoi(stockAttrib[1]), stod(stockAttrib[2]));
     product->stocks.push_back(new_stock);
   }
-  
+  // cout<<"yay";
 } 
 string Product::getProductName() {
   return name;
@@ -363,9 +392,9 @@ void Cart :: removeCartProductFromCart(int index){
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-Customer::Customer() : User() {}
 
-Customer::Customer() : User() {type = CUSTOMER;}
+
+Customer::Customer(int id) : User(id) {type = CUSTOMER;}
 
 Customer::Customer(string username,unsigned long long password,string accountNumber,Address address) : User(username,password,accountNumber,address,CUSTOMER){
 }
@@ -401,7 +430,6 @@ void Customer::objectFromDatabase(Customer* customer, ifstream& fin) {
     for(int j = 0; j < 3; j++) {
       getline(fin, cartAttrib[j]);
     }
-    CartProduct cartProduct= new CartProduct(Database::products[stoi(cartAttrib[0])], (Vendor*)Database::users[stoi(cartAttrib[1])], stoi(cartAttrib[2]));
     CartProduct cartProduct(Database::products[stoi(cartAttrib[0])], Database::products[stoi(cartAttrib[0])]->getStock(stoi(cartAttrib[1])), stoi(cartAttrib[2]));
     customer->cart.cartProducts.push_back(cartProduct);
   }

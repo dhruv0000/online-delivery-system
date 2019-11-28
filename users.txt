@@ -1,26 +1,33 @@
 2
 21
-amm
-43568346
-0.000000
-rfjj
-ff
-dd
-aa
-Hh
+ManulCust
+123456
+56.89
+ICICI123
+room 113
+hostel g6
+iit jodhpur
+rajasthan
 2
-0
-0
-asmm
-43568346
-0.000000
-rfjj
-ff
-dd
-aa
-Hh
 1
 0
-0.000000
+1
 0
 0
+23
+MananVend
+124321
+7.86
+Axis
+mars
+pluto
+saturn 
+jupiter
+1
+0
+5
+1
+2
+greta hah
+bakwas chhora
+

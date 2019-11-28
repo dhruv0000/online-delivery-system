@@ -445,6 +445,7 @@ int main(){
         goto SignIn;
     }
 
-    
+    Database::writeToDatabase();
+    // Database :: writeToDatabase<User>(Database::vendors,"user.txt");
     
 }
