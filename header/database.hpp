@@ -2,7 +2,7 @@
 
 using namespace std;
 
-enum OrderStatus {ORDERED, DISPATCHED, DELIVERED, CANCELLED};
+enum OrderStatus {PENDING,ORDERED, DISPATCHED, DELIVERED, CANCELLED};
 enum PaymentStatus {CASH_ON_DELIVERY,WALLET};
 enum Type {ADMIN,VENDOR,CUSTOMER};
 
@@ -44,6 +44,8 @@ public:
   Wallet(double d);
   double getBalance();
   void updateBalance(double increment);
+  friend class UserManager;
+  friend class OrderManager;
 };
 
 class Order{
@@ -55,9 +57,13 @@ class Order{
   string deliverySlot;
   PaymentStatus paymentStatus;
   public:
+  Order(int id);
+  Order(int id,CartProduct newCartProduct,double cost,string delivrySlot,PaymentStatus paymentStatus);
   int getOrderID();
   string getDatabaseString();
   static void objectFromDatabase(Order* order, ifstream& fin);
+  OrderStatus getOrderStatus();
+  friend class OrderManager;
 };
 
 class User{
@@ -77,6 +83,7 @@ public:
   unsigned long long getPassword();
   string getUsername();
   int getType();
+  void updateWalletBalance(double);
   string getUserString();
   static void userFromDatabase(User* user, ifstream& fin);
   int getUserID();
@@ -84,6 +91,8 @@ public:
   virtual string getDatabaseString();
   static void objectFromDatabase(User* user, ifstream& fin);
   friend class UserManager;
+  friend class ProductManager;
+  friend class OrderManager;
 };
 
 class Vendor : public User{
@@ -93,6 +102,8 @@ class Vendor : public User{
 public:
   Vendor();
   Vendor(string username,unsigned long long password,string accountNumber,Address address);
+  double getRatings();
+  void displayVendorRatings();
   string getDatabaseString();
   static void objectFromDatabase(Vendor* vendor, ifstream& fin);
 };
@@ -141,6 +152,9 @@ class CartProduct{
 
 class Cart{
   vector<CartProduct> cartProducts;
+  void addCartProductToCart(CartProduct);
+  void removeCartProductFromCart(int);
+  void displayCartProduct();
   friend class Customer;
 };
 
@@ -150,7 +164,7 @@ class Customer : public User{
 public:
   Customer();
   Customer(string username,unsigned long long password,string accountNumber,Address address);
-
+  void addCartProduct(CartProduct);
   string getDatabaseString();
   static void objectFromDatabase(Customer* customer, ifstream& fin);
 };

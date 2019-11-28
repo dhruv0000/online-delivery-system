@@ -85,7 +85,12 @@ void Wallet::updateBalance(double increment){
   this->balance = this->balance + increment;
 }
 
-
+Order::Order(int id) {
+  orderID = id;
+  status = PENDING;
+  cost=0;
+  paymentStatus=CASH_ON_DELIVERY;
+}
 
 int Order::getOrderID() {
   return orderID;
@@ -100,6 +105,20 @@ string Order::getDatabaseString() {
 }
 
 void Order::objectFromDatabase(Order* order, ifstream& fin) {}
+OrderStatus Order::getOrderStatus() {
+  return status;
+}
+
+Order ::Order(int id,CartProduct newCartProduct,double cost,string deliverySlot,PaymentStatus paymentStatus){
+  this->orderID = id;
+  this->status = ORDERED;
+  this->cost = cost;
+  this->deliverySlot = deliverySlot;
+  this->paymentStatus = paymentStatus;
+  (this->cartProducts).push_back(newCartProduct);
+}
+  
+
 
 User::User() {}
 
@@ -124,6 +143,9 @@ int User::getType() {
   return type;
 }
 
+void User::updateWalletBalance(double amount){
+  wallet.updateBalance(amount);
+}
 string User::getUserString() {
   string db = username + "\n" + to_string(password) + "\n" + to_string(wallet.getBalance()) + "\n" + account + "\n" + address.getDatabaseString() + to_string(type) + "\n" + to_string(orders.size()) + "\n";
   for(auto order: orders) {
@@ -172,6 +194,15 @@ Vendor::Vendor() : User() {type = VENDOR;}
 Vendor::Vendor(string username,unsigned long long password,string accountNumber,Address address):User(username,password,accountNumber,address,VENDOR){
   rating = 0;
   numberOfRatings = 0;
+}
+
+void Vendor:: displayVendorRatings() {
+  cout<<"Rating :"<<rating<<endl;
+  cout<<"Number of ratings :"<<numberOfRatings<<endl;
+  for(int i=0;i< min(3,(int)reviews.size());i++){
+    cout<<"Review " <<i<< ":" <<reviews[i] <<endl;
+  }
+
 }
 
 string Vendor::getDatabaseString() {
@@ -282,9 +313,16 @@ string CartProduct::getDatabaseString() {
 }
 
 Customer::Customer() : User() {type = CUSTOMER;}
+void Cart :: addCartProductToCart(CartProduct newCartProduct){
+    cartProducts.push_back(newCartProduct);
+}
+
 
 Customer::Customer(string username,unsigned long long password,string accountNumber,Address address) : User(username,password,accountNumber,address,CUSTOMER){}
 
+void Customer :: addCartProduct(CartProduct newCartProduct){
+  cart.addCartProductToCart(newCartProduct);
+}
 
 string Customer::getDatabaseString() {
   string db = getUserString() +  to_string(cart.cartProducts.size()) + "\n";

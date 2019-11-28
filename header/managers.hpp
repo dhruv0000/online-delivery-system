@@ -60,6 +60,7 @@ class ProductManager {
         Database::discount = discount;
         return true;
     }
+    
 
 };
 
@@ -134,13 +135,106 @@ public:
         return true;
     }
 
+    static bool addMoneyToAccount(double amount){
+        
+        printSeparator();
+        cout<<"Directing to Bank Gateway"<<endl;
+        ((Database::currentUser)->wallet).updateBalance(-amount);
+        printSeparator();
+        return true;
+    
+    }
+
     static int getWalletBalance(){
         return ((Database::currentUser)->wallet).getBalance();
     }
 
 };
 
-// in order manager, remember to update order id
-class orderManager {
-    static bool placeOrder();
+class OrderManager {
+
+    // static bool placeOrder(Product* product,Stock* stock,int qty) { //For single product
+    // }
+
+    // static bool addToCart(Product* product,Stock* stock,int qty) {
+    //     OrderStatus lastOrder = (Database :: orders).back()->getOrderStatus();
+    //     if(lastOrder != PENDING){
+    //         Order* order = new Order((Database::orders).size());
+    //         (Database::orders).push_back(order);
+    //         (Database::currentUser)->orders.push_back(order);
+    //     }
+    //     Order* order = *(Database::orders).end();
+    //     CartProduct* cartProduct = new CartProduct(product,stock,qty);
+    //     order->cartProducts.push_back(*cartProduct);
+    //     order->cost+=stock->price*qty;
+    //     return true;
+    // }
+
+    // static void viewCartProduct(){
+
+    // }
+
+    // static bool makePayment(){
+    //     User* currentUser = Database::currentUser;
+    //     Order* lastOrder= *currentUser->orders.end();
+    //     lastOrder->paymentStatus=WALLET;
+    //         if(currentUser->wallet.getBalance() < lastOrder->cost||lastOrder->status!=PENDING)
+    //             return false;
+            
+    //         currentUser->wallet.updateBalance(-1*lastOrder->cost);
+    //         Database::admin->wallet.updateBalance(lastOrder->cost);
+    //         return true;
+    // }
+
+    // static bool placeOrderFromCart() {
+    //     User* currentUser = Database::currentUser;
+    //     OrderStatus lastOrder = currentUser->orders.back()->status;
+    //     if(lastOrder!=PENDING)
+    //         return false;
+    //     Order* order = currentUser->orders.back();
+    //     for (int i = 0; i < order->cartProducts.size(); i++)
+    //     {
+
+    //     }
+        
+        
+
+    // }
+
+    
+    //For payment
+    static void makePayment(Stock* stock,int quantity,PaymentStatus status){
+        
+        if(status == CASH_ON_DELIVERY)return;
+        ((Database :: currentUser))->updateWalletBalance(-(quantity * stock->price*(1-(Database::discount)) + (Database :: deliveryCharge)));
+        Vendor* temp = stock->vendor;
+        temp->updateWalletBalance(quantity * stock->price); 
+        (Database :: admin)->updateWalletBalance(Database::deliveryCharge - quantity * stock->price*(Database::discount));
+
+    }
+
+    static bool placeOrder(Product* product,Stock* stock,int quantity,string deliverySlot,PaymentStatus paymentStatus){
+
+        stock->quantity = stock->quantity - quantity;
+        makePayment(stock,quantity,paymentStatus);
+        CartProduct* newCartPoduct = new CartProduct(product,stock,quantity);
+        int id = (Database :: orders).size();
+        double amountToPay = ((stock->price*quantity)*(1-(Database :: discount)) + (Database :: deliveryCharge));
+        Order* newOrder = new Order(id,*newCartPoduct,amountToPay,deliverySlot,paymentStatus);
+        (Database :: currentUser)->orders.push_back(newOrder);
+        (Database :: orders).push_back(newOrder);
+        (stock->vendor)->orders.push_back(newOrder);
+        return true;
+
+    }
+
+    static void addToCart(Product* product,Stock* stock,int quantity){
+        CartProduct* newCartProduct = new CartProduct(product,stock,quantity);
+        ((Customer*)Database :: currentUser)->addCartProduct(*newCartProduct);
+        
+
+    }
+
+    
+
 };
