@@ -319,8 +319,8 @@ int main(){
         showFuntionality(topSearch.size());
         cin>>customerWish;
 
-        if(customerWish>=1 || customerWish <=(int)topSearch.size()){
-            ProductManager :: searchAndDisplayVendor(topSearch[customerWish]);
+        if(customerWish>=1 || customerWish <=(int)(topSearch.size())){
+            ProductManager :: searchAndDisplayVendor(topSearch[--customerWish]);
             int vendorSelection;
             cin>>vendorSelection;
             Stock* stock = ProductManager :: getStockPointer(topSearch[customerWish],vendorSelection);
@@ -331,22 +331,24 @@ int main(){
             displayProductAcceptance();
             cin>>productAcceptance;
                 
-            int quantity;
-            cout<<"Number of quantity you want to purchase :";
-            cin>>quantity;
-            if(quantity>stock->quantity){
-                cout<<"Vendor does not have enough supply"<<endl;
-                goto TopProductAcceptance;
-            }
+            
+            // if(quantity>stock->quantity){
+            //     cout<<"Vendor does not have enough supply"<<endl;
+            //     goto TopProductAcceptance;
+            // }
                 
             if(productAcceptance == 1){
-                    
+                int quantity;
+                cout<<"Number of quantity you want to purchase :";
+                cin>>quantity;
                 OrderManager :: addToCart(topSearch[customerWish],stock,quantity);
                 cout<<"Your Product has bee added into cart (:"<<endl;
                 goto CustomerChoices;
                 
             }else if(productAcceptance == 2){
-                    
+                int quantity;
+                cout<<"Number of quantity you want to purchase :";
+                cin>>quantity;    
                 string deliverySlot;
                 PaymentStatus paymentStatus;
                 getOrderInformation(deliverySlot,paymentStatus);
@@ -359,7 +361,7 @@ int main(){
                     goto TopProductAcceptance;
             } 
         }
-        else if(customerWish  == (int)topSearch.size()+1){
+        else if(customerWish  == (int)(topSearch.size())+1){
             string searchString;
             cout<<"Enter about product which you wish to search :";
             cin>>searchString;
@@ -422,12 +424,12 @@ int main(){
             }
 
 
-        }else if((customerWish == (int)topSearch.size()+2)){
+        }else if((customerWish == (int)(topSearch.size())+2)){
             //For Cart Department
             OrderManager :: showCart();
 
 
-        }else if(customerWish == (int)topSearch.size()+3){
+        }else if(customerWish == (int)(topSearch.size())+3){
             char operation;
             cout<<"Your Wallet has "<<UserManager :: getWalletBalance()<<"rupees"<<endl;
             cout<<"Do you want to add money to your wallet from bank account(y/n)? ";
@@ -447,7 +449,7 @@ int main(){
             cout<<"Your Wallet has "<<UserManager :: getWalletBalance()<<"rupees"<<endl;
             
         }
-        else if(customerWish == (int)topSearch.size()+5){
+        else if(customerWish == (int)(topSearch.size())+5){
             UserManager :: logoutUser();
             goto SignIn;
         }
