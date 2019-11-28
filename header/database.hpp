@@ -77,7 +77,7 @@ protected:
   Address address;
   enum Type type;
 public:
-  User();
+  User(int id);
   User(string username, unsigned long password, string account, Address address,Type type);
 
   unsigned long long getPassword();
@@ -93,6 +93,7 @@ public:
   friend class UserManager;
   friend class ProductManager;
   friend class OrderManager;
+  friend int main();
 };
 
 class Vendor : public User{
@@ -100,7 +101,7 @@ class Vendor : public User{
   int numberOfRatings;
   vector<string> reviews;
 public:
-  Vendor();
+  Vendor(int id);
   Vendor(string username,unsigned long long password,string accountNumber,Address address);
   double getRatings();
   void displayVendorRatings();
@@ -128,7 +129,7 @@ class Product{
     string description;
     int quantitySold;
   public:
-    Product();
+    Product(int id);
     Product(string name, string type, Stock* stock, string description);
     static bool compareProduct(Product* prod1, Product* prod2);
     void displayProduct();
@@ -164,7 +165,7 @@ class Cart{
 class Customer : public User{
   Cart cart;
 public:
-  Customer();
+  Customer(int id);
   Customer(string username,unsigned long long password,string accountNumber,Address address);
   void addCartProduct(CartProduct);
   void removeCartProduct(int);
@@ -207,15 +208,15 @@ namespace Database {
         fout.close();
     }
     template<typename T>
-    T* newRecord(int type) {
+    T* newRecord(int type, int id) {
       return NULL;
     } 
     template<>
-    User* newRecord<User>(int type) {
+    User* newRecord<User>(int type, int id) {
       // cout<<"GGG"<<endl;
       User* user;
-      if(type == CUSTOMER) user = new Customer();
-      else user = new Vendor();
+      if(type == CUSTOMER) user = new Customer(id);
+      else user = new Vendor(id);
       return user;
     }
 
@@ -237,10 +238,10 @@ namespace Database {
         T* record;
         if(typeid(T) == typeid(User)) {
           // cout<<userTypes[i]-'0'<<endl;
-          record = newRecord<T>(userTypes[i]-'0');
+          record = newRecord<T>(userTypes[i]-'0', i);
         
         } else {
-          record = new T();
+          record = new T(i);
         }
         data.push_back(record);
       }
@@ -283,25 +284,27 @@ namespace Database {
           // cout<<"done"<<endl;
           getObjectFromFile<T>(record, fin);
           
+        } else {
+        // cout<<<<endl;
+          T::objectFromDatabase(record, fin);
+          // cout<<"Fff"<<endl;
         }
-        T::objectFromDatabase(record, fin);
-        // cout<<"Fff"<<endl;
       }
       fin.close();
     }
     void writeToDatabase() {
-      writeEntityToDatabase<User>(Database::users, "users.txt");
-      writeEntityToDatabase<Product>(Database::products, "products.txt");
-      writeEntityToDatabase<Order>(Database::orders, "orders.txt");
+      writeEntityToDatabase<Product>(Database::products, "products1.txt");
+      writeEntityToDatabase<User>(Database::users, "users1.txt");
+      // writeEntityToDatabase<Order>(Database::orders, "orders.txt");
 
     }
     void readFromDatabase() {
-      initializeDataVectors<User>(Database::users, "users.txt");
       initializeDataVectors<Product>(Database::products, "products.txt");
+      initializeDataVectors<User>(Database::users, "users.txt");
       initializeDataVectors<Order>(Database::orders, "orders.txt");
       
       readEntityFromDatabase<Product>(Database::products, "products.txt");
       readEntityFromDatabase<User>(Database::users, "users.txt");
-      readEntityFromDatabase<Order>(Database::orders, "orders.txt");
+      // readEntityFromDatabase<Order>(Database::orders, "orders.txt");
     }
 };

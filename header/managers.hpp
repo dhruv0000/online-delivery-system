@@ -236,9 +236,9 @@ class OrderManager {
 
     }
 
-static void removeFromCart(int index){
-        ((Customer*)Database :: currentUser)->removeCartProduct(*newCartProduct);
-    }
+// static void removeFromCart(int index){
+//         ((Customer*)Database :: currentUser)->removeCartProduct(*newCartProduct);
+//     }
     
 
 };
