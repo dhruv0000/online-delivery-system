@@ -2,15 +2,18 @@ CC=g++
 
 CFLAGS = -O3 -w
 
-all: compile run
+all: compile clear run
+
+clear: login
+	clear
 
 run: login
 	./login
 
-compile:login.cpp database.hpp managers.hpp utilities.hpp
+compile:login.cpp
 	$(CC) $(CFLAGS) login.cpp -o login
 
-vpath %.h /header
-.PHONY: all run
+.PHONY: all run clear
+
 clean:
 	rm -rf login
