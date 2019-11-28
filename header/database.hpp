@@ -79,7 +79,7 @@ protected:
 public:
   User();
   User(string username, unsigned long password, string account, Address address,Type type);
-
+  void displayUserInformation();
   unsigned long long getPassword();
   string getUsername();
   int getType();

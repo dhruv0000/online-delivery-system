@@ -137,11 +137,13 @@ void showFuntionality(int i){
 }
 
 void displaySearchProduct(vector<Product*> searchedProduct){
+    printSeparator();
     cout<<"Enter the number of the product which you are liking"<<endl;
     int i=0;
     for(auto presentProduct : searchedProduct){
         cout<<i<<endl;
         presentProduct->displayProduct();
+        printSeparator();
         i++;
     }
 }
@@ -182,6 +184,18 @@ void displayProductAcceptance(){
     cout<<"1:Add to Cart"<<endl;
     cout<<"2:Buy Product"<<endl;
 }
+void displayVendorList(Stock* stock)or(Product* product){
+        printSeparator();
+        cout<<"Vendor Details :"<<endl;
+        for(int i=0;i<(int)(product->stocks).size();i++){
+            cout<<i<<":"<<endl;
+            product->stocks[i]->vendor->displayUserInformation();
+            cout<<"Quantity available :"<<product->stocks[i]->quantity<<endl;
+            product->stocks[i]->vendor->displayVendorRatings();
+        }   
+        
+    }
+}
 
 int main(){
    
@@ -192,7 +206,6 @@ int main(){
     printLoginChoice();
     std :: cin>>wish;
 
-
     if(wish == '1') {
         
         Registration:
@@ -201,10 +214,8 @@ int main(){
         
         std :: cin>>userWish;
         
-        
         if(userWish == '3')
             goto SignIn;
-
 
         string username,password,accountNumber,rePassword;
         unsigned long long hashPassword;
@@ -219,13 +230,13 @@ int main(){
         }
 
         if(UserManager :: registerUser(username, hashPassword, accountNumber, address, type)){
-            cout<<endl;
+            printSeparator();
             cout<<"You have successfully created new account (:"<<endl;
             if(type == CUSTOMER)
                 cout<<"Please login into your account to purchase our products"<<endl;
             else
                 cout<<"Please login into your account to do business with us"<<endl;
-            cout<<endl;
+            printSeparator();
             goto SignIn;
         }
         
@@ -278,18 +289,19 @@ int main(){
             goto SignIn;
         }
 
+        printSeparator();
         cout<<"You are Logged In successsfully (:"<<endl;
         displayUsername();
-        int count;
+        // int count;
         cout<<"Enter the number of top purchased product you want to see"<<endl;
-        std :: cin>>count;
-            
-        vector<Product*> topSearch = ProductManager :: getTopProducts(count);
+        // std :: cin>>count;
+        vector<Product*> topSearch = ProductManager :: getTopProducts(3);
         char customerWish;
 
         CustomerChoices:
 
         showTopSearch(topSearch);
+        showFuntionality(topSearch.size());
 
         if((customerWish - '0') == topSearch.size()+1){
             string searchString;
@@ -312,11 +324,29 @@ int main(){
             //     cout<<"\nMatch not found\n\n";
             //     goto SearchProductDisplay;
             // }
+
             if(productWish >= '1' && productWish <= (char)(searchProduct.size()+(int)'0')){
-                int productNumber;
+                vector<Stock*> availableVendors = ProductManager :: searchVendor(searchProduct[(int)(productWish-'0')]);
+                displayVendorList(availableVendors);
+                int productAcceptance;
                 displayProductAcceptance();
-                cin>>productNumber;
+                cin>>productAcceptance;
+                if(productAcceptance == 1){
+
+
+                }else if(productAcceptance == 2){
+
+
+                }else{
+
+
+                }
             }
+
+
+        }else if(((customerWish-'0') == topSearch.size()+2)){
+            //For Cart Department
+            OrderManager :: showCart();
 
 
         }
@@ -415,8 +445,6 @@ int main(){
         goto SignIn;
     }
 
-    Database :: writeToDatabase<Product>(Database::products,"products.txt");
-    Database :: writeToDatabase<User>(Database::users,"users.txt");
-    // Database :: writeToDatabase<User>(Database::vendors,"user.txt");
+    
     
 }

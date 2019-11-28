@@ -138,6 +138,11 @@ User::User(string username, unsigned long password, string account, Address addr
 
 }
 
+void User :: displayUserInformation(){
+  cout<<"Name: "<<username<<endl;
+  cout<<"Address: "<<endl;
+  address.displayAddress();
+}
 string User::getUsername() {
   return username;
 }
@@ -362,7 +367,8 @@ Customer::Customer() : User() {}
 
 Customer::Customer() : User() {type = CUSTOMER;}
 
-Customer::Customer(string username,unsigned long long password,string accountNumber,Address address) : User(username,password,accountNumber,address,CUSTOMER){}
+Customer::Customer(string username,unsigned long long password,string accountNumber,Address address) : User(username,password,accountNumber,address,CUSTOMER){
+}
 
 void Customer :: addCartProduct(CartProduct newCartProduct){
   cart.addCartProductToCart(newCartProduct);

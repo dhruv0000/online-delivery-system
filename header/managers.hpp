@@ -62,7 +62,7 @@ class ProductManager {
         return true;
     }
     
-
+    
 };
 
 
@@ -153,7 +153,7 @@ public:
 };
 
 class OrderManager {
-
+public:
     // static bool placeOrder(Product* product,Stock* stock,int qty) { //For single product
     // }
 
@@ -205,11 +205,10 @@ class OrderManager {
     
     //For payment
     static void makePayment(Stock* stock,int quantity,PaymentStatus status){
-        
+        Vendor* temp = stock->vendor;
+        temp->updateWalletBalance(quantity * stock->price);
         if(status == CASH_ON_DELIVERY)return;
         ((Database :: currentUser))->updateWalletBalance(-(quantity * stock->price*(1-(Database::discount)) + (Database :: deliveryCharge)));
-        Vendor* temp = stock->vendor;
-        temp->updateWalletBalance(quantity * stock->price); 
         (Database :: admin)->updateWalletBalance(Database::deliveryCharge - quantity * stock->price*(Database::discount));
 
     }
@@ -236,12 +235,12 @@ class OrderManager {
 
     }
 
-static void removeFromCart(int index){
+    static void removeFromCart(int index){
         ((Customer*)Database :: currentUser)->removeCartProduct(index);
     }
-static void showCart(){
-    ((Customer*)Database::currentUser)->displayCart();
-}
+    static void showCart(){
+        ((Customer*)Database::currentUser)->displayCart();
+    }
     
 
 };
