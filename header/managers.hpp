@@ -147,13 +147,54 @@ public:
 
 };
 
-class orderManager {
+class OrderManager {
 
-    static bool placeOrder(Product* product,Stock* stock,int qty,PaymentStatus status) { //For single product
-        Order* order = new Order();
+    static bool placeOrder(Product* product,Stock* stock,int qty) { //For single product
     }
 
-    static bool addToCart(Product* product,Stock* stock,int qty,PaymentStatus status) {
-        if((Database :: orders).back()
+    static bool addToCart(Product* product,Stock* stock,int qty) {
+        OrderStatus lastOrder = (Database :: orders).back()->getOrderStatus();
+        if(lastOrder != PENDING){
+            Order* order = new Order((Database::orders).size());
+            (Database::orders).push_back(order);
+            (Database::currentUser)->orders.push_back(order);
+        }
+        Order* order = *(Database::orders).end();
+        CartProduct* cartProduct = new CartProduct(product,stock,qty);
+        order->cartProducts.push_back(*cartProduct);
+        order->cost+=stock->price*qty;
+        return true;
     }
-}
+
+    static void viewCartProduct(){
+
+    }
+
+    static bool makePayment(){
+        User* currentUser = Database::currentUser;
+        Order* lastOrder= *currentUser->orders.end();
+        lastOrder->paymentStatus=WALLET;
+            if(currentUser->wallet.getBalance() < lastOrder->cost||lastOrder->status!=PENDING)
+                return false;
+            
+            currentUser->wallet.updateBalance(-1*lastOrder->cost);
+            Database::admin->wallet.updateBalance(lastOrder->cost);
+            return true;
+    }
+
+    static bool placeOrderFromCart() {
+        User* currentUser = Database::currentUser;
+        OrderStatus lastOrder = currentUser->orders.back()->status;
+        if(lastOrder!=PENDING)
+            return false;
+        Order* order = currentUser->orders.back();
+        for (int i = 0; i < order->cartProducts.size(); i++)
+        {
+            
+        }
+        
+        
+
+    }
+
+};

@@ -85,10 +85,19 @@ void Wallet::updateBalance(double increment){
   this->balance = this->balance + increment;
 }
 
-
+Order::Order(int id) {
+  orderID = id;
+  status = PENDING;
+  cost=0;
+  paymentStatus=CASH_ON_DELIVERY;
+}
 
 int Order::getOrderID() {
   return orderID;
+}
+
+OrderStatus Order::getOrderStatus() {
+  return status;
 }
 
 User::User() {}

@@ -2,7 +2,7 @@
 
 using namespace std;
 
-enum OrderStatus {ORDERED, DISPATCHED, DELIVERED, CANCELLED};
+enum OrderStatus {PENDING,ORDERED, DISPATCHED, DELIVERED, CANCELLED};
 enum PaymentStatus {CASH_ON_DELIVERY,WALLET};
 enum Type {ADMIN,VENDOR,CUSTOMER};
 
@@ -39,11 +39,13 @@ public:
 
 class Wallet{
   double balance;
+  void updateBalance(double increment);
 public:
   Wallet();
   Wallet(double d);
   double getBalance();
-  void updateBalance(double increment);
+  friend class UserManager;
+  friend class OrderManager;
 };
 
 class Order{
@@ -55,8 +57,10 @@ class Order{
   string deliverySlot;
   PaymentStatus paymentStatus;
   public:
-  Order();
+  Order(int id);
   int getOrderID();
+  OrderStatus getOrderStatus();
+  friend class OrderManager;
 };
 
 class User{
@@ -79,6 +83,7 @@ public:
   void userFromDatabase(User* user, ifstream& fin);
   virtual string getDatabaseString();
   friend class UserManager;
+  friend class OrderManager;
 };
 
 class Vendor : public User{
@@ -122,7 +127,7 @@ class Product{
     friend class ProductManager;
 };
 
-class DCartProduct{
+class CartProduct{
   Product *product;
   Stock *stock;
   int quantity;
