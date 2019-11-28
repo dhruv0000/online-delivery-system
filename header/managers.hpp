@@ -61,6 +61,27 @@ class ProductManager {
         Database::discount = discount;
         return true;
     }
+
+    static void searchAndDisplayVendor(Product* product){
+        printSeparator();
+        // printFlow();
+        cout<<"Vendor Details :"<<endl;
+        for(int i=0;i<(int)(product->stocks).size();i++){
+            cout<<i<<":"<<endl;
+            product->stocks[i]->vendor->displayUserInformation();
+            cout<<"Quantity available :"<<product->stocks[i]->quantity<<endl;
+            product->stocks[i]->vendor->displayVendorRatings();
+        }
+        
+    }
+    static Stock* getStockPointer(Product *product,int vendorSelection){
+        Stock* chossenStock;
+        for(int i=0;i<min((int)product->stocks.size(),vendorSelection);i++){
+            chossenStock = product->stocks[i];
+        }
+        return chossenStock;
+    }
+    
     
     
 };

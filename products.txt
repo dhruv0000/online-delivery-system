@@ -1,17 +1,1 @@
-2
-shirt
-cloth
-ewfgweufg
 0
-1
-1
-34
-78.500000
-pant
-cloth
-ewfgweue3efg
-0
-1
-1
-34
-78.500000
