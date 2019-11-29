@@ -411,6 +411,7 @@ int main(){
                 PaymentStatus paymentStatus;
                 getOrderInformation(deliverySlot,paymentStatus);
                 OrderManager :: placeOrder(topSearch[customerWish],stock,quantity,deliverySlot,paymentStatus);
+                cout<<"Your order  hass"<<endl;
                 goto CustomerChoices;
 
             }else if(productAcceptance == 3){
@@ -548,6 +549,9 @@ int main(){
                 UserManager :: addMoneyToAccount(amt);
             }
             cout<<"Your Wallet has "<<UserManager :: getWalletBalance()<<"rupees"<<endl;
+            goto CustomerChoices;
+        } else if (customerWish == (topSearch.size()+4)) {
+            OrderManager::showOrder();
             goto CustomerChoices;
         }
         else if(customerWish==(int)(topSearch.size())+4){
