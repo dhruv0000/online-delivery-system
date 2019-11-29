@@ -607,7 +607,7 @@ int main(){
             goto VendorChoices;
 
         }else if (vendorWish == '2'){
-
+            OrderManager::showOrder();
 
 
         }

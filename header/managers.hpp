@@ -283,7 +283,7 @@ public:
         User* user = (Database::currentUser);
         for(auto itr:user->orders){
             printSeparator();
-            if(user->type==VENDOR){
+            if(user->type==VENDOR&&itr->status==ORDERED){
                 itr->displayOrderVender();                
             }
             else if(user->type==CUSTOMER){
