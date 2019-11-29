@@ -1,10 +1,82 @@
 #include "database.hpp"
+#include<ncurses.h>
 
-void printSeparator() {
-    for(int i = 0; i < 50; i++) 
-      cout<<"*";
-    cout<<endl;
+
+int displayBox(string choices[],int n){
+    start_color();
+    int xMax,yMax;
+    getmaxyx(stdscr,yMax,xMax);
+    init_pair(1,COLOR_GREEN,COLOR_WHITE);
+    attron(PAIR_NUMBER(1));
+    mvprintw(0,xMax/2-10,"Welcome to our online store");
+    attroff(PAIR_NUMBER(1));
+
+    mvprintw(10,5,"Select your Choice\n");
+    
+    // init_pair(1,COLOR_RED,COLOR_BLACK);
+    
+    WINDOW* menu = newwin(9,xMax-12,yMax-9,5);
+    box(menu,0,0);
+    refresh();
+    wrefresh(menu);
+
+     keypad(menu,true);
+    // string choices[]={"Manan","Manul","Dhruv"};
+    int choice;
+    int heighlight=0;
+    while(1){
+        for (int  i = 0; i < n; i++)
+        {//    wattron(menu,COLOR_PAIR(1));
+            if(i==heighlight)
+                wattron(menu,A_REVERSE);
+            
+            mvwprintw(menu,i+1,1,choices[i].c_str());
+            wattroff(menu,A_REVERSE);
+            // wattroff(menu,COLOR_PAIR(1));
+        }
+        choice = wgetch(menu);
+
+        switch( choice ) {
+                case KEY_UP:
+                            heighlight--;
+                            heighlight = ( heighlight<0 ) ? n-1 : heighlight;
+                            break;
+                case KEY_DOWN:
+                            heighlight++;
+                            heighlight = ( heighlight>(n-1) ) ? 0 : heighlight;
+                            break;
+        }
+        if(choice==10)
+            break;
+    }
+    wrefresh(menu);
+    
+    
+    heighlight++;
+    return heighlight;
 }
+
+void displayWindow(char in[],const char* c,char in1[] = NULL){
+    
+    // clear();
+    mvprintw(2,5,"Enter the following details");
+    int xMax,yMax;
+    getmaxyx(stdscr,yMax,xMax);
+
+    WINDOW* input = newwin(9,xMax-12,yMax-9,5);
+    box(input,0,0);
+    refresh();
+    wrefresh(input);
+
+    if(in1!=NULL){
+    mvwprintw(input,1,1,"%s ",in1);
+    }
+    mvwprintw(input,2,1,"%s ",in);
+    wscanw(input,"%[^\n]s",c);
+    refresh();
+    
+}
+
 
 bool compareCharIgnoreString(char & c1, char & c2)
 {
@@ -52,16 +124,33 @@ Address::Address(string building, string street, string city, string state) {
 }
 
 void Address::storeAddress(){
-    cout<<"Enter all the details in one line each "<<endl;
-    cout<<"Enter your Building/Appartment :";
-    getchar();
-    getline(std::cin,building);
-    cout<<"Enter your Street :";
-    getline(std::cin,street);
-    cout<<"Enter your City :";
-    getline(std::cin,city);
-    cout<<"Enter your State :";
-    getline(std::cin,state);
+    
+    char temp[100];
+    
+    clear();
+    char c1[] = "Enter your Address ";
+    char d1[] = "Enter your Building :";
+    displayWindow(d1,temp,c1);
+    building = string(temp);
+
+    clear();
+    char c2[] = "Enter your Address ";
+    char d2[] = "Enter your Street :";
+    displayWindow(d2,temp,c2);
+    street = string(temp);
+
+    clear();
+    char c3[] = "Enter your Address ";
+    char d3[] = "Enter your City :";
+    displayWindow(d3,temp,c3);
+    city = string(temp);
+
+    clear();
+    char c4[] = "Enter your Address " ;
+    char d4[] = "Enter your State :";
+    displayWindow(d4,temp,c4);
+    state = string(temp);
+
 }
 
 void Address::displayAddress(){
@@ -115,7 +204,6 @@ int Order::getOrderID() {
 
 void Order :: displayOrderCustomer(){
 
-  printSeparator();
   for(int i=0;i<(int)(cartProducts.size());i++){
     cartProducts[i].displayCartProduct();
   }
@@ -322,14 +410,18 @@ Product::Product(string name, string type, Stock* stock, string description) {
 bool Product::compareProduct(Product* prod1, Product* prod2) {
     return prod1->quantitySold > prod2->quantitySold;
 }
+
 void Product::displayProduct() {
-    cout<<"Name:"<<name<<endl;
-    cout<<"Type:"<<type<<endl;
-    cout<<"Description:"<<description<<endl;
-    cout<<"Quantity Sold:"<<quantitySold<<endl;
-    if(stocks.size() == 0) cout<<"Product is currently out of stock.\n";
-    else cout<<"Product in stock. "<<stocks.size()<<" vendors available.\n";
+
+    printw("Name: %s\n",name.c_str());
+    printw("Type: %s\n",type.c_str());
+    printw("Description: %s\n",description.c_str());
+    printw("Quantity Sold: %d\n",quantitySold);
+    if(stocks.size() == 0) printw("Product is currently out of stock.\n");
+    else printw("Product in stock.%d vendors available.\n",stocks.size());
+
 }
+
 string Product::getDatabaseString() {
     string db = name + "\n" + type + "\n" + description + "\n" + to_string(quantitySold) + "\n" + to_string(stocks.size()) + "\n";
     for(auto stock: stocks) {
@@ -400,7 +492,6 @@ void Cart :: addCartProductToCart(CartProduct newCartProduct){
 void Cart :: displayCartFromCart(){
   int i = 1;
   for(auto presentCartProduct : cartProducts){
-   printSeparator();
    cout<<"Product "<<i<<endl;
    presentCartProduct.displayCartProduct();
     i++;

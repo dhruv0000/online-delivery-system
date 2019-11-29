@@ -1,6 +1,9 @@
 
 #include "utilities.hpp"
 
+void printSeparator(){
+
+}
 class ProductManager {
     public:
     static bool addProduct(string name, string type, int quantity, double price, string description = "none") {
