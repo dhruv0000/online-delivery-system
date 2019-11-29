@@ -99,21 +99,23 @@ class ProductManager {
     }
 
     static void searchAndDisplayVendor(Product* product){
-        printSeparator();
-        // printFlow();
-        cout<<"Vendor Details Selling this product :"<<endl;
+ 
+        char c[]="Vendor Details Selling this product :\n";
+        mvprintw(4,5,c);
+ 
         for(int i=0;i<(product->stocks).size();i++){
-            cout<<i+1<<":"<<endl;
+
+            printw("    Vendor %d :\n",i+1);
             product->stocks[i]->vendor->displayUserInformation();
-            cout<<"Quantity available :"<<product->stocks[i]->quantity<<endl;
-            cout<<"Price offered by this vendor :"<<product->stocks[i]->price<<endl;
-            product->stocks[i]->vendor->displayVendorRatings();
+            printw("    Quantity available :%d\n",product->stocks[i]->quantity);
+            printw("    Quantity available :%lf\n",product->stocks[i]->price);
+            product->stocks[i]->vendor->displayVendorRatings(5);
             
-            
-            printSeparator();
         }
         
+        
     }
+
     static Stock* getStockPointer(Product *product,int vendorSelection){
         
         return product->stocks[min((int)(product->stocks.size()),vendorSelection)];
@@ -186,7 +188,7 @@ public:
             cout<<"User Name :\t\t"<<check->username<<endl;
             cout<<"Account Number :\t\t"<<check->account<<endl;
             cout<<"Address :\t\t"<<endl;
-            (check->address).displayAddress();
+            (check->address).displayAddress(5);
             cout<<"Wallet balance :\t\t"<<(check->wallet).getBalance()<<endl;
             //Still we have to add show cart orders and pending orders
             return true; 
@@ -331,10 +333,23 @@ public:
         for(auto itr:user->orders){
             printSeparator();
             if(user->type==VENDOR&&itr->status==ORDERED){
-                itr->displayOrderVender();                
+                itr->displayOrderVendor();                
             }
             else if(user->type==CUSTOMER){
                 itr->displayOrderCustomer();
+            }
+        }
+
+    }
+
+    static void showVendorOrder() {
+        clear();
+        User* user = (Database::currentUser);
+        for(auto itr:user->orders){
+            if(user->type==VENDOR && itr->status==ORDERED){
+                if(!itr->displayOrderVendor()){
+                    return;
+                }                
             }
         }
 
