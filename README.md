@@ -1,21 +1,47 @@
 # online-delivery-system
-A CLI software to order, track and manage delivery of goods.
+A _nCursers_ based CLI software to order, track and manage delivery of goods.
 
-##  Abstract
-One of the major problems faced by the residents of IIT Jodhpur is the frequent need to travel a long distance to reach the Community Centre to buy commodities. Not only is it time-consuming but also difficult, especially during the summer season.
-Our Online Delivery System provides the necessary interface between customers and vendors needed for the smooth functioning of a delivery system and additional features which make it appealing to the customers.  The actors in our system are the customers, vendors, bank and the Database.
+###Concepts and Tools Learnt
+The project uses the concepts of _classes_, _templates_, _template specialization_, _virtual functions_, _namespaces_, _inheritance_, _file handling_, _password hashing_, _STL components_ and _nCurses Library_.
 
-##  Features and Use Cases
-- The system keeps track of top products and recommends them to the customers.
-- Each customer is provided with a wallet, which he can use for payment.
-- Customers can add money to their wallets through their bank accounts*.
-- Customers are provided with both cash on delivery and pay from wallet options.
-- Vendors are paid as soon as an order is placed irrespective of the mode of payment, thus building their trust.
-- Customers have to confirm delivery after successfully receiving their order, thus avoiding frauds by vendors, such as fake order completion.
-- Customers are provided with exciting discounts set by the admin.
-- Each customer is provided with a cart in which he can add multiple products and order them together.
-- Customers can provide rating and reviews to vendors, which are visible publicly.
-- Customers can suggest the delivery slot as per their convenience.
-- While buying a product, customers can choose from multiple vendors according to their prices and reviews.
-- Vendors can view pending orders.
+###Features
+- __Menu support in CLI__ (using nCurses)
+- __Product Advertisement__
+- __Premium Membership__
+- __Order Cancellation__
+- __Top Products Display__ 
+- Search Products
+- Cart
+- Payment Modes
+ * Cash on Delivery
+ * Wallet
+- Discount
+- Database
+- Review and Rating System
+- Multiple Vendors Support
+- Trust Building among Vendors
+
+###Problems Faced
+- CLI was initially trivial, but menus and headings were later added to improve UI/UX using the __ncurses library__.
+- We tried to host the database online, without success.
+- The system was divided into three separate subsystems, visually _User Manager_, _Product Manager_ and _Order Manager_, to improve modularity and readability of the code.
+- Exception handling was not implemented from starting which led to the program shutting down ungracefully.
+
+
+ 
+##Running the Code
+The code makes use of _ncurses_ library, which is only available in __Linux__ based system currently.
+
+Clone the repository:
+```git clone https://github.com/dhruv0000/online-delivery-system     
+```
+
+Navigate into repository:
+```cd online-delivery-system
+```
+
+Run the makefile:
+```start
+```
+
 
