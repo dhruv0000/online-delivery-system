@@ -335,33 +335,7 @@ public:
         return true;
     }
 
-    static void showOrder() {
-        User* user = (Database::currentUser);
-        for(auto itr:user->orders){
-            printSeparator();
-            if(user->type==VENDOR&&itr->status==ORDERED){
-                itr->displayOrderVendor();                
-            }
-            else if(user->type==CUSTOMER){
-                itr->displayOrderCustomer();
-            }
-        }
-
-    }
-
-    static void showVendorOrder() {
-        clear();
-        User* user = (Database::currentUser);
-        for(auto itr:user->orders){
-            if(user->type==VENDOR && itr->status==ORDERED){
-                if(!itr->displayOrderVendor()){
-                    return;
-                }                
-            }
-        }
-
-    }
-
+  
     
     static bool cancelOrder(Order* order) {
         if(order->status == DELIVERED || order->status == CANCELLED) return false;
@@ -398,5 +372,68 @@ public:
     //         (Database::currentUser)->orders[i].
     //     }    
     // }
+
+    static bool  displayOrderCustomer(int t){
+
+    clear();
+    int i=0;
+    Order* currentOrder = ((Customer*)(Database :: currentUser))->orders[t];
+    
+    for(;i<(int)((currentOrder->cartProducts.size()));i++){
+        currentOrder->cartProducts[t].displayOrderProduct();
+    }
+
+
+    printw("     Cost of Package: %d\n",currentOrder->cost);
+    printw("     Vendor Name: %s\n",currentOrder->cartProducts[0].stock->vendor->getUsername().c_str());
+    printw("     Delivery Slot: %d\n",currentOrder->deliverySlot);
+    // customer->displayUserInformation(4*i+3);
+
+    string in[] = {"1:Confirm this order","2:Cancel this order","3:See next order","4:Exit"};
+    int choice = displayBox(in,4);
+    if(choice == 1){
+        confirmDelivery(currentOrder);
+    }else if (choice == 2){
+        cancelOrder(currentOrder);
+    }
+
+    if(choice == 4)
+        return false;
+    return true;
+    
+}
+
+
+static void showCustomerOrder() {
+        clear();
+        User* user = (Database::currentUser);
+        int i = 0;
+        for(auto itr:user->orders){
+            if(user->type==CUSTOMER && itr->status==ORDERED){
+                if(!(displayOrderCustomer(i))){
+                    return;
+                }                
+            }
+            i++;
+        }
+}
+
+
+
+static void showVendorOrder() {
+        clear();
+        User* user = (Database::currentUser);
+        for(auto itr:user->orders){
+            if(user->type==VENDOR && itr->status==ORDERED){
+                if(!itr->displayOrderVendor()){
+                    return;
+                }                
+            }
+        }
+
+}
+
+
+
 
 };

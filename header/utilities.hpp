@@ -268,26 +268,26 @@ int Order::getOrderID() {
   return orderID;
 }
 
-void Order :: displayOrderCustomer(){
+// void Order :: displayOrderCustomer(){
 
-  for(int i=0;i<(int)(cartProducts.size());i++){
-    cartProducts[i].displayOrderProduct(5);
-  }
+//   for(int i=0;i<(int)(cartProducts.size());i++){
+//     cartProducts[i].displayOrderProduct(5);
+//   }
 
-  cout<<"Cost: "<<cost<<endl;
-  cout<<"Discount: "<<cost*discount<<endl;
-  cout<<"DeliveryCharges: "<<deliveryCharge<<endl;
-  cout<<"Total :"<<cost*(1-discount)+deliveryCharge<<endl;
-  cout<<endl;
-  cout<<"Vendor Name :"<<cartProducts[0].stock->vendor->getUsername();
-  cout<<"Status:";
-  if(status == DISPATCHED)cout<<"DISPATCHED"<<endl;
-  if(status == ORDERED)cout<<"ORDERED"<<endl;
-  if(status == DELIVERED)cout<<"DELIVERED"<<endl;
-  if(status == CANCELLED)cout<<"CANCELLED"<<endl;
-  cout<<"Delivery Slot: "<<deliverySlot<<endl;
+//   cout<<"Cost: "<<cost<<endl;
+//   cout<<"Discount: "<<cost*discount<<endl;
+//   cout<<"DeliveryCharges: "<<deliveryCharge<<endl;
+//   cout<<"Total :"<<cost*(1-discount)+deliveryCharge<<endl;
+//   cout<<endl;
+//   cout<<"Vendor Name :"<<cartProducts[0].stock->vendor->getUsername();
+//   cout<<"Status:";
+//   if(status == DISPATCHED)cout<<"DISPATCHED"<<endl;
+//   if(status == ORDERED)cout<<"ORDERED"<<endl;
+//   if(status == DELIVERED)cout<<"DELIVERED"<<endl;
+//   if(status == CANCELLED)cout<<"CANCELLED"<<endl;
+//   cout<<"Delivery Slot: "<<deliverySlot<<endl;
 
-}
+// }
 
 void Order :: dispatchOrder(){
   if(status==ORDERED)
@@ -321,6 +321,16 @@ bool Order :: displayOrderVendor(){
   return false;
 
 }
+
+
+
+
+
+
+
+
+
+
 
 string Order::getDatabaseString() {
   string db = to_string(status) + "\n" + to_string(cost) + "\n" + to_string(discount) + "\n" + to_string(deliveryCharge) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(customer->getUserID()) + "\n" + to_string(cartProducts.size()) + "\n";
@@ -620,9 +630,18 @@ void CartProduct :: displayCartProduct(){
 
 void CartProduct :: displayOrderProduct(int i){
     
-    mvprintw(4*i+5,5,"Product Name: %d",product->getProductName());
-    mvprintw(4*i+6,5,"No. of Orders: %d",quantity);
+    mvprintw(4*i+5,5,"Product Name: %s",product->getProductName().c_str());
+    mvprintw(4*i+6,5,"No. of quantities: %d",quantity);
     mvprintw(4*i+7,5,"Product Price: %d",stock->price);
+
+}
+
+
+void CartProduct :: displayOrderProduct(){
+    
+    printw("     Product Name: %s\n",product->getProductName().c_str());
+    printw("     No. of quantities: %d\n",quantity);
+    printw("     Product Price: %d\n",stock->price);
 
 }
 

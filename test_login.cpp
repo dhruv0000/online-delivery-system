@@ -454,12 +454,18 @@ int main(){
             
             displaySearchProduct(searchProduct);
 
+            // printw("Fuck0");
+            getch();
             int productWish = displayProductChoice(searchProduct.size());
             
             
-
+            // printw("Fuck1");
+            getch();
             if(productWish >= 1 && productWish <= (int)(searchProduct.size())){
                 productWish--;
+                
+            // printw("Fuck2");
+            getch();
                 clear();
                 ProductManager :: searchAndDisplayVendor(searchProduct[productWish]);
                 // displayVendorList(availableVendors);
@@ -469,6 +475,8 @@ int main(){
                 displayWindow(c,ven);
                 vendorSelection = stod(ven)-1; 
 
+            // printw("Fuck4");
+            getch();
                 Stock* stock = ProductManager :: getStockPointer(searchProduct[productWish],vendorSelection);
                 // cout<<stock->price<<endl;
                 ProductAcceptance:
@@ -510,6 +518,7 @@ int main(){
 
                     // cout<<stock->price<<endl;
                     // cout<<searchProduct[0]->getProductName()<<endl;
+                    
                     
                     OrderManager :: placeOrder(searchProduct[0],stock,quantity,deliverySlot,paymentStatus);
                     clear();
@@ -562,6 +571,7 @@ int main(){
         }else if(customerWish == (topSearch.size()+3)){
             char operation;
             cout<<"Your Wallet has "<<UserManager :: getWalletBalance()<<"rupees"<<endl;
+            
             cout<<"Do you want to add money to your wallet from bank account(y/n)? ";
             cin>>operation;
             if(operation == 'y' ||operation == 'Y'){
@@ -583,6 +593,9 @@ int main(){
         }
         else if(customerWish == (topSearch.size()+4)){
             
+            OrderManager :: showCustomerOrder();
+            goto CustomerChoices;
+
         }
         else if(customerWish == (int)(topSearch.size())+5){
             UserManager :: logoutUser();
