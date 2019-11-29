@@ -569,26 +569,29 @@ int main(){
             goto CustomerChoices;
 
         }else if(customerWish == (topSearch.size()+3)){
-            char operation;
-            cout<<"Your Wallet has "<<UserManager :: getWalletBalance()<<"rupees"<<endl;
-            
-            cout<<"Do you want to add money to your wallet from bank account(y/n)? ";
-            cin>>operation;
-            if(operation == 'y' ||operation == 'Y'){
+            int operation;
+            clear();
+            mvprintw(1,5,"Your Wallet has %lf rupees.",UserManager :: getWalletBalance());
+            // cout<<"Your Wallet has "<<UserManager :: getWalletBalance()<<"rupees"<<endl;
+            string option[]= {"Add Money","Extract Money","Exit"};
+            operation=displayBox(option,3);
+            if(operation == 1){
                 double amt;
-                cout<<"Enter the amount you want to add: "<<endl;
-                cin>>amt;
+                char c[] = "Enter the amount you want to add: ";
+                    char qin[50];
+                    displayWindow(c,qin);
+                    amt = stod(qin);
                 UserManager :: addMoneyFromAccount(amt);
             }
-            cout<<"Do you want to extract money from your wallet to bank account(y/n)? ";
-            cin>>operation;
-            if(operation == 'y' ||operation == 'Y'){
+            if(operation == 2){
                 double amt;
-                cout<<"Enter the amount you want to extract: "<<endl;
-                cin>>amt;
+                char c[] = "Enter the amount you want to extract: ";
+                    char qin[50];
+                    displayWindow(c,qin);
+                    amt = stod(qin);
                 UserManager :: addMoneyToAccount(amt);
             }
-            cout<<"Your Wallet has "<<UserManager :: getWalletBalance()<<"rupees"<<endl;
+            mvprintw(1,5,"Your Wallet has %lf rupees.",UserManager :: getWalletBalance());
             goto CustomerChoices;
         }
         else if(customerWish == (topSearch.size()+4)){
