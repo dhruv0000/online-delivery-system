@@ -279,24 +279,36 @@ public:
             Database::orders.push_back(order->second);
         }
         return true;
-    } 
+    }
+
+    static void showOrder() {
+        User* user = (Database::currentUser);
+        for(auto itr:user->orders){
+            itr->displayOrderCustomer();
+            if(user->type==VENDOR){
+                /*UserName and Address*/
+                
+            }
+        }
+
+    }
 
     
-    static bool cancelOrder(Order* order) {
-        if(order->status == DELIVERED || order->status == CANCELLED) return false;
-        if(order->paymentStatus == CASH_ON_DELIVERY) {
-            order->cartProducts
-        }
-        if(order->paymentStatus == WALLET && (order->status == PENDING || order->status == ORDERED)) {
-            Database::admin->wallet.updateBalance(-Database::deliveryCharge);
-            ((Customer*)(Database::currentUser))->wallet.updateBalance(Database::deliveryCharge);
-        }
+    // static bool cancelOrder(Order* order) {
+    //     if(order->status == DELIVERED || order->status == CANCELLED) return false;
+    //     if(order->paymentStatus == CASH_ON_DELIVERY) {
+    //         order->cartProducts
+    //     }
+    //     if(order->paymentStatus == WALLET && (order->status == PENDING || order->status == ORDERED)) {
+    //         Database::admin->wallet.updateBalance(-Database::deliveryCharge);
+    //         ((Customer*)(Database::currentUser))->wallet.updateBalance(Database::deliveryCharge);
+    //     }
 
-        for(auto cartProduct : order->cartProducts) {
+    //     for(auto cartProduct : order->cartProducts) {
             
-        }
-        order->status = CANCELLED;
-    }
+    //     }
+    //     order->status = CANCELLED;
+    // }
 
     // static void viewCustomerOrder(){
     //     for(int i=0;i<(int)((Database :: currentUser)->orders.size());i++){
