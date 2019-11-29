@@ -2,7 +2,7 @@
 
 using namespace std;
 
-enum OrderStatus {PENDING, ORDERED, DISPATCHED, DELIVERED, CANCELLED};
+enum OrderStatus {ORDERED, DISPATCHED, DELIVERED, CANCELLED};
 enum PaymentStatus {CASH_ON_DELIVERY,WALLET};
 enum Type {ADMIN,VENDOR,CUSTOMER};
 
@@ -52,7 +52,6 @@ class Order{
   int orderID;
   OrderStatus status;
   vector<CartProduct> cartProducts;
-  string expectedDeliveryDate; //Can change to tm if time permites in future
   double cost;
   double discount;
   double deliveryCharge;

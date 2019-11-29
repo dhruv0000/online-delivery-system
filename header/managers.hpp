@@ -301,7 +301,7 @@ public:
             Database::admin->updateWalletBalance(order->cost);
             return true;
         }
-        if(order->status == PENDING || order->status == ORDERED) {
+        if(order->status == ORDERED) {
             Database::admin->wallet.updateBalance(-order->deliveryCharge+order->discount*order->cost);
             (Database::currentUser)->wallet.updateBalance(order->cost*(1-order->discount) + order->deliveryCharge);
             order->cartProducts[0].stock->vendor->updateWalletBalance(-order->cost);

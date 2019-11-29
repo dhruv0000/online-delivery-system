@@ -92,9 +92,6 @@ void Wallet::updateBalance(double increment){
 
 Order::Order(int id) {
   orderID = id;
-  status = PENDING;
-  cost=0;
-  paymentStatus=CASH_ON_DELIVERY;
 }
 
 Order ::Order(int id,CartProduct newCartProduct,double cost,double discount, double deliveryCharge, string deliverySlot,PaymentStatus paymentStatus, Customer* customer){
@@ -127,7 +124,6 @@ void Order :: displayOrderCustomer(){
   cout<<"Status:";
   if(status == DISPATCHED)cout<<"DISPATCHED"<<endl;
   if(status == ORDERED)cout<<"ORDERED"<<endl;
-  if(status == PENDING)cout<<"PENDING"<<endl;
   if(status == DELIVERED)cout<<"DELIVERED"<<endl;
   if(status == CANCELLED)cout<<"CANCELLED"<<endl;
   cout<<"Delivery Slot: "<<deliverySlot<<endl;
@@ -145,7 +141,6 @@ void Order :: displayOrderVender(){
   cout<<"Status:";
   if(status == DISPATCHED)cout<<"DISPATCHED"<<endl;
   if(status == ORDERED)cout<<"ORDERED"<<endl;
-  if(status == PENDING)cout<<"PENDING"<<endl;
   if(status == DELIVERED)cout<<"DELIVERED"<<endl;
   if(status == CANCELLED)cout<<"CANCELLED"<<endl;
   cout<<"Delivery Slot: "<<deliverySlot<<endl;
@@ -153,7 +148,7 @@ void Order :: displayOrderVender(){
 }
 
 string Order::getDatabaseString() {
-  string db = to_string(status) + "\n" + expectedDeliveryDate + "\n" + to_string(cost) + "\n" + to_string(discount) + "\n" + to_string(deliveryCharge) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(customer->getUserID()) + "\n" + to_string(cartProducts.size()) + "\n";
+  string db = to_string(status) + "\n" + to_string(cost) + "\n" + to_string(discount) + "\n" + to_string(deliveryCharge) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(customer->getUserID()) + "\n" + to_string(cartProducts.size()) + "\n";
   for(auto cartProduct : cartProducts) {
     db.append(cartProduct.getDatabaseString());
   }
@@ -161,20 +156,19 @@ string Order::getDatabaseString() {
 }
 
 void Order::objectFromDatabase(Order* order, ifstream& fin) {
-  string attrib[9];
-  for (int i = 0; i < 9; i++)
+  string attrib[8];
+  for (int i = 0; i < 8; i++)
   {
     getline(fin, attrib[i]);
   }
   order->status = static_cast<OrderStatus>(stoi(attrib[0]));
-  order->expectedDeliveryDate = attrib[1];
-  order->cost = stod(attrib[2]);
-  order->discount = stod(attrib[3]);
-  order->deliveryCharge = stod(attrib[4]);
-  order->deliverySlot = attrib[5];
-  order->paymentStatus = static_cast<PaymentStatus>(stoi(attrib[6]));
-  order->customer = (Customer*) (Database::users[stoi(attrib[7])]);
-  int cartSize = stoi(attrib[8]);
+  order->cost = stod(attrib[1]);
+  order->discount = stod(attrib[2]);
+  order->deliveryCharge = stod(attrib[3]);
+  order->deliverySlot = attrib[4];
+  order->paymentStatus = static_cast<PaymentStatus>(stoi(attrib[5]));
+  order->customer = (Customer*) (Database::users[stoi(attrib[6])]);
+  int cartSize = stoi(attrib[7]);
   for (int i = 0; i < cartSize; i++)
   {
     string cartAttrib[3];
