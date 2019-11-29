@@ -13,8 +13,8 @@ The project uses the concepts of _classes_, _templates_, _template specializatio
 - Search Products
 - Cart
 - Payment Modes
- * Cash on Delivery
- * Wallet
+  * Cash on Delivery
+  * Wallet
 - Discount
 - Database
 - Review and Rating System
@@ -33,15 +33,18 @@ The project uses the concepts of _classes_, _templates_, _template specializatio
 The code makes use of _ncurses_ library, which is only available in __Linux__ based system currently.
 
 Clone the repository:
-``` git clone https://github.com/dhruv0000/online-delivery-system     
+```bash
+git clone https://github.com/dhruv0000/online-delivery-system
 ```
 
 Navigate into repository:
-``` cd online-delivery-system
+``` bash
+cd online-delivery-system
 ```
 
 Run the makefile:
-``` start
+```bash 
+start
 ```
 
 
