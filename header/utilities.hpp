@@ -97,6 +97,16 @@ Order::Order(int id) {
   paymentStatus=CASH_ON_DELIVERY;
 }
 
+Order ::Order(int id,CartProduct newCartProduct,double cost,string deliverySlot,PaymentStatus paymentStatus, Customer* customer){
+  this->orderID = id;
+  this->status = ORDERED;
+  this->cost = cost;
+  this->deliverySlot = deliverySlot;
+  this->paymentStatus = paymentStatus;
+  (this->cartProducts).push_back(newCartProduct);
+  this->customer = customer;
+}
+
 int Order::getOrderID() {
   return orderID;
 }
@@ -120,7 +130,7 @@ void Order :: displayOrderCustomer(){
 }
 
 string Order::getDatabaseString() {
-  string db = to_string(status) + "\n" + expectedDeliveryDate + "\n" + to_string(cost) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(cartProducts.size()) + "\n";
+  string db = to_string(status) + "\n" + expectedDeliveryDate + "\n" + to_string(cost) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(customer->getUserID()) + "\n" + to_string(cartProducts.size()) + "\n";
   for(auto cartProduct : cartProducts) {
     db.append(cartProduct.getDatabaseString());
   }
@@ -128,8 +138,8 @@ string Order::getDatabaseString() {
 }
 
 void Order::objectFromDatabase(Order* order, ifstream& fin) {
-  string attrib[6];
-  for (int i = 0; i < 6; i++)
+  string attrib[7];
+  for (int i = 0; i < 7; i++)
   {
     getline(fin, attrib[i]);
   }
@@ -138,7 +148,8 @@ void Order::objectFromDatabase(Order* order, ifstream& fin) {
   order->cost = stod(attrib[2]);
   order->deliverySlot = attrib[3];
   order->paymentStatus = static_cast<PaymentStatus>(stoi(attrib[4]));
-  int cartSize = stoi(attrib[5]);
+  order->customer = (Customer*) Database::users[stoi(attrib[5])];
+  int cartSize = stoi(attrib[6]);
   for (int i = 0; i < cartSize; i++)
   {
     string cartAttrib[3];
@@ -157,14 +168,7 @@ OrderStatus Order::getOrderStatus() {
   return status;
 }
 
-Order ::Order(int id,CartProduct newCartProduct,double cost,string deliverySlot,PaymentStatus paymentStatus){
-  this->orderID = id;
-  this->status = ORDERED;
-  this->cost = cost;
-  this->deliverySlot = deliverySlot;
-  this->paymentStatus = paymentStatus;
-  (this->cartProducts).push_back(newCartProduct);
-}
+
   
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -401,11 +405,7 @@ void Cart :: displayCartFromCart(){
 }
 
 void Cart :: removeCartProductFromCart(int index){
-    vector<CartProduct> :: iterator itr = cartProducts.begin(); 
-    for(int i=0;i<min((int)cartProducts.size(),index);i++){
-      itr++;
-    }
-    cartProducts.erase(itr);
+    cartProducts.erase(cartProducts.begin()+index);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
