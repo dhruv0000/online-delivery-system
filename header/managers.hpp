@@ -225,7 +225,6 @@ public:
         CartProduct* newCartProduct = new CartProduct(product,stock,quantity);
         ((Customer*)(Database :: currentUser))->addCartProduct(*newCartProduct);
         
-
     }
 
     static void removeFromCart(int index){
@@ -234,6 +233,11 @@ public:
     static void showCart(){
         ((Customer*)(Database::currentUser))->displayCart();
     }
+    
+    static CartProduct* getCartProduct(int choice){
+        return &(((Customer*)(Database :: currentUser))->cart.cartProducts[choice]);
+    }
+
     static bool checkCartOrderValidity() {
         double amountToPay = 0;
         unordered_map<int, bool> vendorPresent;
