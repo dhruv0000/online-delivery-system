@@ -401,11 +401,7 @@ void Cart :: displayCartFromCart(){
 }
 
 void Cart :: removeCartProductFromCart(int index){
-    vector<CartProduct> :: iterator itr = cartProducts.begin(); 
-    for(int i=0;i<min((int)cartProducts.size(),index);i++){
-      itr++;
-    }
-    cartProducts.erase(itr);
+    cartProducts.erase(cartProducts.begin()+index);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
