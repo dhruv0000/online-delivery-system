@@ -2,7 +2,7 @@
 A _nCursers_ based CLI software to order, track and manage delivery of goods.
 
 ### Concepts and Tools Learnt
-The project uses the concepts of _classes_, _templates_, _template specialization_, _virtual functions_, _namespaces_, _inheritance_, _file handling_, _password hashing_, _STL components_ and _nCurses Library_.
+The project uses the concepts of _classes_, _templates_, _template specialization_, _virtual functions_, _namespaces_, _inheritance_, _file handling_, _password hashing_, _STL components_ ,_friend functions_ and _nCurses Library_.
 
 ### Features
 - __Menu support in CLI__ (using nCurses)
