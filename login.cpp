@@ -214,8 +214,8 @@ void getProductDetails(string &name,string &type,int &quantity,double &price,str
     cout<<"Would you liketo add description of your product?Y/N";
     char check;
     cin>>check;
-    if(check == 'Y'){
-        cout<<"Enter description in one line :";
+    if(check == 'Y'||check=='y'){
+        cout<<"Enter description in one line :"<<endl;
         getline(cin,description);
     }
 
@@ -598,7 +598,7 @@ int main(){
 
             getProductDetails(name,type,quantity,price,description);
 
-            if(!(ProductManager :: addProduct(name,type,quantity,price,type))){
+            if(!(ProductManager :: addProduct(name,type,quantity,price,description))){
                 cout<<"Sorry something went wrong"<<endl;
                 cout<<"Try after Sometime to add product"<<endl;
                 goto VendorChoices;
