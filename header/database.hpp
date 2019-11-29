@@ -155,6 +155,7 @@ class CartProduct{
   public:
   CartProduct(Product* product, Stock* stock, int quantity);
   void displayCartProduct();
+  void displayOrderProduct();
   string getDatabaseString();
   friend class OrderManager;
   friend class Order;

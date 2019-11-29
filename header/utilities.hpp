@@ -116,13 +116,16 @@ int Order::getOrderID() {
 void Order :: displayOrderCustomer(){
 
   printSeparator();
+  printSeparator();
   for(int i=0;i<(int)(cartProducts.size());i++){
-    cartProducts[i].displayCartProduct();
+    cartProducts[i].displayOrderProduct();
   }
+  printSeparator();
   cout<<"Cost: "<<cost<<endl;
-  // cout<<"Discount: "<<cost*discount<<endl;
-  // cout<<"DeliveryCharges: "<<deliveryCharge<<endl;
-  // cout<<"Total :"<<""<<endl;
+  cout<<"Discount: "<<cost*discount<<endl;
+  cout<<"DeliveryCharges: "<<deliveryCharge<<endl;
+  cout<<"Total :"<<cost*(1-discount)+deliveryCharge<<endl;
+  cout<<endl;
   cout<<"Vendor Name :"<<cartProducts[0].stock->vendor->getUsername();
   cout<<"Status:";
   if(status == DISPATCHED)cout<<"DISPATCHED"<<endl;
@@ -138,10 +141,12 @@ void Order :: displayOrderVender(){
 
   printSeparator();
   for(int i=0;i<(int)(cartProducts.size());i++){
-    cartProducts[i].displayCartProduct();
+    cartProducts[i].displayOrderProduct();
   }
   cout<<"Cost of Package:"<<cost<<endl;
+  cout<<"User Info:"<<endl;
   customer->displayUserInformation();
+  cout<<endl;
   cout<<"Status:";
   if(status == DISPATCHED)cout<<"DISPATCHED"<<endl;
   if(status == ORDERED)cout<<"ORDERED"<<endl;
@@ -411,6 +416,13 @@ string CartProduct::getDatabaseString() {
 void CartProduct :: displayCartProduct(){
     product->displayProduct();
     cout<<"Quantity in Cart :"<<stock->quantity;
+}
+
+void CartProduct :: displayOrderProduct(){
+    cout<<"Product Name: "<<product->getProductName()<<endl;
+    cout<<"No. of Orders: "<<quantity<<endl;
+    cout<<"Product Price: "<<stock->price<<endl;
+    cout<<endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
