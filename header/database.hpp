@@ -54,12 +54,14 @@ class Order{
   vector<CartProduct> cartProducts;
   string expectedDeliveryDate; //Can change to tm if time permites in future
   double cost;
+  double discount;
+  double deliveryCharge;
   string deliverySlot;
   PaymentStatus paymentStatus;
   Customer* customer;
   public:
   Order(int id);
-  Order(int id,CartProduct newCartProduct,double cost,string delivrySlot,PaymentStatus paymentStatus, Customer* customer);
+  Order(int id,CartProduct newCartProduct,double cost,double discount, double deliveryCharge, string deliverySlot,PaymentStatus paymentStatus, Customer* customer);
   int getOrderID();
   void displayOrder();
   string getDatabaseString();
