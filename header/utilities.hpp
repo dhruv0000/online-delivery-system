@@ -1,7 +1,8 @@
+/* this file contains utility functions and defines
+ * all functions (including constructors) of the utility classes defined in database.hpp */
+
 #include "database.hpp"
 #include<ncurses.h>
-
-
 
 
 int displayBox(string choices[],int n){
@@ -133,7 +134,7 @@ void displayWindow(char in[],const char* c,char in1[] = NULL){
     
 }
 
-
+// utility to compare chars ignoring case
 bool compareCharIgnoreString(char & c1, char & c2)
 {
   if (c1 == c2||std::toupper(c1) == std::toupper(c2)||std::toupper(c1) == c2||c1 == std::toupper(c2))
@@ -141,12 +142,14 @@ bool compareCharIgnoreString(char & c1, char & c2)
   return false;
 }
  
+//utility to comapare strings ignoring case
 bool compareStringIgnoreCase(std::string & str1, std::string &str2)
 {
   return ( (str1.size() == str2.size() ) &&
        std::equal(str1.begin(), str1.end(), str2.begin(), &compareCharIgnoreString) );
 }
 
+///////////////////////////////////// PASSWORD //////////////////////////////////////////
 bool Password::checkStrength(string passwd){
     int length = passwd.length();
     int countUpper = 0,countLower = 0,countDigit = 0;
@@ -168,7 +171,7 @@ unsigned long long Password::hashValue(string passwd){
     return h(passwd);
 }
 
-////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////// ADDRESS ///////////////////////////////////////////
 
 Address::Address() {}
 
@@ -220,7 +223,7 @@ string Address::getDatabaseString() {
   return building + "\n" + street + "\n" + city + "\n" + state + "\n";
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// WALLET ////////////////////////////////////////////////////////
 
 Wallet::Wallet(){}
 Wallet::Wallet(double balance){
@@ -233,7 +236,7 @@ void Wallet::updateBalance(double increment){
   this->balance = this->balance + increment;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////// ORDER ////////////////////////////////////////////////////////
 
 Order::Order(int id) {
   orderID = id;
@@ -337,7 +340,7 @@ OrderStatus Order::getOrderStatus() {
 
 
   
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////// USER /////////////////////////////////////////////////////
 
 User::User(int id) {userID = id;}
 
@@ -387,16 +390,12 @@ void User::userFromDatabase(User* user, ifstream& fin) {
   for(int i = 0; i < 10; i++) {
     getline(fin, attrib[i]);
   }
-  // cout<<attrib[0]<<endl;
   user->username = attrib[0];
   user->password = stoull(attrib[1]);
-  // cout<<attrib[2]<<endl;
   user->wallet = Wallet(stod(attrib[2]));
-  // cout<<user->wallet.getBalance()<<endl;
   user->account = attrib[3];
   user->address = Address(attrib[4], attrib[5], attrib[6], attrib[7]);
   user->type = static_cast<Type>(stoi(attrib[8]));
-  // cout<<attrib[8]<<endl;
   int orderSize = stoi(attrib[9]);
   
   for(int i = 0; i < orderSize; i++) {
@@ -417,6 +416,8 @@ int User::getUserType() {
 string User::getDatabaseString(){}
 
 void User::objectFromDatabase(User* user, ifstream& fin){}
+
+///////////////////////////////////////////////// VENDOR //////////////////////////////////////////////////////////
 
 Vendor::Vendor(int id) : User(id) {type = VENDOR;}
 
@@ -463,7 +464,7 @@ void Vendor::objectFromDatabase(Vendor* vendor, ifstream& fin) {
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////// STOCK //////////////////////////////////////////////////////////////
 
 Stock::Stock(int id, Vendor* vendor, int quantity, double price) {
     this->stockID = id;
@@ -478,6 +479,8 @@ int Stock::getVendorID() {
 string Stock::getDatabaseString() {
   return to_string(vendor->getUserID()) + "\n" + to_string(quantity) + "\n" + to_string(price) + "\n" + to_string(advertised) + "\n";
 }
+
+//////////////////////////////////////////////// PRODUCT /////////////////////////////////////////////////////////////
 
 Product::Product(int id) {
   productID = id;
@@ -546,11 +549,12 @@ string Product::getProductName() {
 int Product::getProductID() {
   return productID;
 }
-//////////////////////////////////////////////////////////////////////////////////
 
 Stock* Product::getStock(int id) {
   return stocks[id];
 }
+
+///////////////////////////////////// CART PRODUCT //////////////////////////////////////////////////////
 
 CartProduct::CartProduct(Product* product, Stock* stock, int quantity) {
     this->product = product;
@@ -576,7 +580,8 @@ void CartProduct :: displayOrderProduct(){
     cout<<endl;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////// CART //////////////////////////////////////////////////////////
+
 void Cart :: addCartProductToCart(CartProduct newCartProduct){
     cartProducts.push_back(newCartProduct);
 }
@@ -595,7 +600,7 @@ void Cart :: removeCartProductFromCart(int index){
     cartProducts.erase(cartProducts.begin()+index);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// CUSTOMER /////////////////////////////////////////////////////
 
 
 Customer::Customer(int id) : User(id) {type = CUSTOMER;}
