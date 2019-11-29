@@ -2,7 +2,7 @@
 
 using namespace std;
 
-enum OrderStatus {PENDING, ORDERED, DISPATCHED, DELIVERED, CANCELLED};
+enum OrderStatus {ORDERED, DISPATCHED, DELIVERED, CANCELLED};
 enum PaymentStatus {CASH_ON_DELIVERY,WALLET};
 enum Type {ADMIN,VENDOR,CUSTOMER};
 
@@ -52,7 +52,6 @@ class Order{
   int orderID;
   OrderStatus status;
   vector<CartProduct> cartProducts;
-  string expectedDeliveryDate; //Can change to tm if time permites in future
   double cost;
   double discount;
   double deliveryCharge;
@@ -64,6 +63,7 @@ class Order{
   Order(int id,CartProduct newCartProduct,double cost,double discount, double deliveryCharge, string deliverySlot,PaymentStatus paymentStatus, Customer* customer);
   int getOrderID();
   void displayOrderCustomer();
+  void displayOrderVender();
   string getDatabaseString();
   static void objectFromDatabase(Order* order, ifstream& fin);
   OrderStatus getOrderStatus();
@@ -154,6 +154,7 @@ class CartProduct{
   public:
   CartProduct(Product* product, Stock* stock, int quantity);
   void displayCartProduct();
+  void displayOrderProduct();
   string getDatabaseString();
   friend class OrderManager;
   friend class Order;
@@ -235,6 +236,7 @@ namespace Database {
     void initializeDataVectors(vector<T*>& data, string fname) {
       ifstream fin;
       fin.open(fname);
+      if(fin.fail()) return;
       if(fin.peek() == ifstream::traits_type::eof()) {
         fin.close();
         return;
@@ -282,6 +284,7 @@ namespace Database {
       // cout<<data.size()<<endl;
       ifstream fin;
       fin.open(fname);
+      if(fin.fail()) return;
       if(fin.peek() == ifstream::traits_type::eof()) {
         fin.close();
         return;
@@ -312,20 +315,39 @@ namespace Database {
       fin.close();
     }
     void writeToDatabase() {
-      writeEntityToDatabase<Product>(Database::products, "products.txt");
-      writeEntityToDatabase<User>(Database::users, "users.txt");
-      writeEntityToDatabase<Order>(Database::orders, "orders.txt");
+      ofstream fout;
+      fout.open("charges.db");
+      fout<<Database::discount<<endl;
+      fout<<Database::deliveryCharge<<endl;
+      fout.close();
+
+      writeEntityToDatabase<Product>(Database::products, "products.db");
+      writeEntityToDatabase<User>(Database::users, "users.db");
+      writeEntityToDatabase<Order>(Database::orders, "orders.db");
 
     }
     void readFromDatabase() {
       Database::admin = new User("admin", Password::hashValue("admin"), "AdminAccount", Address("Hostel G6", "IIT Jodhpur", "Jodhpur", "Rajasthan"), ADMIN);
+      Database::discount = 0.05;
+      Database::deliveryCharge = 20;
+      ifstream fin;
+      fin.open("charges.db");
+      if(!fin.fail()) {
+        if(fin.peek() != ifstream::traits_type::eof()) {
+          double disc, del;
+          fin>>disc>>del;
+          Database::discount = disc;
+          Database::deliveryCharge = del;
+        }
+        fin.close();
+      }
+
+      initializeDataVectors<Product>(Database::products, "products.db");
+      initializeDataVectors<User>(Database::users, "users.db");
+      initializeDataVectors<Order>(Database::orders, "orders.db");
       
-      initializeDataVectors<Product>(Database::products, "products.txt");
-      initializeDataVectors<User>(Database::users, "users.txt");
-      initializeDataVectors<Order>(Database::orders, "orders.txt");
-      
-      readEntityFromDatabase<Product>(Database::products, "products.txt");
-      readEntityFromDatabase<User>(Database::users, "users.txt");
-      readEntityFromDatabase<Order>(Database::orders, "orders.txt");
+      readEntityFromDatabase<Product>(Database::products, "products.db");
+      readEntityFromDatabase<User>(Database::users, "users.db");
+      readEntityFromDatabase<Order>(Database::orders, "orders.db");
     }
 };

@@ -339,9 +339,9 @@ int main(){
 
         }else{
             cout<<"You have entered wrong password"<<endl;
-            goto AdminRun;
+            goto SignIn;
         }
-        goto AdminRun;
+        goto SignIn;
         
     }
     else if(wish == '3'){
@@ -411,6 +411,7 @@ int main(){
                 PaymentStatus paymentStatus;
                 getOrderInformation(deliverySlot,paymentStatus);
                 OrderManager :: placeOrder(topSearch[customerWish],stock,quantity,deliverySlot,paymentStatus);
+                cout<<"Your order  hass"<<endl;
                 goto CustomerChoices;
 
             }else if(productAcceptance == 3){
@@ -549,9 +550,13 @@ int main(){
             }
             cout<<"Your Wallet has "<<UserManager :: getWalletBalance()<<"rupees"<<endl;
             goto CustomerChoices;
+        } else if (customerWish == (topSearch.size()+4)) {
+            OrderManager::showOrder();
+            goto CustomerChoices;
         }
-        else if(customerWish == (topSearch.size()+4)){
-            
+        else if(customerWish==(int)(topSearch.size())+4){
+            OrderManager::showOrder();
+            goto CustomerChoices;
         }
         else if(customerWish == (int)(topSearch.size())+5){
             UserManager :: logoutUser();
@@ -602,7 +607,7 @@ int main(){
             goto VendorChoices;
 
         }else if (vendorWish == '2'){
-
+            OrderManager::showOrder();
 
 
         }

@@ -181,9 +181,6 @@ void Wallet::updateBalance(double increment){
 
 Order::Order(int id) {
   orderID = id;
-  status = PENDING;
-  cost=0;
-  paymentStatus=CASH_ON_DELIVERY;
 }
 
 Order ::Order(int id,CartProduct newCartProduct,double cost,double discount, double deliveryCharge, string deliverySlot,PaymentStatus paymentStatus, Customer* customer){
@@ -205,14 +202,37 @@ int Order::getOrderID() {
 void Order :: displayOrderCustomer(){
 
   for(int i=0;i<(int)(cartProducts.size());i++){
-    cartProducts[i].displayCartProduct();
+    cartProducts[i].displayOrderProduct();
   }
-  cout<<"Cost:"<<cost<<endl;
+
+  cout<<"Cost: "<<cost<<endl;
+  cout<<"Discount: "<<cost*discount<<endl;
+  cout<<"DeliveryCharges: "<<deliveryCharge<<endl;
+  cout<<"Total :"<<cost*(1-discount)+deliveryCharge<<endl;
+  cout<<endl;
   cout<<"Vendor Name :"<<cartProducts[0].stock->vendor->getUsername();
   cout<<"Status:";
   if(status == DISPATCHED)cout<<"DISPATCHED"<<endl;
   if(status == ORDERED)cout<<"ORDERED"<<endl;
-  if(status == PENDING)cout<<"PENDING"<<endl;
+  if(status == DELIVERED)cout<<"DELIVERED"<<endl;
+  if(status == CANCELLED)cout<<"CANCELLED"<<endl;
+  cout<<"Delivery Slot: "<<deliverySlot<<endl;
+
+}
+
+void Order :: displayOrderVender(){
+
+  printSeparator();
+  for(int i=0;i<(int)(cartProducts.size());i++){
+    cartProducts[i].displayOrderProduct();
+  }
+  cout<<"Cost of Package:"<<cost<<endl;
+  cout<<"User Info:"<<endl;
+  customer->displayUserInformation();
+  cout<<endl;
+  cout<<"Status:";
+  if(status == DISPATCHED)cout<<"DISPATCHED"<<endl;
+  if(status == ORDERED)cout<<"ORDERED"<<endl;
   if(status == DELIVERED)cout<<"DELIVERED"<<endl;
   if(status == CANCELLED)cout<<"CANCELLED"<<endl;
   cout<<"Delivery Slot: "<<deliverySlot<<endl;
@@ -220,7 +240,7 @@ void Order :: displayOrderCustomer(){
 }
 
 string Order::getDatabaseString() {
-  string db = to_string(status) + "\n" + expectedDeliveryDate + "\n" + to_string(cost) + "\n" + to_string(discount) + "\n" + to_string(deliveryCharge) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(customer->getUserID()) + "\n" + to_string(cartProducts.size()) + "\n";
+  string db = to_string(status) + "\n" + to_string(cost) + "\n" + to_string(discount) + "\n" + to_string(deliveryCharge) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(customer->getUserID()) + "\n" + to_string(cartProducts.size()) + "\n";
   for(auto cartProduct : cartProducts) {
     db.append(cartProduct.getDatabaseString());
   }
@@ -228,20 +248,19 @@ string Order::getDatabaseString() {
 }
 
 void Order::objectFromDatabase(Order* order, ifstream& fin) {
-  string attrib[9];
-  for (int i = 0; i < 9; i++)
+  string attrib[8];
+  for (int i = 0; i < 8; i++)
   {
     getline(fin, attrib[i]);
   }
   order->status = static_cast<OrderStatus>(stoi(attrib[0]));
-  order->expectedDeliveryDate = attrib[1];
-  order->cost = stod(attrib[2]);
-  order->discount = stod(attrib[3]);
-  order->deliveryCharge = stod(attrib[4]);
-  order->deliverySlot = attrib[5];
-  order->paymentStatus = static_cast<PaymentStatus>(stoi(attrib[6]));
-  order->customer = (Customer*) (Database::users[stoi(attrib[7])]);
-  int cartSize = stoi(attrib[8]);
+  order->cost = stod(attrib[1]);
+  order->discount = stod(attrib[2]);
+  order->deliveryCharge = stod(attrib[3]);
+  order->deliverySlot = attrib[4];
+  order->paymentStatus = static_cast<PaymentStatus>(stoi(attrib[5]));
+  order->customer = (Customer*) (Database::users[stoi(attrib[6])]);
+  int cartSize = stoi(attrib[7]);
   for (int i = 0; i < cartSize; i++)
   {
     string cartAttrib[3];
@@ -278,7 +297,7 @@ User::User(string username, unsigned long password, string account, Address addr
 
 void User :: displayUserInformation(){
   cout<<"Name: "<<username<<endl;
-  cout<<"Address of the Vendor: "<<endl;
+  cout<<"Address : "<<endl;
   address.displayAddress();
 }
 string User::getUsername() {
@@ -482,6 +501,13 @@ string CartProduct::getDatabaseString() {
 void CartProduct :: displayCartProduct(){
     product->displayProduct();
     cout<<"Quantity in Cart :"<<stock->quantity;
+}
+
+void CartProduct :: displayOrderProduct(){
+    cout<<"Product Name: "<<product->getProductName()<<endl;
+    cout<<"No. of Orders: "<<quantity<<endl;
+    cout<<"Product Price: "<<stock->price<<endl;
+    cout<<endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
