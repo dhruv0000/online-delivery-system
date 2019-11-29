@@ -564,7 +564,7 @@ int main(){
             clear();
             mvprintw(1,5,"Your Wallet has %lf rupees.",UserManager :: getWalletBalance());
             // cout<<"Your Wallet has "<<UserManager :: getWalletBalance()<<"rupees"<<endl;
-            string option[]= {"Add Money","Extract Money,Exit"};
+            string option[]= {"Add Money","Extract Money","Exit"};
             operation=displayBox(option,3);
             if(operation == 1){
                 double amt;
