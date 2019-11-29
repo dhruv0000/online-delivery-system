@@ -615,7 +615,7 @@ int main(){
         }else if(vendorWish == '4'){
 
             printSeparator();
-            ((Vendor*)Database :: currentUser)->displayVendorRatings();
+            ((Vendor*)(Database :: currentUser))->displayVendorRatings();
             goto VendorChoices;
         
         }
