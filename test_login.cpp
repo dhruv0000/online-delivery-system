@@ -195,7 +195,7 @@ int displayVendorChoices(){
     in[3]="4:See reviews and ratings";
     in[4]="5:Add money from wallet to Bank Account";
     in[5]="6:Logout";
-    displayBox(in,6);
+    return displayBox(in,6);
 }
 
 void getProductDetails(string &name,string &type,int &quantity,double &price,string &description){
@@ -583,6 +583,7 @@ int main(){
             cout<<"\nYou have entered wrong username or password\n\n";
             goto SignIn; 
         }
+        
         if((Database :: currentUser)->getType() != VENDOR){
             cout<<"\nOops you are not VENDOR\n";
             cout<<"Please select proper category\n"<<endl;
@@ -591,7 +592,7 @@ int main(){
 
         VendorChoices:
 
-        char vendorWish = displayVendorChoices();
+        int vendorWish = displayVendorChoices();
         
         if(vendorWish == 1){
             string name,type,description;
@@ -662,6 +663,7 @@ int main(){
         goto SignIn;
     }
     endwin();
+    
     Database::writeToDatabase();
 
     // Database :: writeToDatabase<User>(Database::vendors,"user.txt");
