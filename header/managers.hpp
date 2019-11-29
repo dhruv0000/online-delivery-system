@@ -283,10 +283,12 @@ public:
     static void showOrder() {
         User* user = (Database::currentUser);
         for(auto itr:user->orders){
-            itr->displayOrderCustomer();
+            printSeparator();
             if(user->type==VENDOR){
-                /*UserName and Address*/
-                
+                itr->displayOrderVender();                
+            }
+            else if(user->type==CUSTOMER){
+                itr->displayOrderCustomer();
             }
         }
 

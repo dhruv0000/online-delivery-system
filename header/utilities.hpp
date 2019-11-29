@@ -117,8 +117,29 @@ void Order :: displayOrderCustomer(){
   for(int i=0;i<(int)(cartProducts.size());i++){
     cartProducts[i].displayCartProduct();
   }
-  cout<<"Cost:"<<cost<<endl;
+  cout<<"Cost: "<<cost<<endl;
+  // cout<<"Discount: "<<cost*discount<<endl;
+  // cout<<"DeliveryCharges: "<<deliveryCharge<<endl;
+  // cout<<"Total :"<<""<<endl;
   cout<<"Vendor Name :"<<cartProducts[0].stock->vendor->getUsername();
+  cout<<"Status:";
+  if(status == DISPATCHED)cout<<"DISPATCHED"<<endl;
+  if(status == ORDERED)cout<<"ORDERED"<<endl;
+  if(status == PENDING)cout<<"PENDING"<<endl;
+  if(status == DELIVERED)cout<<"DELIVERED"<<endl;
+  if(status == CANCELLED)cout<<"CANCELLED"<<endl;
+  cout<<"Delivery Slot: "<<deliverySlot<<endl;
+
+}
+
+void Order :: displayOrderVender(){
+
+  printSeparator();
+  for(int i=0;i<(int)(cartProducts.size());i++){
+    cartProducts[i].displayCartProduct();
+  }
+  cout<<"Cost of Package:"<<cost<<endl;
+  customer->displayUserInformation();
   cout<<"Status:";
   if(status == DISPATCHED)cout<<"DISPATCHED"<<endl;
   if(status == ORDERED)cout<<"ORDERED"<<endl;
@@ -186,7 +207,7 @@ User::User(string username, unsigned long password, string account, Address addr
 
 void User :: displayUserInformation(){
   cout<<"Name: "<<username<<endl;
-  cout<<"Address of the Vendor: "<<endl;
+  cout<<"Address : "<<endl;
   address.displayAddress();
 }
 string User::getUsername() {

@@ -296,9 +296,9 @@ int main(){
 
         }else{
             cout<<"You have entered wrong password"<<endl;
-            goto AdminRun;
+            goto SignIn;
         }
-        goto AdminRun;
+        goto SignIn;
         
     }
     else if(wish == '3'){
@@ -480,6 +480,10 @@ int main(){
                 UserManager :: addMoneyToAccount(amt);
             }
             cout<<"Your Wallet has "<<UserManager :: getWalletBalance()<<"rupees"<<endl;
+            goto CustomerChoices;
+        }
+        else if(customerWish==(int)(topSearch.size())+4){
+            OrderManager::showOrder();
             goto CustomerChoices;
         }
         else if(customerWish == (int)(topSearch.size())+5){

@@ -62,6 +62,7 @@ class Order{
   Order(int id,CartProduct newCartProduct,double cost,string delivrySlot,PaymentStatus paymentStatus, Customer* customer);
   int getOrderID();
   void displayOrderCustomer();
+  void displayOrderVender();
   string getDatabaseString();
   static void objectFromDatabase(Order* order, ifstream& fin);
   OrderStatus getOrderStatus();
