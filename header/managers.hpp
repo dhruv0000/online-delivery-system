@@ -5,7 +5,7 @@ class ProductManager {
     public:
     static bool addProduct(string name, string type, int quantity, double price, string description = "none") {
         // if(Database::currentUser->)
-        Stock* newStock = new Stock(0, (Vendor*) Database::currentUser, quantity, price);
+        Stock* newStock = new Stock(0, (Vendor*) (Database::currentUser), quantity, price);
         bool found = false;
         for(auto product: Database::products) {
             if(compareStringIgnoreCase(name, product->name)) {          
@@ -185,27 +185,25 @@ public:
     
     static void makePayment(Order* order){
         Vendor* vendor = order->cartProducts[0].stock->vendor;
-        double amountToPay = 0;
-        for(auto cartProduct : order->cartProducts) {
-            amountToPay += cartProduct.quantity * cartProduct.stock->price;
-        }
-        double discount = amountToPay*Database::discount;
-        vendor->updateWalletBalance(amountToPay);
+
+        double discount = order->cost*order->discount;
+        vendor->updateWalletBalance(order->cost);
         if(order->paymentStatus == CASH_ON_DELIVERY) {
-            Database::admin->updateWalletBalance(-amountToPay);
+            Database::admin->updateWalletBalance(-order->cost);
             return;
         }
-        (Database :: currentUser)->updateWalletBalance(-(amountToPay - discount) - (Database :: deliveryCharge));
-        (Database :: admin)->updateWalletBalance(Database::deliveryCharge - discount);
+        (Database :: currentUser)->updateWalletBalance(-(order->cost - discount) - (order->deliveryCharge));
+        (Database :: admin)->updateWalletBalance(order->deliveryCharge - discount);
     }
 
-    // static bool confirmDelivery(Order* order) {
-    //     if(order->status != DISPATCHED) return false;
-    //     order->status = DELIVERED;
-    //     if(order->paymentStatus == CASH_ON_DELIVERY) {
-    //         Database::admin->updateWalletBalance(Database::deliveryCharge - )
-    //     }
-    // }
+    static bool confirmDelivery(Order* order) {
+        if(order->status != DISPATCHED) return false;
+        order->status = DELIVERED;
+        if(order->paymentStatus == CASH_ON_DELIVERY) {
+            Database::admin->updateWalletBalance(order->deliveryCharge + order->cost*(1-order->discount));
+        }
+        return true;
+    }
 
     static bool placeOrder(Product* product,Stock* stock,int quantity,string deliverySlot,PaymentStatus paymentStatus){
         double amountToPay = ((stock->price*quantity)*(1-(Database :: discount)) + (Database :: deliveryCharge));
@@ -214,9 +212,8 @@ public:
         stock->quantity = stock->quantity - quantity;
         CartProduct* newCartPoduct = new CartProduct(product,stock,quantity);
         int id = (Database :: orders).size();
-        Order* newOrder = new Order(id,*newCartPoduct,amountToPay,deliverySlot,paymentStatus, (Customer*)(Database::currentUser));
+        Order* newOrder = new Order(id,*newCartPoduct,stock->price*quantity,Database::discount, Database::deliveryCharge,deliverySlot,paymentStatus, (Customer*)(Database::currentUser));
         makePayment(newOrder);
-        cout<<"AfterrMakePaymentFuck"<<endl;
         (Database :: currentUser)->orders.push_back(newOrder);
         (Database :: orders).push_back(newOrder);
         (stock->vendor)->orders.push_back(newOrder);
@@ -228,7 +225,6 @@ public:
         CartProduct* newCartProduct = new CartProduct(product,stock,quantity);
         ((Customer*)(Database :: currentUser))->addCartProduct(*newCartProduct);
         
-
     }
 
     static void removeFromCart(int index){
@@ -237,6 +233,11 @@ public:
     static void showCart(){
         ((Customer*)(Database::currentUser))->displayCart();
     }
+    
+    static CartProduct* getCartProduct(int choice){
+        return &(((Customer*)(Database :: currentUser))->cart.cartProducts[choice]);
+    }
+
     static bool checkCartOrderValidity() {
         double amountToPay = 0;
         unordered_map<int, bool> vendorPresent;
@@ -261,7 +262,7 @@ public:
             cartProduct.stock->quantity -= cartProduct.quantity;
             int vendorID = cartProduct.stock->getVendorID();
             if(orders.find(vendorID) == orders.end()) {
-                orders[vendorID] = new Order(0, cartProduct, cartProduct.quantity*cartProduct.stock->price, deliverySlot, paymentStatus, (Customer*)(Database::currentUser));
+                orders[vendorID] = new Order(0, cartProduct, cartProduct.quantity*cartProduct.stock->price, Database::discount, Database::deliveryCharge, deliverySlot, paymentStatus, (Customer*)(Database::currentUser));
             }
             else {
                 orders[vendorID]->cartProducts.push_back(cartProduct);
@@ -269,8 +270,6 @@ public:
             }
         }
         for(auto order = orders.begin(); order!=orders.end(); order++) {
-            order->second->cost -= Database::discount*order->second->cost;
-            order->second->cost += Database::deliveryCharge;
             order->second->orderID = Database::orders.size();
             makePayment(order->second);
             customer->orders.push_back(order->second);
@@ -295,22 +294,28 @@ public:
     }
 
     
-    // static bool cancelOrder(Order* order) {
-    //     if(order->status == DELIVERED || order->status == CANCELLED) return false;
-    //     if(order->paymentStatus == CASH_ON_DELIVERY) {
-    //         order->cartProducts
-    //     }
-    //     if(order->paymentStatus == WALLET && (order->status == PENDING || order->status == ORDERED)) {
-    //         Database::admin->wallet.updateBalance(-Database::deliveryCharge);
-    //         ((Customer*)(Database::currentUser))->wallet.updateBalance(Database::deliveryCharge);
-    //     }
+    static bool cancelOrder(Order* order) {
+        if(order->status == DELIVERED || order->status == CANCELLED) return false;
+        if(order->paymentStatus == CASH_ON_DELIVERY) {
+            order->cartProducts[0].stock->vendor->updateWalletBalance(-order->cost);
+            Database::admin->updateWalletBalance(order->cost);
+            return true;
+        }
+        if(order->status == PENDING || order->status == ORDERED) {
+            Database::admin->wallet.updateBalance(-order->deliveryCharge+order->discount*order->cost);
+            (Database::currentUser)->wallet.updateBalance(order->cost*(1-order->discount) + order->deliveryCharge);
+            order->cartProducts[0].stock->vendor->updateWalletBalance(-order->cost);
+            return true;
+        }
+        order->cartProducts[0].stock->vendor->updateWalletBalance(-order->cost);
+        Database::admin->wallet.updateBalance(order->discount*order->cost);
+        (Database::currentUser)->wallet.updateBalance(order->cost*(1-order->discount));
 
-    //     for(auto cartProduct : order->cartProducts) {
-            
-    //     }
-    //     order->status = CANCELLED;
-    // }
+        order->status = CANCELLED;
+        return true;
+    }
 
+    
     // static void viewCustomerOrder(){
     //     for(int i=0;i<(int)((Database :: currentUser)->orders.size());i++){
     //         printSeparator();

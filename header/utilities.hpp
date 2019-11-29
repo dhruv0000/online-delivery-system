@@ -97,10 +97,12 @@ Order::Order(int id) {
   paymentStatus=CASH_ON_DELIVERY;
 }
 
-Order ::Order(int id,CartProduct newCartProduct,double cost,string deliverySlot,PaymentStatus paymentStatus, Customer* customer){
+Order ::Order(int id,CartProduct newCartProduct,double cost,double discount, double deliveryCharge, string deliverySlot,PaymentStatus paymentStatus, Customer* customer){
   this->orderID = id;
   this->status = ORDERED;
   this->cost = cost;
+  this->discount = discount;
+  this->deliveryCharge = deliveryCharge;
   this->deliverySlot = deliverySlot;
   this->paymentStatus = paymentStatus;
   (this->cartProducts).push_back(newCartProduct);
@@ -151,7 +153,7 @@ void Order :: displayOrderVender(){
 }
 
 string Order::getDatabaseString() {
-  string db = to_string(status) + "\n" + expectedDeliveryDate + "\n" + to_string(cost) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(customer->getUserID()) + "\n" + to_string(cartProducts.size()) + "\n";
+  string db = to_string(status) + "\n" + expectedDeliveryDate + "\n" + to_string(cost) + "\n" + to_string(discount) + "\n" + to_string(deliveryCharge) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(customer->getUserID()) + "\n" + to_string(cartProducts.size()) + "\n";
   for(auto cartProduct : cartProducts) {
     db.append(cartProduct.getDatabaseString());
   }
@@ -159,18 +161,20 @@ string Order::getDatabaseString() {
 }
 
 void Order::objectFromDatabase(Order* order, ifstream& fin) {
-  string attrib[7];
-  for (int i = 0; i < 7; i++)
+  string attrib[9];
+  for (int i = 0; i < 9; i++)
   {
     getline(fin, attrib[i]);
   }
   order->status = static_cast<OrderStatus>(stoi(attrib[0]));
   order->expectedDeliveryDate = attrib[1];
   order->cost = stod(attrib[2]);
-  order->deliverySlot = attrib[3];
-  order->paymentStatus = static_cast<PaymentStatus>(stoi(attrib[4]));
-  order->customer = (Customer*) Database::users[stoi(attrib[5])];
-  int cartSize = stoi(attrib[6]);
+  order->discount = stod(attrib[3]);
+  order->deliveryCharge = stod(attrib[4]);
+  order->deliverySlot = attrib[5];
+  order->paymentStatus = static_cast<PaymentStatus>(stoi(attrib[6]));
+  order->customer = (Customer*) (Database::users[stoi(attrib[7])]);
+  int cartSize = stoi(attrib[8]);
   for (int i = 0; i < cartSize; i++)
   {
     string cartAttrib[3];
