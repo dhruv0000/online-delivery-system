@@ -1,4 +1,9 @@
 # online-delivery-system
+![System Requirement](https://img.shields.io/badge/g%2B%2B-7.4.0-orange)
+![System Requirement](https://img.shields.io/badge/ubuntu-18.04.1-green)
+![System Requirement](https://img.shields.io/badge/lib-ncurses-blue)
+![System Requirement](https://img.shields.io/badge/language-c%2B%2B-yellow)
+
 A _nCursers_ based CLI software to order, track and manage delivery of goods.
 
 ### Concepts and Tools Learnt
