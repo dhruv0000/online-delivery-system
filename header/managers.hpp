@@ -204,20 +204,16 @@ public:
     }
 
     static bool placeOrder(Product* product,Stock* stock,int quantity,string deliverySlot,PaymentStatus paymentStatus){
-        //  cout<<"Fuck"<<endl;
         double amountToPay = ((stock->price*quantity)*(1-(Database :: discount)) + (Database :: deliveryCharge));
-        //  cout<<"Fuck"<<endl;
         if(quantity > stock->quantity || amountToPay > Database::currentUser->wallet.getBalance()) return false;
                
         stock->quantity = stock->quantity - quantity;
-//  cout<<"Fuck"<<endl;
         // makePayment(stock,quantity,paymentStatus);
         CartProduct* newCartPoduct = new CartProduct(product,stock,quantity);
         int id = (Database :: orders).size();
         Order* newOrder = new Order(id,*newCartPoduct,amountToPay,deliverySlot,paymentStatus);
         // cout<<"Fuck"<<endl;
         makePayment(newOrder);
-        cout<<"AfterrMakePaymentFuck"<<endl;
         (Database :: currentUser)->orders.push_back(newOrder);
         (Database :: orders).push_back(newOrder);
         (stock->vendor)->orders.push_back(newOrder);
@@ -229,7 +225,6 @@ public:
         CartProduct* newCartProduct = new CartProduct(product,stock,quantity);
         ((Customer*)(Database :: currentUser))->addCartProduct(*newCartProduct);
         
-
     }
 
     static void removeFromCart(int index){
@@ -238,6 +233,11 @@ public:
     static void showCart(){
         ((Customer*)(Database::currentUser))->displayCart();
     }
+    
+    static CartProduct* getCartProduct(int choice){
+        return &(((Customer*)(Database :: currentUser))->cart.cartProducts[choice]);
+    }
+
     static bool checkCartOrderValidity() {
         double amountToPay = 0;
         unordered_map<int, bool> vendorPresent;
@@ -285,7 +285,7 @@ public:
     static bool cancelOrder(Order* order) {
         if(order->status == DELIVERED || order->status == CANCELLED) return false;
         if(order->paymentStatus == CASH_ON_DELIVERY) {
-            order->cartProducts
+            order->cartProducts;
         }
         if(order->paymentStatus == WALLET && (order->status == PENDING || order->status == ORDERED)) {
             Database::admin->wallet.updateBalance(-Database::deliveryCharge);
@@ -297,7 +297,6 @@ public:
         }
         order->status = CANCELLED;
     }
-
     // static void viewCustomerOrder(){
     //     for(int i=0;i<(int)((Database :: currentUser)->orders.size());i++){
     //         printSeparator();

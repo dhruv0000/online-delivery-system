@@ -2,6 +2,42 @@
 // #include <conio.h>
 
 using namespace std;
+// void blueStart(){
+//     cout<<"\033[1;36m";
+// }
+// void redStart(){
+//     cout<<"\033[1;31m";
+// }
+// void greenStart(){
+//     cout<<"\033[1;32m";
+// }
+// void yellowStart(){
+//     cout<<"\033[1;33m";
+// }
+// void cyanStart(){
+//     cout<<"\033[1;36m";
+// }
+
+// void blueBackStart(){
+//     cout<<"\033[1;44m";
+// }
+// void redBackStart(){
+//     cout<<"\033[1;41m";
+// }
+// void greenbackStart(){
+//     cout<<"\033[1;42m";
+// }
+// void yellowBackStart(){
+//     cout<<"\033[1;43m";
+// }
+// void cyanBackStart(){
+//     cout<<"\033[1;46m";
+// }
+
+// void end(){
+//     cout<<"\033[0m";
+// }
+
 
 void printFlow(){
   cout<<"Enter the number corresponding to funtion you wish to perform"<<endl;
@@ -23,12 +59,14 @@ void getPassword(string *password) {
 
 void printLoginChoice(){
     printFlow();
+    // cyanStart();
     cout<<"1 : New User"<<endl;
     cout<<"2 : Login as Admin"<<endl;
     cout<<"3 : Login as Customer"<<endl;
     cout<<"4 : Login as Vendor"<<endl;
     cout<<"5 : Exit Store"<<endl;
-}
+    // end();
+    }
 void printUserChoice(){
     printFlow();
     cout<<"1: Register as Customer"<<endl;
@@ -125,17 +163,19 @@ void showTopSearch(vector<Product*> v){
     printFlow();
     for(int i=0;i<v.size();i++){
         printSeparator();
-        cout<<"Product "<<i+1<<":"<<endl;
+        cout<<"\033[1;36mBuy Product "<<i+1<<":\033[0m"<<endl;
         v[i]->displayProduct();
     }
 }
 
 void showFuntionality(int i){
+    // blueStart();
     cout<<i+1<<":Search products"<<endl;
     cout<<i+2<<":Show cart"<<endl;
     cout<<i+3<<":Show wallet balance"<<endl;
-    cout<<i+4<<"Show ordered products"<<endl;
+    cout<<i+4<<":Show ordered products"<<endl;
     cout<<i+5<<":Logout"<<endl;
+    // end();
 }
 
 void displaySearchProduct(vector<Product*> searchedProduct){
@@ -211,22 +251,25 @@ void getOrderInformation(string &slot,PaymentStatus &status){
     cout<<"2:Wallet Money"<<endl;
     // status=WALLET;
     int t;
-    cout<<"Fuck final"<<endl;
     cin>>t;
-    cout<<"dfgg"<<endl;
-    if(t==1){
+    if(t==1)
         status = CASH_ON_DELIVERY;
-    cout<<"Fuck0"<<endl;}
-    else {
+    else 
         status = WALLET;
-    cout<<"Fuck1"<<endl;    } 
-    cout<<"Fuck2"<<endl;
+}
+
+void cartChoices(){
+    printSeparator();
+    // blueStart();
+    cout<<"1:Order the cart items"<<endl;
+    cout<<"2:Remove from cart"<<endl;
+    // end();
 }
 
 int main(){
     Database :: readFromDatabase();
     char wish;
-    cout<<"Welcome to our Online Store"<<endl;
+    cout<<"\033[1;44mWelcome to our Online Store\033[0m"<<endl;
     
     SignIn: 
     printLoginChoice();
@@ -324,10 +367,9 @@ int main(){
         displayUsername();
         vector<Product*> topSearch = ProductManager :: getTopProducts(3);
         
-
+        int customerWish;
         CustomerChoices:
 
-        int customerWish;
         showTopSearch(topSearch);
         showFuntionality(topSearch.size());
         cin>>customerWish;
@@ -367,9 +409,7 @@ int main(){
                 cin>>quantity;    
                 string deliverySlot;
                 PaymentStatus paymentStatus;
-                cout<<"Fuck0";
                 getOrderInformation(deliverySlot,paymentStatus);
-                cout<<"Fuck"<<endl;
                 OrderManager :: placeOrder(topSearch[customerWish],stock,quantity,deliverySlot,paymentStatus);
                 goto CustomerChoices;
 
@@ -405,7 +445,6 @@ int main(){
                 cin>>vendorSelection;
                 vendorSelection--;
                 Stock* stock = ProductManager :: getStockPointer(searchProduct[productWish],vendorSelection);
-                cout<<"Manan"<<endl;
                 cout<<stock->price<<endl;
                 ProductAcceptance:
 
@@ -457,8 +496,37 @@ int main(){
 
         }else if((customerWish == (topSearch.size()+2))){
             //For Cart Department
-            OrderManager :: showCart();
+            CartChoices:
 
+            cout<<"\033[1;33mYour Cart Products are shown below :\033[0m"<<endl;
+            OrderManager :: showCart();
+            cartChoices();
+            int cartChoice;
+            cin>>cartChoice;
+            
+            if(cartChoice == 1){
+                string deliverySlot;
+                PaymentStatus paymentStatus;
+                getOrderInformation(deliverySlot,paymentStatus);
+                OrderManager :: placeOrderFromCart(deliverySlot,paymentStatus);
+
+            }else if(cartChoice == 2){
+                cout<<"Enter the cart product you wish to remove:";
+                int cartChoice;
+                cin>>cartChoice;
+                CartProduct *cartProduct = OrderManager :: getCartProduct(cartChoice);
+                cout<<"Your Product has been removed"<<endl;
+
+
+            }else{
+                // redStart();
+                cout<<"You have entered wrong choice"<<endl;
+                // end();
+                goto CartChoices;
+            }
+
+
+            goto CustomerChoices;
 
         }else if(customerWish == (topSearch.size()+3)){
             char operation;
@@ -482,14 +550,17 @@ int main(){
             cout<<"Your Wallet has "<<UserManager :: getWalletBalance()<<"rupees"<<endl;
             goto CustomerChoices;
         }
+        else if(customerWish == (topSearch.size()+4)){
+            
+        }
         else if(customerWish == (int)(topSearch.size())+5){
             UserManager :: logoutUser();
             goto SignIn;
         }
         else{
+            cout<<"\033[1;31mYou have entered wrong choice\033[0m"<<endl;
             goto CustomerChoices;
         }
-
        
 
     }
