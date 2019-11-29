@@ -1,17 +1,21 @@
+<<<<<<< HEAD
+0
+=======
 2
-gkmgk
-dkdm
-dkdm
+fojofd
+fff
+fff
 0
 1
 1
-32
-34.000000
-ltmrlm
-efwmfkn
-efwmfkn
+230
+22.000000
+fl
+efbfb
+efbfb
 0
 1
 1
-323
-33.000000
+344
+23.000000
+>>>>>>> 7961ab19de8bfb1f2c2e5e56dd0e1a43b17eb5e8
