@@ -33,13 +33,13 @@ int printLoginChoice(){
 }
 
 int printUserChoice(){
-    string s[] = {"1:Register as Customer","2: Register as Vendor","3: Go to start menu"};
+    string s[] = {"1: Register as Customer","2: Register as Vendor","3: Go to start menu"};
     return displayBox(s,3);
 }
 
 
-void getDetails(string username,string password,unsigned long long& hashPassword,string rePassword,
-    string accountNumber,Address& address,Type& type,int wish){
+void getDetails(string &username,string &password,unsigned long long& hashPassword,string &rePassword,
+    string &accountNumber,Address &address,Type& type,int wish){
     
         clear();
         char t[100]; 
@@ -96,7 +96,7 @@ void getDetails(string username,string password,unsigned long long& hashPassword
 
         address.storeAddress();
         hashPassword = Password :: hashValue(password);
-        if(wish == '1'){
+        if(wish == 1){
             type = CUSTOMER;
         }else{
              type = VENDOR;
@@ -150,9 +150,10 @@ void getUserDetails(string &username,string &password,unsigned long long &value)
 }
 
 void showTopSearch(vector<Product*> v){
+    clear();
     move(5,5);
     for(int i=0;i<v.size();i++){
-        printw("Buy Product: %d\n",i);
+        printw("Product: %d\n",i);
         v[i]->displayProduct();
     }
 
@@ -163,25 +164,27 @@ int showFuntionality(int n){
     for(int i=0;i<n;i++){
         str[i] = "Product "+to_string(i+1);
     }
-    str[n+1] = ":Search products";
-    str[n+2] = ":Show cart";
-    str[n+3] = ":Show wallet balance";
-    str[n+4] = ":Show ordered products";
-    str[n+5] = ":Logout";
+    str[n] = to_string(n+1)+":Search products";
+    str[n+1] = to_string(n+2)+":Show cart";
+    str[n+2] = to_string(n+3)+":Show wallet balance";
+    str[n+3] = to_string(n+4)+":Show ordered products";
+    str[n+4] = to_string(n+5)+":Logout";
     return displayBox(str,n+5);
 
 }
 
 void displaySearchProduct(vector<Product*> searchedProduct){
-    printSeparator();
-    cout<<"Enter the number of the product which you are liking"<<endl;
+    
+    clear();
+    mvprintw(5,5,"Select the product of your choice");
+    
     int i=1;
     for(auto presentProduct : searchedProduct){
-        cout<<i<<endl;
-        presentProduct->displayProduct();
-        printSeparator();
+        printw("Product: %d\n",i);
+        searchedProduct[i]->displayProduct();
         i++;
     }
+
 }
 
 int displayVendorChoices(){
@@ -196,30 +199,49 @@ int displayVendorChoices(){
 }
 
 void getProductDetails(string &name,string &type,int &quantity,double &price,string &description){
-    cout<<"\nEnter the followig details"<<endl;
-    cout<<"Name your product name:";
-    getchar();
-    getline(cin,name);
-    cout<<"Enter your product type:";
-    getline(cin,type);
-    cout<<"Enter quantity(must be an integer value):";
-    cin>>quantity;
-    cout<<"Enter price(must be decimal value):";
-    cin>>price;
-    cout<<"Would you liketo add description of your product?Y/N";
+
+    char temp[100];
+
+    clear();
+    char in[]="Name your product name:";
+    displayWindow(in,temp);
+    name = string(temp);
+
+    clear();
+    char in1[]="Enter your product type:";
+    displayWindow(in1,temp);
+    type = string(temp);
+
+    clear();
+    char in2[]="Enter quantity(must be an integer value):";
+    displayWindow(in2,temp);
+    quantity = stod(temp);
+
+    clear();
+    char in3[]="Enter price(must be decimal value):";
+    displayWindow(in3,temp);
+    price = stod(temp);
+
     char check;
-    cin>>check;
-    if(check == 'Y'){
-        cout<<"Enter description in one line :";
-        getline(cin,description);
+    clear();
+    char in4[]="Would you liketo add description of your product?Y/N";
+    displayWindow(in4,temp);
+    check = (temp[0]);
+
+    
+    if(check == 'Y' || check == 'y'){
+        clear();
+        char in7[]="Enter your product one line description :";
+        displayWindow(in7,temp);
+        description = string(temp);
     }
 
 }
 
-void displayProductAcceptance(){
+int displayProductAcceptance(){
     
     string a[]={"1:Add to Cart","2:Buy Product","3:Go to Customer Choices"};
-    displayBox(a,3);
+    return displayBox(a,3);
 }
 
 void getOrderInformation(string &slot,PaymentStatus &status){
@@ -241,7 +263,6 @@ void getOrderInformation(string &slot,PaymentStatus &status){
     cout<<"Enter the payment mode"<<endl;
     cout<<"1:Cash On Delivery"<<endl;
     cout<<"2:Wallet Money"<<endl;
-    // status=WALLET;
     int t;
     cin>>t;
     if(t==1)
@@ -258,12 +279,8 @@ void cartChoices(){
     // end();
 }
 
-void greenColor(){
-attron(COLOR_PAIR(1));
-}
-void endGreenColor(){
-attroff(COLOR_PAIR(1));
-}
+
+
 int main(){
     Database :: readFromDatabase();
     
@@ -572,46 +589,43 @@ int main(){
         }
 
         VendorChoices:
+
+        char vendorWish = displayVendorChoices();
         
-        // displayUsername();
-        char vendorWish;
-        displayVendorChoices();
-        cin>>vendorWish;
-        
-        if(vendorWish == '1'){
+        if(vendorWish == 1){
             string name,type,description;
             int quantity;
             double price;
 
             getProductDetails(name,type,quantity,price,description);
 
-            if(!(ProductManager :: addProduct(name,type,quantity,price,type))){
-                cout<<"Sorry something went wrong"<<endl;
-                cout<<"Try after Sometime to add product"<<endl;
-                goto VendorChoices;
-            }
-            cout<<"Your product have been added succesfully (:"<<endl;
+            // if(!(ProductManager :: addProduct(name,type,quantity,price,type))){
+            //     cout<<"Sorry something went wrong"<<endl;
+            //     cout<<"Try after Sometime to add product"<<endl;
+            //     goto VendorChoices;
+            // }
+            clear();
+            mvprintw(5,5,"Your product have been added succesfully (:");
             goto VendorChoices;
 
-        }else if (vendorWish == '2'){
+        }else if (vendorWish == 2){
 
-
+    
 
         }
-        else if(vendorWish == '3'){
-            
-            printSeparator();
-            cout<<"Your wallet has "<<UserManager :: getWalletBalance()<<endl;
+        else if(vendorWish == 3){
+            clear();
+            mvprintw(5,5,"Your wallet has %d", UserManager :: getWalletBalance());
             goto VendorChoices;
 
-        }else if(vendorWish == '4'){
+        }else if(vendorWish == 4){
 
-            printSeparator();
+            clear();
             ((Vendor*)(Database :: currentUser))->displayVendorRatings();
             goto VendorChoices;
         
         }
-        else if(vendorWish == '5'){
+        else if(vendorWish == 5){
            
             printSeparator();
             cout<<"Your wallet has "<<UserManager :: getWalletBalance()<<endl;
@@ -632,7 +646,7 @@ int main(){
             goto VendorChoices;
 
         }
-        else if(vendorWish == '6')
+        else if(vendorWish == 6)
             goto SignIn;
         else{
             printSeparator();

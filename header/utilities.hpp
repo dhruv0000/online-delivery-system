@@ -222,7 +222,7 @@ void Order :: displayOrderCustomer(){
 
 void Order :: displayOrderVender(){
 
-  printSeparator();
+
   for(int i=0;i<(int)(cartProducts.size());i++){
     cartProducts[i].displayOrderProduct();
   }
@@ -366,11 +366,14 @@ Vendor::Vendor(string username,unsigned long long password,string accountNumber,
 }
 
 void Vendor:: displayVendorRatings() {
-  cout<<"Rating :"<<rating<<endl;
-  cout<<"Number of ratings :"<<numberOfRatings<<endl;
+  
+  mvprintw(5,5,"Rating :%d\n",rating);
+  printw("Number of ratings %d\n:",reviews);
+
   for(int i=0;i< min(3,(int)reviews.size());i++){
-    cout<<"Review " <<i<< ":" <<reviews[i] <<endl;
+    printw("Review %d : %s\n",i,reviews[i]);
   }
+
 
 }
 
