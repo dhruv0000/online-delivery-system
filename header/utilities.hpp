@@ -101,6 +101,23 @@ int Order::getOrderID() {
   return orderID;
 }
 
+void Order :: displayOrder(){
+
+  printSeparator();
+  for(int i=0;i<(int)(cartProducts.size());i++){
+    cartProducts[i].displayCartProduct();
+  }
+  cout<<"Cost:"<<cost<<endl;
+  cout<<"Status:";
+  if(status == DISPATCHED)cout<<"DISPATCHED"<<endl;
+  if(status == ORDERED)cout<<"ORDERED"<<endl;
+  if(status == PENDING)cout<<"PENDING"<<endl;
+  if(status == DELIVERED)cout<<"DELIVERED"<<endl;
+  if(status == CANCELLED)cout<<"CANCELLED"<<endl;
+  cout<<"Delivery Slot"<<deliverySlot<<endl;
+
+}
+
 string Order::getDatabaseString() {
   string db = to_string(status) + "\n" + expectedDeliveryDate + "\n" + to_string(cost) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(cartProducts.size()) + "\n";
   for(auto cartProduct : cartProducts) {
