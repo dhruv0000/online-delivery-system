@@ -87,6 +87,7 @@ public:
   unsigned long long getPassword();
   string getUsername();
   int getType();
+  double getWalletBalance();
   void updateWalletBalance(double);
   string getUserString();
   static void userFromDatabase(User* user, ifstream& fin);
@@ -112,6 +113,7 @@ public:
   string getDatabaseString();
   static void objectFromDatabase(Vendor* vendor, ifstream& fin);
   friend class OrderManager;
+  friend class UserManager;
 };
 
 class Stock{
@@ -121,6 +123,7 @@ class Stock{
     Vendor* vendor;
     int quantity;
     double price;
+    bool advertised;
     Stock(int id, Vendor* vendor, int quantity, double price);
     int getVendorID();
     string getDatabaseString();
@@ -145,6 +148,7 @@ class Product{
     int getProductID();
     Stock* getStock(int id);
     friend class ProductManager;
+    friend class OrderManager;
 };
 
 class CartProduct{
@@ -174,6 +178,7 @@ class Cart{
 
 class Customer : public User{
   Cart cart;
+  bool primeMember;
 public:
   Customer(int id);
   Customer(string username,unsigned long long password,string accountNumber,Address address);
@@ -183,16 +188,22 @@ public:
   string getDatabaseString();
   static void objectFromDatabase(Customer* customer, ifstream& fin);
   friend class OrderManager;
+  friend class UserManager;
+  friend class ProductManager;
 };
 
 namespace Database {
     vector<Order*> orders;
     vector<Product*> products;
     vector<User*> users;
+    queue< pair<Product*, Stock*> > advertisedProducts;
     User* currentUser;
     User* admin;
     double discount;
     double deliveryCharge;
+    double advertisingCost;
+    double primeMembershipCost;
+    double primeDiscount;
 
     template<typename T>
     int getType(T* record) {
@@ -225,7 +236,6 @@ namespace Database {
     } 
     template<>
     User* newRecord<User>(int type, int id) {
-      // cout<<"GGG"<<endl;
       User* user;
       if(type == CUSTOMER) user = new Customer(id);
       else user = new Vendor(id);
@@ -247,14 +257,11 @@ namespace Database {
       if(typeid(T) == typeid(User)) {
         
         fin>>userTypes;
-        // cout<<userTypes<<endl;
       }
-      // cout<<size<<endl;
       for (int i = 0; i < size; i++)
       {
         T* record;
         if(typeid(T) == typeid(User)) {
-          // cout<<userTypes[i]-'0'<<endl;
           record = newRecord<T>(userTypes[i]-'0', i);
         
         } else {
@@ -274,14 +281,11 @@ namespace Database {
         
         Customer::objectFromDatabase((Customer*)user, fin);
       } else {
-        // cout<<"done"<<endl;
         Vendor::objectFromDatabase((Vendor*)user, fin);
       }
-      // cout<<"done"<<endl;
     }
     template<typename T>
     void readEntityFromDatabase(vector<T*>& data, string fname) {
-      // cout<<data.size()<<endl;
       ifstream fin;
       fin.open(fname);
       if(fin.fail()) return;
@@ -291,25 +295,17 @@ namespace Database {
       }
       string sizeStr;
       getline(fin, sizeStr);
-      // cout<<sizeStr.length()<<endl;
       int size = stoi(sizeStr);
-      // cout<<size<<endl;
-      // fin>>size;
       if(typeid(T) == typeid(User)) {
         string typeString;
         getline(fin, typeString);
-        // cout<<typeString<<endl;
       }
-      // int i = 0;
       for(auto record : data) {
         if(typeid(T) == typeid(User)) {
-          // cout<<"done"<<endl;
           getObjectFromFile<T>(record, fin);
           
         } else {
-        // cout<<<<endl;
           T::objectFromDatabase(record, fin);
-          // cout<<"Fff"<<endl;
         }
       }
       fin.close();
@@ -319,6 +315,9 @@ namespace Database {
       fout.open("charges.db");
       fout<<Database::discount<<endl;
       fout<<Database::deliveryCharge<<endl;
+      fout<<Database::advertisingCost<<endl;
+      fout<<Database::primeMembershipCost<<endl;
+      fout<<Database::primeDiscount<<endl;
       fout.close();
 
       writeEntityToDatabase<Product>(Database::products, "products.db");
@@ -330,14 +329,15 @@ namespace Database {
       Database::admin = new User("admin", Password::hashValue("admin"), "AdminAccount", Address("Hostel G6", "IIT Jodhpur", "Jodhpur", "Rajasthan"), ADMIN);
       Database::discount = 0.05;
       Database::deliveryCharge = 20;
+      Database::advertisingCost = 50;
+      Database::primeMembershipCost = 100;
+      Database::primeDiscount = 0.1;
+      Database::currentUser = NULL;
       ifstream fin;
       fin.open("charges.db");
       if(!fin.fail()) {
         if(fin.peek() != ifstream::traits_type::eof()) {
-          double disc, del;
-          fin>>disc>>del;
-          Database::discount = disc;
-          Database::deliveryCharge = del;
+          fin>>discount>>deliveryCharge>>advertisingCost>>primeMembershipCost>>primeDiscount;
         }
         fin.close();
       }
