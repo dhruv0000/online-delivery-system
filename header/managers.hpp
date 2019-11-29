@@ -246,6 +246,7 @@ public:
     static bool confirmDelivery(Order* order) {
         if(order->status != DISPATCHED) return false;
         order->status = DELIVERED;
+
         if(order->paymentStatus == CASH_ON_DELIVERY) {
             Database::admin->updateWalletBalance(order->deliveryCharge + order->cost*(1-order->discount));
         }
@@ -253,14 +254,16 @@ public:
     }
 
     static bool placeOrder(Product* product,Stock* stock,int quantity,string deliverySlot,PaymentStatus paymentStatus){
-        double amountToPay = ((stock->price*quantity)*(1-(Database :: discount)) + (Database :: deliveryCharge));
+        double discount = Database::discount;
+        if(((Customer*)(Database::currentUser))->primeMember) discount += Database::primeDiscount;
+        double amountToPay = ((stock->price*quantity)*(1-(discount)) + (Database :: deliveryCharge));
         if(quantity > stock->quantity || amountToPay > Database::currentUser->wallet.getBalance()) return false;
                
         stock->quantity = stock->quantity - quantity;
         product->quantitySold += stock->quantity;
         CartProduct* newCartPoduct = new CartProduct(product,stock,quantity);
         int id = (Database :: orders).size();
-        Order* newOrder = new Order(id,*newCartPoduct,stock->price*quantity,Database::discount, Database::deliveryCharge,deliverySlot,paymentStatus, (Customer*)(Database::currentUser));
+        Order* newOrder = new Order(id,*newCartPoduct,stock->price*quantity,discount, Database::deliveryCharge,deliverySlot,paymentStatus, (Customer*)(Database::currentUser));
         makePayment(newOrder);
         (Database :: currentUser)->orders.push_back(newOrder);
         (Database :: orders).push_back(newOrder);
@@ -287,6 +290,8 @@ public:
     }
 
     static bool checkCartOrderValidity() {
+        double discount = Database::discount;
+        if(((Customer*)(Database::currentUser))->primeMember) discount += Database::primeDiscount;
         double amountToPay = 0;
         unordered_map<int, bool> vendorPresent;
         int totalVendors = 0;
@@ -298,7 +303,7 @@ public:
                 vendorPresent[cartProduct.stock->getVendorID()] = true;
             }
         }
-        amountToPay = amountToPay - amountToPay*Database::discount + totalVendors*Database::deliveryCharge;
+        amountToPay = amountToPay - amountToPay*discount + totalVendors*Database::deliveryCharge;
         if(Database::currentUser->wallet.getBalance() < amountToPay) return false;
         return true;
     }
@@ -306,12 +311,14 @@ public:
         if(!checkCartOrderValidity()) return false;
         unordered_map<int, Order*> orders;
         Customer* customer = (Customer*) (Database::currentUser);
+        double discount = Database::discount;
+        if(((Customer*)(Database::currentUser))->primeMember) discount += Database::primeDiscount;
         for(auto cartProduct : customer->cart.cartProducts) {
             cartProduct.stock->quantity -= cartProduct.quantity;
             cartProduct.product->quantitySold += cartProduct.quantity;
             int vendorID = cartProduct.stock->getVendorID();
             if(orders.find(vendorID) == orders.end()) {
-                orders[vendorID] = new Order(0, cartProduct, cartProduct.quantity*cartProduct.stock->price, Database::discount, Database::deliveryCharge, deliverySlot, paymentStatus, (Customer*)(Database::currentUser));
+                orders[vendorID] = new Order(0, cartProduct, cartProduct.quantity*cartProduct.stock->price, discount, Database::deliveryCharge, deliverySlot, paymentStatus, (Customer*)(Database::currentUser));
             }
             else {
                 orders[vendorID]->cartProducts.push_back(cartProduct);
@@ -363,6 +370,7 @@ public:
             cartProduct.product->quantitySold -= cartProduct.quantity;
             cartProduct.stock->quantity += cartProduct.quantity;
         }
+        
 
         if(order->paymentStatus == CASH_ON_DELIVERY) {
             order->cartProducts[0].stock->vendor->updateWalletBalance(-order->cost);
