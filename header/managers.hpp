@@ -1,6 +1,9 @@
 
 #include "utilities.hpp"
 
+void printSeparator(){
+
+}
 class ProductManager {
     public:
     static void advertiseProduct(Product* product, Stock* stock) {
