@@ -18,7 +18,7 @@ int displayBox(string choices[],int n){
     
     // init_pair(1,COLOR_RED,COLOR_BLACK);
     
-    WINDOW* menu = newwin(9,xMax-12,yMax-11,5);
+    WINDOW* menu = newwin(9,xMax-12,yMax-13,5);
     box(menu,0,0);
     refresh();
     wrefresh(menu);

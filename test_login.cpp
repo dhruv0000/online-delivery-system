@@ -440,7 +440,6 @@ int main(){
 
                 Stock* stock = ProductManager :: getStockPointer(topSearch[vendorSelection],vendorSelection);
                 // cout<<stock->price<<endl;
-                ProductAcceptance:
 
                 int productAcceptance = displayProductAcceptance();
                 
@@ -523,7 +522,6 @@ int main(){
 
                 Stock* stock = ProductManager :: getStockPointer(searchProduct[productWish],vendorSelection);
                 // cout<<stock->price<<endl;
-                ProductAcceptance:
 
                 int productAcceptance = displayProductAcceptance();
                 
