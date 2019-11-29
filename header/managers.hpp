@@ -3,7 +3,32 @@
 
 class ProductManager {
     public:
-    static bool addProduct(string name, string type, int quantity, double price, string description = "none") {
+    static void advertiseProduct(Product* product, Stock* stock) {
+        if(stock->vendor->getWalletBalance() < Database::advertisingCost) return;
+        stock->vendor->updateWalletBalance(-(Database::advertisingCost));
+        Database::admin->updateWalletBalance(Database::advertisingCost);
+        stock->advertised = true;
+        Database::advertisedProducts.push(make_pair(product, stock));
+    }
+
+    static string getAdvertisedProduct(int count = 1) {
+        if(Database::currentUser->type == VENDOR) return "";
+        if(((Customer*)(Database::currentUser))->primeMember) {
+            return "You are a prime member! Enjoy " + to_string(Database::primeDiscount*100) + "% EXTRA DISCOUNT on every item!\n";
+        }
+        string advertisement = "Flat " + to_string(int(Database::discount*100)) + "% off on every item!!\n";
+        for(int i = 0; i < min((int)(Database::advertisedProducts.size()), count); i++) {
+            Product* product = Database::advertisedProducts.front().first;
+            Stock* stock = Database::advertisedProducts.front().second;
+            Database::advertisedProducts.pop();
+            Database::advertisedProducts.push(make_pair(product, stock));
+            advertisement.append("Buy " + product->name + " from " + stock->vendor->getUsername() + " at Rs. " + to_string(stock->price*(1-Database::discount)) + " only!\n");
+        }
+        advertisement.append("Limited offer! Search for these products now!\n");
+        return advertisement;
+    }
+
+    static bool addProduct(string name, string type, int quantity, double price, string description = "none", bool advertise = false) {
         // if(Database::currentUser->)
         Stock* newStock = new Stock(0, (Vendor*) (Database::currentUser), quantity, price);
         bool found = false;
@@ -13,6 +38,7 @@ class ProductManager {
                     if(Database::currentUser->getUsername() == stock->vendor->getUsername()) {
                         stock->quantity += quantity;
                         stock->price = price;
+                        if(advertise) advertiseProduct(product, stock);
                         found = true;
                         break;
                     }
@@ -20,6 +46,7 @@ class ProductManager {
                 if(found) break;
                 newStock->stockID = product->stocks.size();
                 product->stocks.push_back(newStock);
+                if(advertise) advertiseProduct(product, newStock);
                 found = true;
                 break;
             }
@@ -28,6 +55,7 @@ class ProductManager {
         Product* newProduct = new Product(name, type, newStock, description);
         newProduct->productID = Database::products.size();
         Database::products.push_back(newProduct);
+        if(advertise) advertiseProduct(newProduct, newStock);
         return true;
     }
     
@@ -97,7 +125,14 @@ class ProductManager {
 class UserManager{
 public:
 
-    static bool registerUser(string username, unsigned long long hashPassword, string account, Address address, Type type){
+    static void makeCustomerPrimeMember(Customer* customer) {
+        if(customer->getWalletBalance() < Database::primeMembershipCost) return;
+        customer->updateWalletBalance(-(Database::primeMembershipCost));
+        Database::admin->updateWalletBalance(Database::primeMembershipCost);
+        customer->primeMember = true;
+    }
+
+    static bool registerUser(string username, unsigned long long hashPassword, string account, Address address, Type type, bool primeMembership = false){
         if(type == VENDOR){
             User* newVendor = new Vendor(username,hashPassword,account,address);
             newVendor->userID = Database::users.size();
@@ -107,6 +142,7 @@ public:
             User* newCustomer = new Customer(username,hashPassword,account,address);
             newCustomer->userID = Database::users.size();
             (Database :: users).push_back(newCustomer);
+            if(primeMembership) makeCustomerPrimeMember((Customer*)newCustomer);
         }
 
         return true;
@@ -178,6 +214,12 @@ public:
         return ((Database::currentUser)->wallet).getBalance();
     }
 
+    static void rateVendor(Vendor* vendor, double rating, string review) {
+        vendor->rating = (vendor->rating*vendor->numberOfRatings + rating)/(vendor->numberOfRatings+1);
+        vendor->numberOfRatings++;
+        vendor->reviews.push_back(review);
+    }
+
 };
 
 class OrderManager {
@@ -210,6 +252,7 @@ public:
         if(quantity > stock->quantity || amountToPay > Database::currentUser->wallet.getBalance()) return false;
                
         stock->quantity = stock->quantity - quantity;
+        product->quantitySold += stock->quantity;
         CartProduct* newCartPoduct = new CartProduct(product,stock,quantity);
         int id = (Database :: orders).size();
         Order* newOrder = new Order(id,*newCartPoduct,stock->price*quantity,Database::discount, Database::deliveryCharge,deliverySlot,paymentStatus, (Customer*)(Database::currentUser));
@@ -260,6 +303,7 @@ public:
         Customer* customer = (Customer*) (Database::currentUser);
         for(auto cartProduct : customer->cart.cartProducts) {
             cartProduct.stock->quantity -= cartProduct.quantity;
+            cartProduct.product->quantitySold += cartProduct.quantity;
             int vendorID = cartProduct.stock->getVendorID();
             if(orders.find(vendorID) == orders.end()) {
                 orders[vendorID] = new Order(0, cartProduct, cartProduct.quantity*cartProduct.stock->price, Database::discount, Database::deliveryCharge, deliverySlot, paymentStatus, (Customer*)(Database::currentUser));
@@ -296,6 +340,12 @@ public:
     
     static bool cancelOrder(Order* order) {
         if(order->status == DELIVERED || order->status == CANCELLED) return false;
+        
+        for(auto cartProduct : order->cartProducts) {
+            cartProduct.product->quantitySold -= cartProduct.quantity;
+            cartProduct.stock->quantity += cartProduct.quantity;
+        }
+
         if(order->paymentStatus == CASH_ON_DELIVERY) {
             order->cartProducts[0].stock->vendor->updateWalletBalance(-order->cost);
             Database::admin->updateWalletBalance(order->cost);

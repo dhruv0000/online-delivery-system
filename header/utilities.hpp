@@ -223,6 +223,10 @@ int User::getType() {
   return type;
 }
 
+double User::getWalletBalance() {
+  return wallet.getBalance();
+}
+
 void User::updateWalletBalance(double amount){
   wallet.updateBalance(amount);
 }
@@ -320,12 +324,13 @@ Stock::Stock(int id, Vendor* vendor, int quantity, double price) {
     this->vendor = vendor;
     this->quantity = quantity;
     this->price = price;
+    this->advertised = false;
 }
 int Stock::getVendorID() {
   return vendor->getUserID();
 }
 string Stock::getDatabaseString() {
-  return to_string(vendor->getUserID()) + "\n" + to_string(quantity) + "\n" + to_string(price) + "\n";
+  return to_string(vendor->getUserID()) + "\n" + to_string(quantity) + "\n" + to_string(price) + "\n" + to_string(advertised) + "\n";
 }
 
 Product::Product(int id) {
@@ -371,13 +376,15 @@ void Product::objectFromDatabase(Product* product, ifstream& fin) {
   int stockCnt = stoi(attrib[4]);
   // cout<<"yay"<<endl;
   for(int i = 0; i < stockCnt; i++) {
-    string stockAttrib[3];
-    for (int j = 0; j < 3; j++)
+    string stockAttrib[4];
+    for (int j = 0; j < 4; j++)
     {
       getline(fin, stockAttrib[j]);
     }
     Vendor* vendor = (Vendor *) Database::users[stoi(stockAttrib[0])];
     Stock* new_stock = new Stock(i, vendor, stoi(stockAttrib[1]), stod(stockAttrib[2]));
+    new_stock->advertised = stoi(attrib[3]);
+    if(new_stock->advertised) Database::advertisedProducts.push(make_pair(product, new_stock));
     product->stocks.push_back(new_stock);
   }
   // cout<<"yay";
@@ -445,6 +452,7 @@ void Cart :: removeCartProductFromCart(int index){
 Customer::Customer(int id) : User(id) {type = CUSTOMER;}
 
 Customer::Customer(string username,unsigned long long password,string accountNumber,Address address) : User(username,password,accountNumber,address,CUSTOMER){
+  primeMember = false;
 }
 
 void Customer :: addCartProduct(CartProduct newCartProduct){
@@ -460,7 +468,7 @@ void Customer :: displayCart(){
 }
 
 string Customer::getDatabaseString() {
-  string db = getUserString() +  to_string(cart.cartProducts.size()) + "\n";
+  string db = getUserString() + to_string(primeMember) + "\n" + to_string(cart.cartProducts.size()) +  "\n";
   for(auto product : cart.cartProducts) {
     db.append(product.getDatabaseString());
   }
@@ -469,6 +477,9 @@ string Customer::getDatabaseString() {
 
 void Customer::objectFromDatabase(Customer* customer, ifstream& fin) {
   userFromDatabase(customer, fin);
+  string primeMembership;
+  getline(fin, primeMembership);
+  customer->primeMember = stoi(primeMembership);
   string cartSizeStr;
   getline(fin, cartSizeStr);
   int cartSize = stoi(cartSizeStr);
