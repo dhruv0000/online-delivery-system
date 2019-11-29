@@ -107,17 +107,20 @@ class ProductManager {
 
     // to display all the vendors selling a given product
     static void searchAndDisplayVendor(Product* product){
-        // printFlow();
-        cout<<"Vendor Details Selling this product :"<<endl;
+ 
+        char c[]="Vendor Details Selling this product :\n";
+        mvprintw(4,5,c);
+ 
         for(int i=0;i<(product->stocks).size();i++){
-            cout<<i+1<<":"<<endl;
+
+            printw("    Vendor %d :\n",i+1);
             product->stocks[i]->vendor->displayUserInformation();
-            cout<<"Quantity available :"<<product->stocks[i]->quantity<<endl;
-            cout<<"Price offered by this vendor :"<<product->stocks[i]->price<<endl;
-            product->stocks[i]->vendor->displayVendorRatings();
-            
+            printw("    Quantity available :%d\n",product->stocks[i]->quantity);
+            printw("    Quantity available :%lf\n",product->stocks[i]->price);
+            product->stocks[i]->vendor->displayVendorRatings(5);
             
         }
+        
         
     }
 
@@ -200,7 +203,7 @@ public:
             cout<<"User Name :\t\t"<<check->username<<endl;
             cout<<"Account Number :\t\t"<<check->account<<endl;
             cout<<"Address :\t\t"<<endl;
-            (check->address).displayAddress();
+            (check->address).displayAddress(5);
             cout<<"Wallet balance :\t\t"<<(check->wallet).getBalance()<<endl;
             //Still we have to add show cart orders and pending orders
             return true; 
@@ -225,8 +228,7 @@ public:
     
     }
 
-    // utility to return wallet balance
-    static int getWalletBalance(){
+    static double getWalletBalance(){
         return ((Database::currentUser)->wallet).getBalance();
     }
 
@@ -359,21 +361,8 @@ public:
         return true;
     }
 
-    // to display information about a product
-    static void showOrder() {
-        User* user = (Database::currentUser);
-        for(auto itr:user->orders){
-            if(user->type==VENDOR&&itr->status==ORDERED){
-                itr->displayOrderVender();                
-            }
-            else if(user->type==CUSTOMER){
-                itr->displayOrderCustomer();
-            }
-        }
-
-    }
-
-    // to cancel a placed order, with refund
+  
+    
     static bool cancelOrder(Order* order) {
         if(order->status == DELIVERED || order->status == CANCELLED) return false;
         
@@ -386,12 +375,14 @@ public:
         if(order->paymentStatus == CASH_ON_DELIVERY) {
             order->cartProducts[0].stock->vendor->updateWalletBalance(-order->cost);
             Database::admin->updateWalletBalance(order->cost);
+            order->status = CANCELLED;
             return true;
         }
         if(order->status == ORDERED) {
             Database::admin->wallet.updateBalance(-order->deliveryCharge+order->discount*order->cost);
             (Database::currentUser)->wallet.updateBalance(order->cost*(1-order->discount) + order->deliveryCharge);
             order->cartProducts[0].stock->vendor->updateWalletBalance(-order->cost);
+            order->status = CANCELLED;
             return true;
         }
         order->cartProducts[0].stock->vendor->updateWalletBalance(-order->cost);
@@ -409,5 +400,70 @@ public:
     //         (Database::currentUser)->orders[i].
     //     }    
     // }
+
+    static bool  displayOrderCustomer(int t){
+
+    clear();
+    int i=0;
+    Order* currentOrder = ((Customer*)(Database :: currentUser))->orders[t];
+    
+    for(;i<(int)((currentOrder->cartProducts.size()));i++){
+        currentOrder->cartProducts[t].displayOrderProduct();
+    }
+
+
+    printw("     Cost of Package: %d\n",currentOrder->cost);
+    printw("     Vendor Name: %s\n",currentOrder->cartProducts[0].stock->vendor->getUsername().c_str());
+    printw("     Delivery Slot: %d\n",currentOrder->deliverySlot);
+    // customer->displayUserInformation(4*i+3);
+
+    string in[] = {"1:Confirm this order","2:Cancel this order","3:See next order","4:Exit"};
+    int choice = displayBox(in,4);
+    if(choice == 1){
+        confirmDelivery(currentOrder);
+    }else if (choice == 2){
+        cancelOrder(currentOrder);
+    }
+
+    if(choice == 4)
+        return false;
+    return true;
+    
+}
+
+
+static void showCustomerOrder() {
+        clear();
+        User* user = (Database::currentUser);
+        int i = 0;
+        for(auto itr:user->orders){
+            if(user->type==CUSTOMER && itr->status==ORDERED){
+                if(!(displayOrderCustomer(i))){
+                    return;
+                }                
+            }
+            i++;
+        }
+        clear();
+}
+
+
+
+static void showVendorOrder() {
+        clear();
+        User* user = (Database::currentUser);
+        for(auto itr:user->orders){
+            if(user->type==VENDOR && itr->status==ORDERED){
+                if(!itr->displayOrderVendor()){
+                    return;
+                }                
+            }
+        }
+        clear();
+
+}
+
+
+
 
 };

@@ -37,6 +37,7 @@ public:
     Address();
     Address(string building, string street, string city, string state);
     void storeAddress();
+    void displayAddress(int);
     void displayAddress();
     string getDatabaseString();
 };
@@ -68,8 +69,9 @@ class Order{
   Order(int id);
   Order(int id,CartProduct newCartProduct,double cost,double discount, double deliveryCharge, string deliverySlot,PaymentStatus paymentStatus, Customer* customer);
   int getOrderID();
-  void displayOrderCustomer();
-  void displayOrderVender();
+  // bool displayOrderCustomer();
+  bool displayOrderVendor();
+  void dispatchOrder();
   string getDatabaseString();
   static void objectFromDatabase(Order* order, ifstream& fin);
   OrderStatus getOrderStatus();
@@ -90,6 +92,7 @@ protected:
 public:
   User(int id);
   User(string username, unsigned long password, string account, Address address,Type type);
+  void displayUserInformation(int);
   void displayUserInformation();
   unsigned long long getPassword();
   string getUsername();
@@ -118,6 +121,7 @@ public:
   Vendor(string username,unsigned long long password,string accountNumber,Address address);
   double getRatings();
   void displayVendorRatings();
+  void displayVendorRatings(int);
   string getDatabaseString();
   static void objectFromDatabase(Vendor* vendor, ifstream& fin);
   friend class OrderManager;
@@ -169,6 +173,7 @@ class CartProduct{
   public:
   CartProduct(Product* product, Stock* stock, int quantity);
   void displayCartProduct();
+  void displayOrderProduct(int);
   void displayOrderProduct();
   string getDatabaseString();
   friend class OrderManager;

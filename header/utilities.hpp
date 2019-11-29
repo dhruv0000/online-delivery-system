@@ -7,6 +7,7 @@
 
 int displayBox(string choices[],int n){
     start_color();
+    noecho();
     int xMax,yMax;
     getmaxyx(stdscr,yMax,xMax);
     init_pair(1,COLOR_GREEN,COLOR_WHITE);
@@ -14,11 +15,11 @@ int displayBox(string choices[],int n){
     mvprintw(0,xMax/2-10,"Welcome to our online store");
     attroff(PAIR_NUMBER(1));
 
-    mvprintw(10,5,"Select your Choice\n");
+    mvprintw(yMax-13,5,"Select your Choice\n");
     
     // init_pair(1,COLOR_RED,COLOR_BLACK);
     
-    WINDOW* menu = newwin(9,xMax-12,yMax-9,5);
+    WINDOW* menu = newwin(9,xMax-12,yMax-13,5);
     box(menu,0,0);
     refresh();
     wrefresh(menu);
@@ -52,6 +53,7 @@ int displayBox(string choices[],int n){
         if(choice==10)
             break;
     }
+    echo();
     wrefresh(menu);
     
     
@@ -61,6 +63,7 @@ int displayBox(string choices[],int n){
 
 int displayBoxHeader(string choices[],int n,char* header){
     start_color();
+    noecho();
     int xMax,yMax;
     getmaxyx(stdscr,yMax,xMax);
     init_pair(1,COLOR_GREEN,COLOR_WHITE);
@@ -68,7 +71,7 @@ int displayBoxHeader(string choices[],int n,char* header){
     mvprintw(0,xMax/2-10,"Welcome to our online store");
     attroff(PAIR_NUMBER(1));
 
-    mvprintw(10,5,"Select your Choice\n");
+    mvprintw(yMax-11,5,"Select your Choice\n");
     
     // init_pair(1,COLOR_RED,COLOR_BLACK);
     
@@ -106,6 +109,7 @@ int displayBoxHeader(string choices[],int n,char* header){
         if(choice==10)
             break;
     }
+    echo();
     wrefresh(menu);
     
     
@@ -212,11 +216,20 @@ void Address::storeAddress(){
 
 }
 
+void Address::displayAddress(int i){
+
+    mvprintw(i,5,"Building/Apartment : %s",building.c_str());
+    mvprintw(i,5,"Street : %s",street.c_str());
+    mvprintw(i,5,"City : %s",city.c_str());
+    mvprintw(i,5,"State : %s",state.c_str());
+}
+
 void Address::displayAddress(){
-    cout<<"Building/Apartment : "<<building<<endl;
-    cout<<"Street : "<<street<<endl;
-    cout<<"City : "<<city<<endl;
-    cout<<"State : "<<state<<endl;
+
+    printw("    Building/Apartment : %s\n",building.c_str());
+    printw("    Street : %s\n",street.c_str());
+    printw("    City : %s\n",city.c_str());
+    printw("    State : %s\n",state.c_str());
 }
 
 string Address::getDatabaseString() {
@@ -258,45 +271,69 @@ int Order::getOrderID() {
   return orderID;
 }
 
-void Order :: displayOrderCustomer(){
+// void Order :: displayOrderCustomer(){
 
-  for(int i=0;i<(int)(cartProducts.size());i++){
-    cartProducts[i].displayOrderProduct();
+//   for(int i=0;i<(int)(cartProducts.size());i++){
+//     cartProducts[i].displayOrderProduct(5);
+//   }
+
+//   cout<<"Cost: "<<cost<<endl;
+//   cout<<"Discount: "<<cost*discount<<endl;
+//   cout<<"DeliveryCharges: "<<deliveryCharge<<endl;
+//   cout<<"Total :"<<cost*(1-discount)+deliveryCharge<<endl;
+//   cout<<endl;
+//   cout<<"Vendor Name :"<<cartProducts[0].stock->vendor->getUsername();
+//   cout<<"Status:";
+//   if(status == DISPATCHED)cout<<"DISPATCHED"<<endl;
+//   if(status == ORDERED)cout<<"ORDERED"<<endl;
+//   if(status == DELIVERED)cout<<"DELIVERED"<<endl;
+//   if(status == CANCELLED)cout<<"CANCELLED"<<endl;
+//   cout<<"Delivery Slot: "<<deliverySlot<<endl;
+
+// }
+
+void Order :: dispatchOrder(){
+  if(status==ORDERED)
+    status=DISPATCHED;
+    
+}
+
+bool Order :: displayOrderVendor(){
+
+  clear();
+  int i=0;
+  for(;i<(int)(cartProducts.size());i++){
+    cartProducts[i].displayOrderProduct(i);
   }
 
-  cout<<"Cost: "<<cost<<endl;
-  cout<<"Discount: "<<cost*discount<<endl;
-  cout<<"DeliveryCharges: "<<deliveryCharge<<endl;
-  cout<<"Total :"<<cost*(1-discount)+deliveryCharge<<endl;
-  cout<<endl;
-  cout<<"Vendor Name :"<<cartProducts[0].stock->vendor->getUsername();
-  cout<<"Status:";
-  if(status == DISPATCHED)cout<<"DISPATCHED"<<endl;
-  if(status == ORDERED)cout<<"ORDERED"<<endl;
-  if(status == DELIVERED)cout<<"DELIVERED"<<endl;
-  if(status == CANCELLED)cout<<"CANCELLED"<<endl;
-  cout<<"Delivery Slot: "<<deliverySlot<<endl;
+  i++;
+
+  mvprintw(4*i,5,"Cost of Package: %d",cost);
+  mvprintw(4*i+1,5,"User Info:");
+  mvprintw(4*i+2,5,"Delivery Slot: %d",deliverySlot);
+  customer->displayUserInformation(4*i+3);
+
+  string in[] = {"1:Dispatch this order","2:See next order","3:Exit"};
+  int choice = displayBox(in,3);
+  if(choice == 1){
+    dispatchOrder();
+    return true;
+  }
+  else if (choice == 2)
+    return true;
+  return false;
 
 }
 
-void Order :: displayOrderVender(){
 
 
-  for(int i=0;i<(int)(cartProducts.size());i++){
-    cartProducts[i].displayOrderProduct();
-  }
-  cout<<"Cost of Package:"<<cost<<endl;
-  cout<<"User Info:"<<endl;
-  customer->displayUserInformation();
-  cout<<endl;
-  cout<<"Status:";
-  if(status == DISPATCHED)cout<<"DISPATCHED"<<endl;
-  if(status == ORDERED)cout<<"ORDERED"<<endl;
-  if(status == DELIVERED)cout<<"DELIVERED"<<endl;
-  if(status == CANCELLED)cout<<"CANCELLED"<<endl;
-  cout<<"Delivery Slot: "<<deliverySlot<<endl;
 
-}
+
+
+
+
+
+
 
 string Order::getDatabaseString() {
   string db = to_string(status) + "\n" + to_string(cost) + "\n" + to_string(discount) + "\n" + to_string(deliveryCharge) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(customer->getUserID()) + "\n" + to_string(cartProducts.size()) + "\n";
@@ -354,11 +391,21 @@ User::User(string username, unsigned long password, string account, Address addr
 
 }
 
-void User :: displayUserInformation(){
-  cout<<"Name: "<<username<<endl;
-  cout<<"Address : "<<endl;
-  address.displayAddress();
+void User :: displayUserInformation(int i){
+  mvprintw(i,5,"Name: %s",username.c_str());
+  mvprintw(i+1,5,"Address : ");
+  address.displayAddress(i+2);
+
 }
+
+void User :: displayUserInformation(){
+  printw("    Name: %s\n",username.c_str());
+  printw("    Address : \n");
+  address.displayAddress();
+
+}
+
+
 string User::getUsername() {
   return username;
 }
@@ -428,11 +475,23 @@ Vendor::Vendor(string username,unsigned long long password,string accountNumber,
 
 void Vendor:: displayVendorRatings() {
   
-  mvprintw(5,5,"Rating :%d\n",rating);
-  printw("Number of ratings %d\n:",reviews);
+  mvprintw(5,5,"Rating :%lf",rating);
+  mvprintw(6,5,"Number of ratings: %d",numberOfRatings);
 
   for(int i=0;i< min(3,(int)reviews.size());i++){
     printw("Review %d : %s\n",i,reviews[i]);
+  }
+
+
+}
+
+void Vendor:: displayVendorRatings(int a) {
+  
+  printw("    Rating :%lf\n",rating);
+  printw("    Number of ratings: %d\n",numberOfRatings);
+
+  for(int i=0;i< min(3,(int)reviews.size());i++){
+    printw("    Review %d : %s\n",i,reviews[i]);
   }
 
 
@@ -499,12 +558,12 @@ bool Product::compareProduct(Product* prod1, Product* prod2) {
 
 void Product::displayProduct() {
 
-    printw("Name: %s\n",name.c_str());
-    printw("Type: %s\n",type.c_str());
-    printw("Description: %s\n",description.c_str());
-    printw("Quantity Sold: %d\n",quantitySold);
-    if(stocks.size() == 0) printw("Product is currently out of stock.\n");
-    else printw("Product in stock.%d vendors available.\n",stocks.size());
+    printw("      Name: %s\n",name.c_str());
+    printw("      Type: %s\n",type.c_str());
+    printw("      Description: %s\n",description.c_str());
+    printw("      Quantity Sold: %d\n",quantitySold);
+    if(stocks.size() == 0) printw("     Product is currently out of stock.\n");
+    else printw("      Product in stock.%d vendors available.\n",stocks.size());
 
 }
 
@@ -573,11 +632,21 @@ void CartProduct :: displayCartProduct(){
     cout<<"Quantity in Cart :"<<stock->quantity;
 }
 
+void CartProduct :: displayOrderProduct(int i){
+    
+    mvprintw(4*i+5,5,"Product Name: %s",product->getProductName().c_str());
+    mvprintw(4*i+6,5,"No. of quantities: %d",quantity);
+    mvprintw(4*i+7,5,"Product Price: %d",stock->price);
+
+}
+
+
 void CartProduct :: displayOrderProduct(){
-    cout<<"Product Name: "<<product->getProductName()<<endl;
-    cout<<"No. of Orders: "<<quantity<<endl;
-    cout<<"Product Price: "<<stock->price<<endl;
-    cout<<endl;
+    
+    printw("     Product Name: %s\n",product->getProductName().c_str());
+    printw("     No. of quantities: %d\n",quantity);
+    printw("     Product Price: %d\n",stock->price);
+
 }
 
 ///////////////////////////////////////////// CART //////////////////////////////////////////////////////////
