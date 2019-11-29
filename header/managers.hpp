@@ -273,7 +273,19 @@ public:
             Database::orders.push_back(order->second);
         }
         return true;
-    } 
+    }
+
+    static void showOrder() {
+        User* user = (Database::currentUser);
+        for(auto itr:user->orders){
+            itr->displayOrderCustomer();
+            if(user->type==VENDOR){
+                /*UserName and Address*/
+                
+            }
+        }
+
+    }
 
     
     static bool cancelOrder(Order* order) {

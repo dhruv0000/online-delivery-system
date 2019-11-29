@@ -63,7 +63,7 @@ class Order{
   Order(int id);
   Order(int id,CartProduct newCartProduct,double cost,double discount, double deliveryCharge, string deliverySlot,PaymentStatus paymentStatus, Customer* customer);
   int getOrderID();
-  void displayOrder();
+  void displayOrderCustomer();
   string getDatabaseString();
   static void objectFromDatabase(Order* order, ifstream& fin);
   OrderStatus getOrderStatus();
@@ -156,6 +156,7 @@ class CartProduct{
   void displayCartProduct();
   string getDatabaseString();
   friend class OrderManager;
+  friend class Order;
 };
 
 

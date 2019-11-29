@@ -113,20 +113,21 @@ int Order::getOrderID() {
   return orderID;
 }
 
-void Order :: displayOrder(){
+void Order :: displayOrderCustomer(){
 
   printSeparator();
   for(int i=0;i<(int)(cartProducts.size());i++){
     cartProducts[i].displayCartProduct();
   }
   cout<<"Cost:"<<cost<<endl;
+  cout<<"Vendor Name :"<<cartProducts[0].stock->vendor->getUsername();
   cout<<"Status:";
   if(status == DISPATCHED)cout<<"DISPATCHED"<<endl;
   if(status == ORDERED)cout<<"ORDERED"<<endl;
   if(status == PENDING)cout<<"PENDING"<<endl;
   if(status == DELIVERED)cout<<"DELIVERED"<<endl;
   if(status == CANCELLED)cout<<"CANCELLED"<<endl;
-  cout<<"Delivery Slot"<<deliverySlot<<endl;
+  cout<<"Delivery Slot: "<<deliverySlot<<endl;
 
 }
 
@@ -388,7 +389,6 @@ string CartProduct::getDatabaseString() {
 
 void CartProduct :: displayCartProduct(){
     product->displayProduct();
-    cout<<"Vendor Name :"<<stock->vendor->getUsername();
     cout<<"Quantity in Cart :"<<stock->quantity;
 }
 
