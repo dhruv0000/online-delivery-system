@@ -184,14 +184,11 @@ class OrderManager {
 public:
     
     static void makePayment(Order* order){
-        cout<<"Fuck"<<endl;
         Vendor* vendor = order->cartProducts[0].stock->vendor;
         double amountToPay = 0;
-        cout<<"Fuck"<<endl;
         for(auto cartProduct : order->cartProducts) {
             amountToPay += cartProduct.quantity * cartProduct.stock->price;
         }
-        cout<<"Fuck"<<endl;
         double discount = amountToPay*Database::discount;
         vendor->updateWalletBalance(amountToPay);
         if(order->paymentStatus == CASH_ON_DELIVERY) {
@@ -200,22 +197,24 @@ public:
         }
         (Database :: currentUser)->updateWalletBalance(-(amountToPay - discount) - (Database :: deliveryCharge));
         (Database :: admin)->updateWalletBalance(Database::deliveryCharge - discount);
-        cout<<"Fuck"<<endl;
     }
 
+    // static bool confirmDelivery(Order* order) {
+    //     if(order->status != DISPATCHED) return false;
+    //     order->status = DELIVERED;
+    //     if(order->paymentStatus == CASH_ON_DELIVERY) {
+    //         Database::admin->updateWalletBalance(Database::deliveryCharge - )
+    //     }
+    // }
+
     static bool placeOrder(Product* product,Stock* stock,int quantity,string deliverySlot,PaymentStatus paymentStatus){
-        //  cout<<"Fuck"<<endl;
         double amountToPay = ((stock->price*quantity)*(1-(Database :: discount)) + (Database :: deliveryCharge));
-        //  cout<<"Fuck"<<endl;
         if(quantity > stock->quantity || amountToPay > Database::currentUser->wallet.getBalance()) return false;
                
         stock->quantity = stock->quantity - quantity;
-//  cout<<"Fuck"<<endl;
-        // makePayment(stock,quantity,paymentStatus);
         CartProduct* newCartPoduct = new CartProduct(product,stock,quantity);
         int id = (Database :: orders).size();
-        Order* newOrder = new Order(id,*newCartPoduct,amountToPay,deliverySlot,paymentStatus);
-        // cout<<"Fuck"<<endl;
+        Order* newOrder = new Order(id,*newCartPoduct,amountToPay,deliverySlot,paymentStatus, (Customer*)(Database::currentUser));
         makePayment(newOrder);
         cout<<"AfterrMakePaymentFuck"<<endl;
         (Database :: currentUser)->orders.push_back(newOrder);
@@ -262,7 +261,7 @@ public:
             cartProduct.stock->quantity -= cartProduct.quantity;
             int vendorID = cartProduct.stock->getVendorID();
             if(orders.find(vendorID) == orders.end()) {
-                orders[vendorID] = new Order(0, cartProduct, cartProduct.quantity*cartProduct.stock->price, deliverySlot, paymentStatus);
+                orders[vendorID] = new Order(0, cartProduct, cartProduct.quantity*cartProduct.stock->price, deliverySlot, paymentStatus, (Customer*)(Database::currentUser));
             }
             else {
                 orders[vendorID]->cartProducts.push_back(cartProduct);
@@ -282,21 +281,21 @@ public:
     } 
 
     
-    static bool cancelOrder(Order* order) {
-        if(order->status == DELIVERED || order->status == CANCELLED) return false;
-        if(order->paymentStatus == CASH_ON_DELIVERY) {
-            order->cartProducts
-        }
-        if(order->paymentStatus == WALLET && (order->status == PENDING || order->status == ORDERED)) {
-            Database::admin->wallet.updateBalance(-Database::deliveryCharge);
-            ((Customer*)(Database::currentUser))->wallet.updateBalance(Database::deliveryCharge);
-        }
+    // static bool cancelOrder(Order* order) {
+    //     if(order->status == DELIVERED || order->status == CANCELLED) return false;
+    //     if(order->paymentStatus == CASH_ON_DELIVERY) {
+    //         order->cartProducts
+    //     }
+    //     if(order->paymentStatus == WALLET && (order->status == PENDING || order->status == ORDERED)) {
+    //         Database::admin->wallet.updateBalance(-Database::deliveryCharge);
+    //         ((Customer*)(Database::currentUser))->wallet.updateBalance(Database::deliveryCharge);
+    //     }
 
-        for(auto cartProduct : order->cartProducts) {
+    //     for(auto cartProduct : order->cartProducts) {
             
-        }
-        order->status = CANCELLED;
-    }
+    //     }
+    //     order->status = CANCELLED;
+    // }
 
     // static void viewCustomerOrder(){
     //     for(int i=0;i<(int)((Database :: currentUser)->orders.size());i++){

@@ -56,9 +56,10 @@ class Order{
   double cost;
   string deliverySlot;
   PaymentStatus paymentStatus;
+  Customer* customer;
   public:
   Order(int id);
-  Order(int id,CartProduct newCartProduct,double cost,string delivrySlot,PaymentStatus paymentStatus);
+  Order(int id,CartProduct newCartProduct,double cost,string delivrySlot,PaymentStatus paymentStatus, Customer* customer);
   int getOrderID();
   void displayOrder();
   string getDatabaseString();
