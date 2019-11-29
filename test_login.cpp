@@ -245,37 +245,38 @@ int displayProductAcceptance(){
 }
 
 void getOrderInformation(string &slot,PaymentStatus &status){
-    printSeparator();
-    printFlow();
-    cout<<"Enter the timimgs when you are available to take delivery "<<endl;
-    cout<<"1:Morning"<<endl;
-    cout<<"2:Afternoon"<<endl;
-    cout<<"3:Evening"<<endl;
-    cout<<"4:Night"<<endl;
+    string in[4]; 
+    char header[]="Enter the timimgs when you are available to take delivery ";
+    in[0]="1:Morning";
+    in[1]="2:Afternoon";
+    in[2]="3:Evening";
+    in[3]="4:Night";
     int time;
-    cin>>time;
+    displayBoxHeader(in,time,header);
     if(time==1)slot = "Morning";
     else if(time==2)slot = "Afternoon";
     else if(time == 3)slot = "Evening";
     else slot = "Night";
-    cout<<time<<endl;
-    printSeparator();
-    cout<<"Enter the payment mode"<<endl;
-    cout<<"1:Cash On Delivery"<<endl;
-    cout<<"2:Wallet Money"<<endl;
+
+    char header2[]="Enter the payment mode";
+    string in2[2];
+    in2[0]="1:Cash On Delivery";
+    in2[1]="2:Wallet Money";
+    // status=WALLET;
     int t;
-    cin>>t;
+    displayBoxHeader(in2,t,header2);
     if(t==1)
         status = CASH_ON_DELIVERY;
     else 
         status = WALLET;
 }
 
-void cartChoices(){
-    printSeparator();
-    // blueStart();
-    cout<<"1:Order the cart items"<<endl;
-    cout<<"2:Remove from cart"<<endl;
+int cartChoices(){
+    string s[2];
+    s[0]="1:Order the cart items";
+    s[1]="2:Remove from cart";
+    return displayBox(s,2);
+    // end();
     // end();
 }
 

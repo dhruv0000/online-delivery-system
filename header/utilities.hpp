@@ -2,6 +2,8 @@
 #include<ncurses.h>
 
 
+
+
 int displayBox(string choices[],int n){
     start_color();
     int xMax,yMax;
@@ -31,6 +33,60 @@ int displayBox(string choices[],int n){
                 wattron(menu,A_REVERSE);
             
             mvwprintw(menu,i+1,1,choices[i].c_str());
+            wattroff(menu,A_REVERSE);
+            // wattroff(menu,COLOR_PAIR(1));
+        }
+        choice = wgetch(menu);
+
+        switch( choice ) {
+                case KEY_UP:
+                            heighlight--;
+                            heighlight = ( heighlight<0 ) ? n-1 : heighlight;
+                            break;
+                case KEY_DOWN:
+                            heighlight++;
+                            heighlight = ( heighlight>(n-1) ) ? 0 : heighlight;
+                            break;
+        }
+        if(choice==10)
+            break;
+    }
+    wrefresh(menu);
+    
+    
+    heighlight++;
+    return heighlight;
+}
+
+int displayBoxHeader(string choices[],int n,char* header){
+    start_color();
+    int xMax,yMax;
+    getmaxyx(stdscr,yMax,xMax);
+    init_pair(1,COLOR_GREEN,COLOR_WHITE);
+    attron(PAIR_NUMBER(1));
+    mvprintw(0,xMax/2-10,"Welcome to our online store");
+    attroff(PAIR_NUMBER(1));
+
+    mvprintw(10,5,"Select your Choice\n");
+    
+    // init_pair(1,COLOR_RED,COLOR_BLACK);
+    
+    WINDOW* menu = newwin(9,xMax-12,yMax-9,5);
+    box(menu,0,0);
+    refresh();
+    wrefresh(menu);
+
+    keypad(menu,true);
+    int choice;
+    int heighlight=0;
+    while(1){
+      mvwprintw(menu,1,1,header);
+        for (int  i = 0; i < n; i++)
+        {//    wattron(menu,COLOR_PAIR(1));
+            if(i==heighlight)
+                wattron(menu,A_REVERSE);
+            
+            mvwprintw(menu,i+2,1,choices[i].c_str());
             wattroff(menu,A_REVERSE);
             // wattroff(menu,COLOR_PAIR(1));
         }
