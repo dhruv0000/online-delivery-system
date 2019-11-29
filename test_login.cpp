@@ -13,14 +13,14 @@ void printFlow(){
 
 // void getPassword(string *password) {
 //     char ch;
-//     ch = getchar();
+//     ch = );
 //     cout<<"\b ";
 
 //     while (ch!='\n')
 //     {
 //         password->push_back(ch);
 //         cout<<"\b ";
-//         ch = getchar();
+//         ch = );
 //     }
     
 // }
@@ -51,7 +51,7 @@ void getDetails(string &username,string &password,unsigned long long& hashPasswo
         displayWindow(in,t);
         username = string(t); 
        
-        // getch();
+        // 
 
         if(!(UserManager :: checkUserNameAvailable(username))){
             clear();
@@ -391,50 +391,102 @@ int main(){
         int customerWish = showFuntionality(topSearch.size());
         
         if(customerWish>=1 && customerWish <=(int)(topSearch.size())){
-            ProductManager :: searchAndDisplayVendor(topSearch[--customerWish]);
-            int vendorSelection;
-            cin>>vendorSelection;
-            vendorSelection--;
-            Stock* stock = ProductManager :: getStockPointer(topSearch[customerWish],vendorSelection);
-            // cout<<"Manan"<<endl;
-            // cout<<stock->price<<endl;
-            // cout<<"Manan"<<endl;
-            TopProductAcceptance:
-
-            int productAcceptance;
-            displayProductAcceptance();
-            cin>>productAcceptance;
-                
             
-            // if(quantity>stock->quantity){
-            //     cout<<"Vendor does not have enough supply"<<endl;
-            //     goto TopProductAcceptance;
-            // }
-                
-            if(productAcceptance == 1){
-                int quantity;
-                cout<<"Number of quantity you want to purchase :";
-                cin>>quantity;
-                OrderManager :: addToCart(topSearch[customerWish],stock,quantity);
-                cout<<"Your Product has bee added into cart (:"<<endl;
-                goto CustomerChoices;
-                
-            }else if(productAcceptance == 2){
-                int quantity;
-                cout<<"Number of quantity you want to purchase :";
-                cin>>quantity;    
-                string deliverySlot;
-                PaymentStatus paymentStatus;
-                getOrderInformation(deliverySlot,paymentStatus);
-                OrderManager :: placeOrder(topSearch[customerWish],stock,quantity,deliverySlot,paymentStatus);
-                goto CustomerChoices;
+            // ProductManager :: searchAndDisplayVendor(topSearch[--customerWish]);
+            // int vendorSelection;
+            // cin>>vendorSelection;
+            // vendorSelection--;
+            // Stock* stock = ProductManager :: getStockPointer(topSearch[customerWish],vendorSelection);
 
-            }else if(productAcceptance == 3){
-                goto CustomerChoices;
-            }else{
-                cout<<"You have Entered wrong choice"<<endl;
-                    goto TopProductAcceptance;
-            } 
+            // TopProductAcceptance:
+
+            // int productAcceptance;
+            // displayProductAcceptance();
+            // cin>>productAcceptance;
+                
+            // if(productAcceptance == 1){
+            //     int quantity;
+            //     cout<<"Number of quantity you want to purchase :";
+            //     cin>>quantity;
+            //     OrderManager :: addToCart(topSearch[customerWish],stock,quantity);
+            //     cout<<"Your Product has bee added into cart (:"<<endl;
+            //     goto CustomerChoices;
+                
+            // }else if(productAcceptance == 2){
+            //     int quantity;
+            //     cout<<"Number of quantity you want to purchase :";
+            //     cin>>quantity;    
+            //     string deliverySlot;
+            //     PaymentStatus paymentStatus;
+            //     getOrderInformation(deliverySlot,paymentStatus);
+            //     OrderManager :: placeOrder(topSearch[customerWish],stock,quantity,deliverySlot,paymentStatus);
+            //     goto CustomerChoices;
+
+            // }else if(productAcceptance == 3){
+            //     goto CustomerChoices;
+            // }else{
+            //     cout<<"You have Entered wrong choice"<<endl;
+            //         goto TopProductAcceptance;
+            // }
+            
+                clear();
+                ProductManager :: searchAndDisplayVendor(topSearch[--customerWish]);
+                // displayVendorList(availableVendors);
+                int vendorSelection;
+                char c[] = "Enter the Vendor Number:";
+                char ven[10];
+                displayWindow(c,ven);
+                vendorSelection = stod(ven)-1; 
+
+                Stock* stock = ProductManager :: getStockPointer(topSearch[vendorSelection],vendorSelection);
+                // cout<<stock->price<<endl;
+                ProductAcceptance:
+
+                int productAcceptance = displayProductAcceptance();
+                
+                
+                if(productAcceptance == 1){
+                    
+                    int quantity;
+                    clear();
+                    char c[] = "Number of quantity you want to purchase :";
+                    char qin[10];
+                    displayWindow(c,qin);
+                    quantity = stod(qin); 
+
+                    OrderManager :: addToCart(topSearch[vendorSelection],stock,quantity);
+                    clear();
+                    mvprintw(3,5,"Your Product has bee added into cart");
+                    goto CustomerChoices;
+                
+                }else if(productAcceptance == 2){
+                    
+                    int quantity;
+                    clear();
+                    char c[] = "Number of quantity you want to purchase :";
+                    char qin[10];
+                    displayWindow(c,qin);
+                    quantity = stod(qin); 
+
+                    string deliverySlot;
+                    PaymentStatus paymentStatus;
+                    
+                    getOrderInformation(deliverySlot,paymentStatus);
+
+                    // cout<<stock->price<<endl;
+                    // cout<<searchProduct[0]->getProductName()<<endl;
+                    
+                    
+                    OrderManager :: placeOrder(topSearch[0],stock,quantity,deliverySlot,paymentStatus);
+                    clear();
+                    mvprintw(3,5,"Your Product has successfully ordered (:");
+                    goto CustomerChoices;
+                    
+                }else if(productAcceptance == 3){
+                    goto CustomerChoices;
+
+                }
+             
         }
         else if(customerWish  == (int)(topSearch.size())+1){
             string searchString;
@@ -454,18 +506,12 @@ int main(){
             
             displaySearchProduct(searchProduct);
 
-            // printw("Fuck0");
-            getch();
+            
             int productWish = displayProductChoice(searchProduct.size());
-            
-            
-            // printw("Fuck1");
-            getch();
+                        
             if(productWish >= 1 && productWish <= (int)(searchProduct.size())){
                 productWish--;
                 
-            // printw("Fuck2");
-            getch();
                 clear();
                 ProductManager :: searchAndDisplayVendor(searchProduct[productWish]);
                 // displayVendorList(availableVendors);
@@ -475,18 +521,12 @@ int main(){
                 displayWindow(c,ven);
                 vendorSelection = stod(ven)-1; 
 
-            // printw("Fuck4");
-            getch();
                 Stock* stock = ProductManager :: getStockPointer(searchProduct[productWish],vendorSelection);
                 // cout<<stock->price<<endl;
                 ProductAcceptance:
 
                 int productAcceptance = displayProductAcceptance();
                 
-                // if(quantity>stock->quantity){
-                //     cout<<"Vendor does not have enough supply"<<endl;
-                //     goto ProductAcceptance;
-                // }
                 
                 if(productAcceptance == 1){
                     
@@ -571,9 +611,9 @@ int main(){
         }else if(customerWish == (topSearch.size()+3)){
             int operation;
             clear();
-            mvprintw(1,5,"Your Wallet has %lf rupees.",UserManager :: getWalletBalance());
+            mvprintw(1,5,"Your Wallet has %.2lf rupees.",UserManager :: getWalletBalance());
             // cout<<"Your Wallet has "<<UserManager :: getWalletBalance()<<"rupees"<<endl;
-            string option[]= {"Add Money","Extract Money","Exit"};
+            string option[]= {"1:Add Money","2:Extract Money","3:Exit"};
             operation=displayBox(option,3);
             if(operation == 1){
                 double amt;
@@ -591,7 +631,8 @@ int main(){
                     amt = stod(qin);
                 UserManager :: addMoneyToAccount(amt);
             }
-            mvprintw(1,5,"Your Wallet has %lf rupees.",UserManager :: getWalletBalance());
+            clear();
+            mvprintw(1,5,"Your Wallet has %.2lf rupees.",UserManager :: getWalletBalance());
             goto CustomerChoices;
         }
         else if(customerWish == (topSearch.size()+4)){

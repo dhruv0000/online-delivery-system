@@ -215,7 +215,7 @@ public:
     
     }
 
-    static int getWalletBalance(){
+    static double getWalletBalance(){
         return ((Database::currentUser)->wallet).getBalance();
     }
 
@@ -349,12 +349,14 @@ public:
         if(order->paymentStatus == CASH_ON_DELIVERY) {
             order->cartProducts[0].stock->vendor->updateWalletBalance(-order->cost);
             Database::admin->updateWalletBalance(order->cost);
+            order->status = CANCELLED;
             return true;
         }
         if(order->status == ORDERED) {
             Database::admin->wallet.updateBalance(-order->deliveryCharge+order->discount*order->cost);
             (Database::currentUser)->wallet.updateBalance(order->cost*(1-order->discount) + order->deliveryCharge);
             order->cartProducts[0].stock->vendor->updateWalletBalance(-order->cost);
+            order->status = CANCELLED;
             return true;
         }
         order->cartProducts[0].stock->vendor->updateWalletBalance(-order->cost);
@@ -416,6 +418,7 @@ static void showCustomerOrder() {
             }
             i++;
         }
+        clear();
 }
 
 
@@ -430,6 +433,7 @@ static void showVendorOrder() {
                 }                
             }
         }
+        clear();
 
 }
 
