@@ -592,10 +592,6 @@ int main(){
             UserManager :: logoutUser();
             goto SignIn;
         }
-        else{
-            cout<<"\033[1;31mYou have entered wrong choice\033[0m"<<endl;
-            goto CustomerChoices;
-        }
        
 
     }
