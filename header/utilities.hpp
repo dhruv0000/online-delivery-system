@@ -1,7 +1,8 @@
+/* this file contains utility functions and defines
+ * all functions (including constructors) of the utility classes defined in database.hpp */
+
 #include "database.hpp"
 #include<ncurses.h>
-
-
 
 
 int displayBox(string choices[],int n){
@@ -14,14 +15,18 @@ int displayBox(string choices[],int n){
     mvprintw(0,xMax/2-10,"Welcome to our online store");
     attroff(PAIR_NUMBER(1));
 
-    mvprintw(yMax-11,5,"Select your Choice\n");
+    mvprintw(yMax-13,5,"Select your Choice\n");
     
     // init_pair(1,COLOR_RED,COLOR_BLACK);
     
-    WINDOW* menu = newwin(9,xMax-12,yMax-9,5);
+    WINDOW* menu = newwin(9,xMax-12,yMax-13,5);
     box(menu,0,0);
+
+    string ad = Product::getAdvertisedProduct(1);
+    mvprintw(yMax-4,5,"%s",ad.c_str());
     refresh();
     wrefresh(menu);
+
 
      keypad(menu,true);
     // string choices[]={"Manan","Manul","Dhruv"};
@@ -74,8 +79,10 @@ int displayBoxHeader(string choices[],int n,char* header){
     
     // init_pair(1,COLOR_RED,COLOR_BLACK);
     
-    WINDOW* menu = newwin(9,xMax-12,yMax-9,5);
+    WINDOW* menu = newwin(9,xMax-12,yMax-13,5);
     box(menu,0,0);
+    string ad = Product::getAdvertisedProduct(1);
+    mvprintw(yMax-4,5,"%s",ad.c_str());
     refresh();
     wrefresh(menu);
 
@@ -123,8 +130,10 @@ void displayWindow(char in[],const char* c,char in1[] = NULL){
     int xMax,yMax;
     getmaxyx(stdscr,yMax,xMax);
 
-    WINDOW* input = newwin(9,xMax-12,yMax-9,5);
+    WINDOW* input = newwin(9,xMax-12,yMax-13,5);
     box(input,0,0);
+    string ad = Product::getAdvertisedProduct(1);
+    mvprintw(yMax-4,5,"%s",ad.c_str());
     refresh();
     wrefresh(input);
 
@@ -137,7 +146,7 @@ void displayWindow(char in[],const char* c,char in1[] = NULL){
     
 }
 
-
+// utility to compare chars ignoring case
 bool compareCharIgnoreString(char & c1, char & c2)
 {
   if (c1 == c2||std::toupper(c1) == std::toupper(c2)||std::toupper(c1) == c2||c1 == std::toupper(c2))
@@ -145,12 +154,14 @@ bool compareCharIgnoreString(char & c1, char & c2)
   return false;
 }
  
+//utility to comapare strings ignoring case
 bool compareStringIgnoreCase(std::string & str1, std::string &str2)
 {
   return ( (str1.size() == str2.size() ) &&
        std::equal(str1.begin(), str1.end(), str2.begin(), &compareCharIgnoreString) );
 }
 
+///////////////////////////////////// PASSWORD //////////////////////////////////////////
 bool Password::checkStrength(string passwd){
     int length = passwd.length();
     int countUpper = 0,countLower = 0,countDigit = 0;
@@ -172,7 +183,7 @@ unsigned long long Password::hashValue(string passwd){
     return h(passwd);
 }
 
-////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////// ADDRESS ///////////////////////////////////////////
 
 Address::Address() {}
 
@@ -233,7 +244,7 @@ string Address::getDatabaseString() {
   return building + "\n" + street + "\n" + city + "\n" + state + "\n";
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// WALLET ////////////////////////////////////////////////////////
 
 Wallet::Wallet(){}
 Wallet::Wallet(double balance){
@@ -246,7 +257,7 @@ void Wallet::updateBalance(double increment){
   this->balance = this->balance + increment;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////// ORDER ////////////////////////////////////////////////////////
 
 Order::Order(int id) {
   orderID = id;
@@ -268,26 +279,26 @@ int Order::getOrderID() {
   return orderID;
 }
 
-void Order :: displayOrderCustomer(){
+// void Order :: displayOrderCustomer(){
 
-  for(int i=0;i<(int)(cartProducts.size());i++){
-    cartProducts[i].displayOrderProduct(5);
-  }
+//   for(int i=0;i<(int)(cartProducts.size());i++){
+//     cartProducts[i].displayOrderProduct(5);
+//   }
 
-  cout<<"Cost: "<<cost<<endl;
-  cout<<"Discount: "<<cost*discount<<endl;
-  cout<<"DeliveryCharges: "<<deliveryCharge<<endl;
-  cout<<"Total :"<<cost*(1-discount)+deliveryCharge<<endl;
-  cout<<endl;
-  cout<<"Vendor Name :"<<cartProducts[0].stock->vendor->getUsername();
-  cout<<"Status:";
-  if(status == DISPATCHED)cout<<"DISPATCHED"<<endl;
-  if(status == ORDERED)cout<<"ORDERED"<<endl;
-  if(status == DELIVERED)cout<<"DELIVERED"<<endl;
-  if(status == CANCELLED)cout<<"CANCELLED"<<endl;
-  cout<<"Delivery Slot: "<<deliverySlot<<endl;
+//   cout<<"Cost: "<<cost<<endl;
+//   cout<<"Discount: "<<cost*discount<<endl;
+//   cout<<"DeliveryCharges: "<<deliveryCharge<<endl;
+//   cout<<"Total :"<<cost*(1-discount)+deliveryCharge<<endl;
+//   cout<<endl;
+//   cout<<"Vendor Name :"<<cartProducts[0].stock->vendor->getUsername();
+//   cout<<"Status:";
+//   if(status == DISPATCHED)cout<<"DISPATCHED"<<endl;
+//   if(status == ORDERED)cout<<"ORDERED"<<endl;
+//   if(status == DELIVERED)cout<<"DELIVERED"<<endl;
+//   if(status == CANCELLED)cout<<"CANCELLED"<<endl;
+//   cout<<"Delivery Slot: "<<deliverySlot<<endl;
 
-}
+// }
 
 void Order :: dispatchOrder(){
   if(status==ORDERED)
@@ -321,6 +332,16 @@ bool Order :: displayOrderVendor(){
   return false;
 
 }
+
+
+
+
+
+
+
+
+
+
 
 string Order::getDatabaseString() {
   string db = to_string(status) + "\n" + to_string(cost) + "\n" + to_string(discount) + "\n" + to_string(deliveryCharge) + "\n" + deliverySlot + "\n" + to_string(paymentStatus) + "\n" + to_string(customer->getUserID()) + "\n" + to_string(cartProducts.size()) + "\n";
@@ -364,7 +385,7 @@ OrderStatus Order::getOrderStatus() {
 
 
   
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////// USER /////////////////////////////////////////////////////
 
 User::User(int id) {userID = id;}
 
@@ -424,16 +445,12 @@ void User::userFromDatabase(User* user, ifstream& fin) {
   for(int i = 0; i < 10; i++) {
     getline(fin, attrib[i]);
   }
-  // cout<<attrib[0]<<endl;
   user->username = attrib[0];
   user->password = stoull(attrib[1]);
-  // cout<<attrib[2]<<endl;
   user->wallet = Wallet(stod(attrib[2]));
-  // cout<<user->wallet.getBalance()<<endl;
   user->account = attrib[3];
   user->address = Address(attrib[4], attrib[5], attrib[6], attrib[7]);
   user->type = static_cast<Type>(stoi(attrib[8]));
-  // cout<<attrib[8]<<endl;
   int orderSize = stoi(attrib[9]);
   
   for(int i = 0; i < orderSize; i++) {
@@ -454,6 +471,8 @@ int User::getUserType() {
 string User::getDatabaseString(){}
 
 void User::objectFromDatabase(User* user, ifstream& fin){}
+
+///////////////////////////////////////////////// VENDOR //////////////////////////////////////////////////////////
 
 Vendor::Vendor(int id) : User(id) {type = VENDOR;}
 
@@ -512,7 +531,7 @@ void Vendor::objectFromDatabase(Vendor* vendor, ifstream& fin) {
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////// STOCK //////////////////////////////////////////////////////////////
 
 Stock::Stock(int id, Vendor* vendor, int quantity, double price) {
     this->stockID = id;
@@ -527,6 +546,8 @@ int Stock::getVendorID() {
 string Stock::getDatabaseString() {
   return to_string(vendor->getUserID()) + "\n" + to_string(quantity) + "\n" + to_string(price) + "\n" + to_string(advertised) + "\n";
 }
+
+//////////////////////////////////////////////// PRODUCT /////////////////////////////////////////////////////////////
 
 Product::Product(int id) {
   productID = id;
@@ -595,11 +616,29 @@ string Product::getProductName() {
 int Product::getProductID() {
   return productID;
 }
-//////////////////////////////////////////////////////////////////////////////////
 
 Stock* Product::getStock(int id) {
   return stocks[id];
 }
+string Product::getAdvertisedProduct(int count = 1) {
+    if(Database::currentUser == NULL) return "";
+    if(Database::currentUser->getUserType() == VENDOR) return "";
+    if(((Customer*)(Database::currentUser))->getMembershipStatus()) {
+        return "You are a prime member! Enjoy " + to_string(Database::primeDiscount*100) + "% EXTRA DISCOUNT on every item!\n";
+    }
+    string advertisement = "Flat " + to_string(int(Database::discount*100)) + "% off on every item!!\n";
+    for(int i = 0; i < min((int)(Database::advertisedProducts.size()), count); i++) {
+        Product* product = Database::advertisedProducts.front().first;
+        Stock* stock = Database::advertisedProducts.front().second;
+        Database::advertisedProducts.pop();
+        Database::advertisedProducts.push(make_pair(product, stock));
+        advertisement.append("Buy " + product->name + " from " + stock->vendor->getUsername() + " at Rs. " + to_string(stock->price*(1-Database::discount)) + " only!\n     ");
+    }
+    advertisement.append("Limited offer! Search for these products now!\n");
+    return advertisement;
+}
+
+///////////////////////////////////// CART PRODUCT //////////////////////////////////////////////////////
 
 CartProduct::CartProduct(Product* product, Stock* stock, int quantity) {
     this->product = product;
@@ -620,13 +659,23 @@ void CartProduct :: displayCartProduct(){
 
 void CartProduct :: displayOrderProduct(int i){
     
-    mvprintw(4*i+5,5,"Product Name: %d",product->getProductName());
-    mvprintw(4*i+6,5,"No. of Orders: %d",quantity);
+    mvprintw(4*i+5,5,"Product Name: %s",product->getProductName().c_str());
+    mvprintw(4*i+6,5,"No. of quantities: %d",quantity);
     mvprintw(4*i+7,5,"Product Price: %d",stock->price);
 
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
+
+void CartProduct :: displayOrderProduct(){
+    
+    printw("     Product Name: %s\n",product->getProductName().c_str());
+    printw("     No. of quantities: %d\n",quantity);
+    printw("     Product Price: %d\n",stock->price);
+
+}
+
+///////////////////////////////////////////// CART //////////////////////////////////////////////////////////
+
 void Cart :: addCartProductToCart(CartProduct newCartProduct){
     cartProducts.push_back(newCartProduct);
 }
@@ -645,7 +694,7 @@ void Cart :: removeCartProductFromCart(int index){
     cartProducts.erase(cartProducts.begin()+index);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// CUSTOMER /////////////////////////////////////////////////////
 
 
 Customer::Customer(int id) : User(id) {type = CUSTOMER;}
@@ -692,4 +741,8 @@ void Customer::objectFromDatabase(Customer* customer, ifstream& fin) {
     customer->cart.cartProducts.push_back(cartProduct);
   }
   
+}
+
+bool Customer::getMembershipStatus() {
+  return primeMember;
 }

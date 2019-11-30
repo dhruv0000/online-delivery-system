@@ -1,3 +1,5 @@
+// Contains declarations of all utility classes and database shared by the system
+
 #include<bits/stdc++.h>
 
 using namespace std;
@@ -19,6 +21,8 @@ class Cart;
 class Wallet;
 class Order;
 
+
+// utility functions for manipulating passwords
 class Password{
 public:
     static bool checkStrength(string passwd);
@@ -38,6 +42,7 @@ public:
     string getDatabaseString();
 };
 
+// user wallet which stores user balance
 class Wallet{
   double balance;
 public:
@@ -49,6 +54,7 @@ public:
   friend class OrderManager;
 };
 
+// contains details of orders placed, every order corresponds to only one vendor
 class Order{
   int orderID;
   OrderStatus status;
@@ -63,7 +69,7 @@ class Order{
   Order(int id);
   Order(int id,CartProduct newCartProduct,double cost,double discount, double deliveryCharge, string deliverySlot,PaymentStatus paymentStatus, Customer* customer);
   int getOrderID();
-  void displayOrderCustomer();
+  // bool displayOrderCustomer();
   bool displayOrderVendor();
   void dispatchOrder();
   string getDatabaseString();
@@ -72,6 +78,7 @@ class Order{
   friend class OrderManager;
 };
 
+// basic user class containing common attributes of users
 class User{
 protected:
   int userID;
@@ -104,6 +111,7 @@ public:
   friend int main();
 };
 
+// subclass of user containing vendor specific attributes like rating, review, etc.
 class Vendor : public User{
   double rating;
   int numberOfRatings;
@@ -120,6 +128,7 @@ public:
   friend class UserManager;
 };
 
+// stores the vendor of a particular product alongwith its price and quantity
 class Stock{
     
     public:
@@ -134,6 +143,7 @@ class Stock{
     friend class OrderManager;
 };
 
+// represents a product and stores all its stocks
 class Product{
     int productID;
     string name;
@@ -151,10 +161,12 @@ class Product{
     string getProductName();
     int getProductID();
     Stock* getStock(int id);
+    static string getAdvertisedProduct(int);
     friend class ProductManager;
     friend class OrderManager;
 };
 
+// represents ready-to-order product which can be added to an order
 class CartProduct{
   Product *product;
   Stock *stock;
@@ -163,13 +175,13 @@ class CartProduct{
   CartProduct(Product* product, Stock* stock, int quantity);
   void displayCartProduct();
   void displayOrderProduct(int);
+  void displayOrderProduct();
   string getDatabaseString();
   friend class OrderManager;
   friend class Order;
 };
 
-
-
+// stores cart products
 class Cart{
   vector<CartProduct> cartProducts;
   void addCartProductToCart(CartProduct);
@@ -179,7 +191,7 @@ class Cart{
   friend class OrderManager;
 };
 
-
+// subclass of user containing customer specific attributes like cart, membership etc.
 class Customer : public User{
   Cart cart;
   bool primeMember;
@@ -191,11 +203,13 @@ public:
   void removeCartProduct(int);
   string getDatabaseString();
   static void objectFromDatabase(Customer* customer, ifstream& fin);
+  bool getMembershipStatus();
   friend class OrderManager;
   friend class UserManager;
   friend class ProductManager;
 };
 
+// main shared database alongwith functions to read and write into database
 namespace Database {
     vector<Order*> orders;
     vector<Product*> products;
@@ -209,6 +223,7 @@ namespace Database {
     double primeMembershipCost;
     double primeDiscount;
 
+    //utility to get user type
     template<typename T>
     int getType(T* record) {
       return -1;
@@ -218,22 +233,25 @@ namespace Database {
       return user->getType();
     }
 
+    // generic function to write entity (product, order or user) to file
     template<typename T>
     void writeEntityToDatabase(vector<T*> data, string fname) {
         ofstream fout;
         fout.open(fname);
         fout<<data.size()<<endl;
-        if(typeid(T) == typeid(User)) {
+        if(typeid(T) == typeid(User)) {             //typeid is used to check class type of entity
           for(auto user : data) {
             fout<<getType<T>(user);
           }
           fout<<endl;
         }
         for(auto item : data) {
-            fout<<item->getDatabaseString();
+            fout<<item->getDatabaseString();        //gets the particular entity's database representation string
         }
         fout.close();
     }
+
+    // utility to create new customer or vendor depending on user type
     template<typename T>
     T* newRecord(int type, int id) {
       return NULL;
@@ -246,6 +264,7 @@ namespace Database {
       return user;
     }
 
+    // generic function to initialize data vectors for different entities
     template<typename T>
     void initializeDataVectors(vector<T*>& data, string fname) {
       ifstream fin;
@@ -275,6 +294,8 @@ namespace Database {
       }
       fin.close();
     }
+
+    // utility to read object of customer or vendor from file according to user type
     template<typename T>
     void getObjectFromFile(T* record, ifstream& fin) {
 
@@ -288,6 +309,8 @@ namespace Database {
         Vendor::objectFromDatabase((Vendor*)user, fin);
       }
     }
+
+    // generic function to read different entities from file, and update their attributes in data vectors
     template<typename T>
     void readEntityFromDatabase(vector<T*>& data, string fname) {
       ifstream fin;
@@ -309,11 +332,13 @@ namespace Database {
           getObjectFromFile<T>(record, fin);
           
         } else {
-          T::objectFromDatabase(record, fin);
+          T::objectFromDatabase(record, fin);         // sets the entity's attributes according to the file contents
         }
       }
       fin.close();
     }
+
+    // wrapper function to handle writing of all entities to file at program termination
     void writeToDatabase() {
       ofstream fout;
       fout.open("charges.db");
@@ -322,6 +347,7 @@ namespace Database {
       fout<<Database::advertisingCost<<endl;
       fout<<Database::primeMembershipCost<<endl;
       fout<<Database::primeDiscount<<endl;
+      fout<<Database::admin->getWalletBalance()<<endl;
       fout.close();
 
       writeEntityToDatabase<Product>(Database::products, "products.db");
@@ -329,6 +355,8 @@ namespace Database {
       writeEntityToDatabase<Order>(Database::orders, "orders.db");
 
     }
+
+    // wrapper function to handle reading of all entities from file at program beginning
     void readFromDatabase() {
       Database::admin = new User("admin", Password::hashValue("admin"), "AdminAccount", Address("Hostel G6", "IIT Jodhpur", "Jodhpur", "Rajasthan"), ADMIN);
       Database::discount = 0.05;
@@ -341,7 +369,9 @@ namespace Database {
       fin.open("charges.db");
       if(!fin.fail()) {
         if(fin.peek() != ifstream::traits_type::eof()) {
-          fin>>discount>>deliveryCharge>>advertisingCost>>primeMembershipCost>>primeDiscount;
+          double adminWalletBalance;
+          fin>>discount>>deliveryCharge>>advertisingCost>>primeMembershipCost>>primeDiscount>>adminWalletBalance;
+          admin->updateWalletBalance(adminWalletBalance);
         }
         fin.close();
       }
