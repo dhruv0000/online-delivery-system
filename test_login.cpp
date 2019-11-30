@@ -39,7 +39,7 @@ int printUserChoice(){
 
 
 void getDetails(string &username,string &password,unsigned long long& hashPassword,string &rePassword,
-    string &accountNumber,Address &address,Type& type,int wish){
+    string &accountNumber,Address &address,Type& type,int wish,bool &prime){
     
         clear();
         char t[100]; 
@@ -101,6 +101,13 @@ void getDetails(string &username,string &password,unsigned long long& hashPasswo
         }else{
              type = VENDOR;
         }
+        char in4[]="Do you want to be a Prime Member?";
+        string option[]={"YES","NO"};
+        int choice = displayBoxHeader(option,2,in4);
+        if(choice==1)
+            prime=true;
+        else
+            prime=false;
         
 }
 
@@ -326,12 +333,12 @@ int main(){
         unsigned long long hashPassword;
         Address address;
         Type type;
-
+        bool prime;
         if(userWish ==  1|| userWish == 2){
-            getDetails(username,password,hashPassword,rePassword,accountNumber,address,type,userWish);
+            getDetails(username,password,hashPassword,rePassword,accountNumber,address,type,userWish,prime);
         }
 
-        if(UserManager :: registerUser(username, hashPassword, accountNumber, address, type)){
+        if(UserManager :: registerUser(username, hashPassword, accountNumber, address, type,prime)){
             clear();
             mvprintw(5,5,"You have successfully created new account (:");
             if(type == CUSTOMER)
