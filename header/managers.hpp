@@ -304,7 +304,7 @@ public:
 
     // display contents of the cart
     static void showCart(){
-        ((Customer*)(Database::currentUser))->displayCart();
+        (((Customer*)(Database::currentUser))->cart).displayCartFromCart();
     }
     
     // to get a cart product according to index
@@ -414,7 +414,7 @@ public:
 
     printw("     Cost of Package: %d\n",currentOrder->cost);
     printw("     Vendor Name: %s\n",currentOrder->cartProducts[0].stock->vendor->getUsername().c_str());
-    printw("     Delivery Slot: %d\n",currentOrder->deliverySlot);
+    printw("     Delivery Slot: %s\n",currentOrder->deliverySlot);
     // customer->displayUserInformation(4*i+3);
 
     string in[] = {"1:Confirm this order","2:Cancel this order","3:See next order","4:Exit"};
