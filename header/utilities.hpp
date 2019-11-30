@@ -7,6 +7,7 @@
 int displayBox(string choices[],int n){
     start_color();
     noecho();
+    cbreak();
     int xMax,yMax;
     getmaxyx(stdscr,yMax,xMax);
     init_pair(1,COLOR_GREEN,COLOR_WHITE);
@@ -18,7 +19,7 @@ int displayBox(string choices[],int n){
     
     // init_pair(1,COLOR_RED,COLOR_BLACK);
     
-    WINDOW* menu = newwin(9,xMax-12,yMax-13,5);
+    WINDOW* menu = newwin(9,xMax-12,yMax-15,5);
     box(menu,0,0);
     refresh();
     wrefresh(menu);
@@ -63,6 +64,7 @@ int displayBox(string choices[],int n){
 int displayBoxHeader(string choices[],int n,char* header){
     start_color();
     noecho();
+    cbreak();
     int xMax,yMax;
     getmaxyx(stdscr,yMax,xMax);
     init_pair(1,COLOR_GREEN,COLOR_WHITE);
@@ -74,7 +76,7 @@ int displayBoxHeader(string choices[],int n,char* header){
     
     // init_pair(1,COLOR_RED,COLOR_BLACK);
     
-    WINDOW* menu = newwin(9,xMax-12,yMax-9,5);
+    WINDOW* menu = newwin(9,xMax-12,yMax-15,5);
     box(menu,0,0);
     refresh();
     wrefresh(menu);
@@ -119,11 +121,12 @@ int displayBoxHeader(string choices[],int n,char* header){
 void displayWindow(char in[],const char* c,char in1[] = NULL){
     
     // clear();
+    cbreak();
     mvprintw(2,5,"Enter the following details");
     int xMax,yMax;
     getmaxyx(stdscr,yMax,xMax);
 
-    WINDOW* input = newwin(9,xMax-12,yMax-9,5);
+    WINDOW* input = newwin(9,xMax-12,yMax-15,5);
     box(input,0,0);
     refresh();
     wrefresh(input);
@@ -625,7 +628,7 @@ string CartProduct::getDatabaseString() {
 
 void CartProduct :: displayCartProduct(){
     product->displayProduct();
-    cout<<"Quantity in Cart :"<<stock->quantity;
+    printw("     Quantity in Cart :%d",stock->quantity);
 }
 
 void CartProduct :: displayOrderProduct(int i){
@@ -653,8 +656,8 @@ void Cart :: addCartProductToCart(CartProduct newCartProduct){
 void Cart :: displayCartFromCart(){
   int i = 1;
   for(auto presentCartProduct : cartProducts){
-   cout<<"Product "<<i<<endl;
-   presentCartProduct.displayCartProduct();
+    printw("     Product %d:",i);
+    presentCartProduct.displayCartProduct();
     i++;
   }
 

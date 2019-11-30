@@ -112,8 +112,8 @@ void displayUsername(WINDOW* window){
 }
 
 int printAdminChoices(){
-    string s[] = {"1: Set delivery charges","2: Set discount percentage","3: Logout"};
-    return displayBox(s,3);
+    string s[] = {"1: Set delivery charges","2: Set discount percentage","3:Set advertisement cost","4: Logout"};
+    return displayBox(s,4);
 }
 
 
@@ -280,6 +280,12 @@ int cartChoices(){
     // end();
 }
 
+void setAdvertisement(){
+        char charge[100];
+        char in[]="Enter advertisement charges : ";
+        displayWindow(in,charge);
+        Database :: advertisingCost = stod(charge);
+}
 int displayProductChoice(int n){
     string s[n];
     for(int i=0;i<n;i++){
@@ -327,36 +333,33 @@ int main(){
         
     }else if(wish == 2) {
         // For Login as Admin
+        clear();
         string username,password;
+        unsigned long long hashValue;
+        getUserDetails(username,password,hashValue);
+        // unsigned long long hashValue = (Password :: hashValue(password));
         
-        
-        cout<<"Enter your username (without spaces):";
-        std :: cin>>username;
-        cout<<"Enter your password:";
-        std :: cin>>password;
-        unsigned long long hashValue = (Password :: hashValue(password));
-        
-        if((username == Database :: admin->getUsername()) &&  hashValue == (Database :: admin->getPassword())){
-            
+        if((username == Database :: admin->getUsername()) &&  hashValue == (Database :: admin->getPassword())) {
+            clear();
             AdminRun:
             
-            printAdminChoices();
-            char adminWish;
-            std :: cin>>adminWish;
-            if(adminWish == '1')setDeliveryCharges();
-            else if(adminWish == '2')setDiscountPercentage();
-            else if(adminWish == '3'){
-                UserManager :: logoutUser();
-                goto SignIn;
-            }else{
-                 cout<<"Admin Please enter correct choice"<<endl;
-                 goto AdminRun;
+            int adminWish = printAdminChoices();
+            
+            if(adminWish == 1)setDeliveryCharges();
+            else if(adminWish == 2)setDiscountPercentage();
+            else if(adminWish == 3){
+                setAdvertisement();
             }
-
+            else if(adminWish == 4){
+                UserManager :: logoutUser(); 
+                goto SignIn;
+            }
         }else{
-            cout<<"You have entered wrong password"<<endl;
-            goto AdminRun;
+            clear();
+            mvprintw(5,5,"You have entered wrong password");
+            goto SignIn;
         }
+        clear();
         goto AdminRun;
         
     }
@@ -574,36 +577,35 @@ int main(){
 
         }else if((customerWish == (topSearch.size()+2))){
             //For Cart Department
+            clear();
             CartChoices:
 
-            cout<<"\033[1;33mYour Cart Products are shown below :\033[0m"<<endl;
+            mvprintw(5,5," Your Cart Products are shown below : \n");
+            
             OrderManager :: showCart();
-            cartChoices();
-            int cartChoice;
-            cin>>cartChoice;
+
+            int cartChoice = cartChoices();
+            
             
             if(cartChoice == 1){
+
                 string deliverySlot;
                 PaymentStatus paymentStatus;
                 getOrderInformation(deliverySlot,paymentStatus);
                 OrderManager :: placeOrderFromCart(deliverySlot,paymentStatus);
 
+
             }else if(cartChoice == 2){
-                cout<<"Enter the cart product you wish to remove:";
-                int cartChoice;
-                cin>>cartChoice;
-                CartProduct *cartProduct = OrderManager :: getCartProduct(cartChoice);
-                cout<<"Your Product has been removed"<<endl;
+                char chh[] = "Enter the cart product you wish to remove:";
+                char inpt[100];
+                displayWindow(chh,inpt);
+                int deleteItem= stoi(inpt);
+
+                CartProduct *cartProduct = OrderManager :: getCartProduct(deleteItem-1);
+                mvprintw(5,5,"Your product has been removed");
 
 
-            }else{
-                // redStart();
-                cout<<"You have entered wrong choice"<<endl;
-                // end();
-                goto CartChoices;
             }
-
-
             goto CustomerChoices;
 
         }else if(customerWish == (topSearch.size()+3)){

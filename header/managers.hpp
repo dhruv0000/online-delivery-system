@@ -282,7 +282,7 @@ public:
         ((Customer*)(Database :: currentUser))->removeCartProduct(index);
     }
     static void showCart(){
-        ((Customer*)(Database::currentUser))->displayCart();
+        (((Customer*)(Database::currentUser))->cart).displayCartFromCart();
     }
     
     static CartProduct* getCartProduct(int choice){
