@@ -289,10 +289,11 @@ void getOrderInformation(string &slot,PaymentStatus &status){
 }
 
 int cartChoices(){
-    string s[2];
+    string s[3];
     s[0]="1:Order the cart items";
     s[1]="2:Remove from cart";
-    return displayBox(s,2);
+    s[2]="3:Go Back";
+    return displayBox(s,3);
     // end();
     // end();
 }
@@ -535,7 +536,7 @@ int main(){
                 ProductManager :: searchAndDisplayVendor(searchProduct[productWish]);
                 // displayVendorList(availableVendors);
                 int vendorSelection;
-                char c[] = "Enter the Vendoe Number:";
+                char c[] = "Enter the Vendor Number:";
                 char ven[10];
                 displayWindow(c,ven);
                 vendorSelection = stod(ven)-1; 
