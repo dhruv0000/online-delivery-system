@@ -20,7 +20,7 @@ int displayBox(string choices[],int n){
     
     // init_pair(1,COLOR_RED,COLOR_BLACK);
     
-    WINDOW* menu = newwin(9,xMax-12,yMax-15,5);
+    WINDOW* menu = newwin(9,xMax-12,yMax-14,5);
     box(menu,0,0);
 
     string ad = Product::getAdvertisedProduct(1);
@@ -81,11 +81,7 @@ int displayBoxHeader(string choices[],int n,char* header){
     
     // init_pair(1,COLOR_RED,COLOR_BLACK);
     
-<<<<<<< HEAD
-    WINDOW* menu = newwin(9,xMax-12,yMax-15,5);
-=======
-    WINDOW* menu = newwin(9,xMax-12,yMax-13,5);
->>>>>>> 3c0d570d07895cc22b4e31cc3252000a649cc15f
+    WINDOW* menu = newwin(9,xMax-12,yMax-14,5);
     box(menu,0,0);
     string ad = Product::getAdvertisedProduct(1);
     mvprintw(yMax-4,5,"%s",ad.c_str());
@@ -137,11 +133,7 @@ void displayWindow(char in[],const char* c,char in1[] = NULL){
     int xMax,yMax;
     getmaxyx(stdscr,yMax,xMax);
 
-<<<<<<< HEAD
-    WINDOW* input = newwin(9,xMax-12,yMax-15,5);
-=======
-    WINDOW* input = newwin(9,xMax-12,yMax-13,5);
->>>>>>> 3c0d570d07895cc22b4e31cc3252000a649cc15f
+    WINDOW* input = newwin(9,xMax-12,yMax-14,5);
     box(input,0,0);
     string ad = Product::getAdvertisedProduct(1);
     mvprintw(yMax-4,5,"%s",ad.c_str());
@@ -643,9 +635,9 @@ string Product::getAdvertisedProduct(int count = 1) {
         Stock* stock = Database::advertisedProducts.front().second;
         Database::advertisedProducts.pop();
         Database::advertisedProducts.push(make_pair(product, stock));
-        advertisement.append("Buy " + product->name + " from " + stock->vendor->getUsername() + " at Rs. " + to_string(stock->price*(1-Database::discount)) + " only!\n     ");
+        advertisement.append("     Buy " + product->name + " from " + stock->vendor->getUsername() + " at Rs. " + to_string(stock->price*(1-Database::discount)) + " only!\n");
     }
-    advertisement.append("Limited offer! Search for these products now!\n");
+    advertisement.append("     Limited offer! Search for these products now!\n");
     return advertisement;
 }
 
