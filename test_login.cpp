@@ -200,7 +200,7 @@ int displayVendorChoices(){
     return displayBox(in,6);
 }
 
-void getProductDetails(string &name,string &type,int &quantity,double &price,string &description){
+void getProductDetails(string &name,string &type,int &quantity,double &price,string &description,bool &advertise){
 
     char temp[100];
 
@@ -226,7 +226,7 @@ void getProductDetails(string &name,string &type,int &quantity,double &price,str
 
     char check;
     clear();
-    char in4[]="Would you liketo add description of your product?Y/N";
+    char in4[]="Would you like to add description of your product?Y/N";
     displayWindow(in4,temp);
     check = (temp[0]);
 
@@ -237,6 +237,16 @@ void getProductDetails(string &name,string &type,int &quantity,double &price,str
         displayWindow(in7,temp);
         description = string(temp);
     }
+
+    clear();
+    string option[] = {"Yes","No"};
+    char in8[]="Would you like to advertise your Product for Rs.50 ";
+    int choice=displayBoxHeader(option,2,in8);
+    
+    if(choice==1)
+        advertise=true;
+    else
+        advertise=false;
 
 }
 
@@ -645,10 +655,6 @@ int main(){
             UserManager :: logoutUser();
             goto SignIn;
         }
-        else{
-            cout<<"\033[1;31mYou have entered wrong choice\033[0m"<<endl;
-            goto CustomerChoices;
-        }
        
 
     }
@@ -676,9 +682,10 @@ int main(){
             string name,type,description;
             int quantity;
             double price;
+            bool advertise;
 
-            getProductDetails(name,type,quantity,price,description);
-            ProductManager :: addProduct(name,type,quantity,price,type);
+            getProductDetails(name,type,quantity,price,description,advertise);
+            ProductManager :: addProduct(name,type,quantity,price,type,advertise);
             // if(!(ProductManager :: addProduct(name,type,quantity,price,type))){
             //     cout<<"Sorry something went wrong"<<endl;
             //     cout<<"Try after Sometime to add product"<<endl;

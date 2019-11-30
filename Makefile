@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS = -O3 -w
+CFLAGS = 
 vpath %.h /header
 
 .PHONY: all run clear clean
@@ -13,8 +13,8 @@ run: login
 	./login
 
 
-compile:login.cpp
-	$(CC) $(CFLAGS) login.cpp -o login
+compile:test_login.cpp
+	$(CC) $(CFLAGS) test_login.cpp -o login -lncurses
 
 
 

@@ -1,7 +1,8 @@
+/* this file contains utility functions and defines
+ * all functions (including constructors) of the utility classes defined in database.hpp */
+
 #include "database.hpp"
 #include<ncurses.h>
-
-
 
 
 int displayBox(string choices[],int n){
@@ -21,8 +22,12 @@ int displayBox(string choices[],int n){
     
     WINDOW* menu = newwin(9,xMax-12,yMax-15,5);
     box(menu,0,0);
+
+    string ad = Product::getAdvertisedProduct(1);
+    mvprintw(yMax-4,5,"%s",ad.c_str());
     refresh();
     wrefresh(menu);
+
 
      keypad(menu,true);
     // string choices[]={"Manan","Manul","Dhruv"};
@@ -76,8 +81,14 @@ int displayBoxHeader(string choices[],int n,char* header){
     
     // init_pair(1,COLOR_RED,COLOR_BLACK);
     
+<<<<<<< HEAD
     WINDOW* menu = newwin(9,xMax-12,yMax-15,5);
+=======
+    WINDOW* menu = newwin(9,xMax-12,yMax-13,5);
+>>>>>>> 3c0d570d07895cc22b4e31cc3252000a649cc15f
     box(menu,0,0);
+    string ad = Product::getAdvertisedProduct(1);
+    mvprintw(yMax-4,5,"%s",ad.c_str());
     refresh();
     wrefresh(menu);
 
@@ -126,8 +137,14 @@ void displayWindow(char in[],const char* c,char in1[] = NULL){
     int xMax,yMax;
     getmaxyx(stdscr,yMax,xMax);
 
+<<<<<<< HEAD
     WINDOW* input = newwin(9,xMax-12,yMax-15,5);
+=======
+    WINDOW* input = newwin(9,xMax-12,yMax-13,5);
+>>>>>>> 3c0d570d07895cc22b4e31cc3252000a649cc15f
     box(input,0,0);
+    string ad = Product::getAdvertisedProduct(1);
+    mvprintw(yMax-4,5,"%s",ad.c_str());
     refresh();
     wrefresh(input);
 
@@ -140,7 +157,7 @@ void displayWindow(char in[],const char* c,char in1[] = NULL){
     
 }
 
-
+// utility to compare chars ignoring case
 bool compareCharIgnoreString(char & c1, char & c2)
 {
   if (c1 == c2||std::toupper(c1) == std::toupper(c2)||std::toupper(c1) == c2||c1 == std::toupper(c2))
@@ -148,12 +165,14 @@ bool compareCharIgnoreString(char & c1, char & c2)
   return false;
 }
  
+//utility to comapare strings ignoring case
 bool compareStringIgnoreCase(std::string & str1, std::string &str2)
 {
   return ( (str1.size() == str2.size() ) &&
        std::equal(str1.begin(), str1.end(), str2.begin(), &compareCharIgnoreString) );
 }
 
+///////////////////////////////////// PASSWORD //////////////////////////////////////////
 bool Password::checkStrength(string passwd){
     int length = passwd.length();
     int countUpper = 0,countLower = 0,countDigit = 0;
@@ -175,7 +194,7 @@ unsigned long long Password::hashValue(string passwd){
     return h(passwd);
 }
 
-////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////// ADDRESS ///////////////////////////////////////////
 
 Address::Address() {}
 
@@ -236,7 +255,7 @@ string Address::getDatabaseString() {
   return building + "\n" + street + "\n" + city + "\n" + state + "\n";
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// WALLET ////////////////////////////////////////////////////////
 
 Wallet::Wallet(){}
 Wallet::Wallet(double balance){
@@ -249,7 +268,7 @@ void Wallet::updateBalance(double increment){
   this->balance = this->balance + increment;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////// ORDER ////////////////////////////////////////////////////////
 
 Order::Order(int id) {
   orderID = id;
@@ -377,7 +396,7 @@ OrderStatus Order::getOrderStatus() {
 
 
   
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////// USER /////////////////////////////////////////////////////
 
 User::User(int id) {userID = id;}
 
@@ -437,16 +456,12 @@ void User::userFromDatabase(User* user, ifstream& fin) {
   for(int i = 0; i < 10; i++) {
     getline(fin, attrib[i]);
   }
-  // cout<<attrib[0]<<endl;
   user->username = attrib[0];
   user->password = stoull(attrib[1]);
-  // cout<<attrib[2]<<endl;
   user->wallet = Wallet(stod(attrib[2]));
-  // cout<<user->wallet.getBalance()<<endl;
   user->account = attrib[3];
   user->address = Address(attrib[4], attrib[5], attrib[6], attrib[7]);
   user->type = static_cast<Type>(stoi(attrib[8]));
-  // cout<<attrib[8]<<endl;
   int orderSize = stoi(attrib[9]);
   
   for(int i = 0; i < orderSize; i++) {
@@ -467,6 +482,8 @@ int User::getUserType() {
 string User::getDatabaseString(){}
 
 void User::objectFromDatabase(User* user, ifstream& fin){}
+
+///////////////////////////////////////////////// VENDOR //////////////////////////////////////////////////////////
 
 Vendor::Vendor(int id) : User(id) {type = VENDOR;}
 
@@ -525,7 +542,7 @@ void Vendor::objectFromDatabase(Vendor* vendor, ifstream& fin) {
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////// STOCK //////////////////////////////////////////////////////////////
 
 Stock::Stock(int id, Vendor* vendor, int quantity, double price) {
     this->stockID = id;
@@ -540,6 +557,8 @@ int Stock::getVendorID() {
 string Stock::getDatabaseString() {
   return to_string(vendor->getUserID()) + "\n" + to_string(quantity) + "\n" + to_string(price) + "\n" + to_string(advertised) + "\n";
 }
+
+//////////////////////////////////////////////// PRODUCT /////////////////////////////////////////////////////////////
 
 Product::Product(int id) {
   productID = id;
@@ -608,11 +627,29 @@ string Product::getProductName() {
 int Product::getProductID() {
   return productID;
 }
-//////////////////////////////////////////////////////////////////////////////////
 
 Stock* Product::getStock(int id) {
   return stocks[id];
 }
+string Product::getAdvertisedProduct(int count = 1) {
+    if(Database::currentUser == NULL) return "";
+    if(Database::currentUser->getUserType() == VENDOR) return "";
+    if(((Customer*)(Database::currentUser))->getMembershipStatus()) {
+        return "You are a prime member! Enjoy " + to_string(Database::primeDiscount*100) + "% EXTRA DISCOUNT on every item!\n";
+    }
+    string advertisement = "Flat " + to_string(int(Database::discount*100)) + "% off on every item!!\n";
+    for(int i = 0; i < min((int)(Database::advertisedProducts.size()), count); i++) {
+        Product* product = Database::advertisedProducts.front().first;
+        Stock* stock = Database::advertisedProducts.front().second;
+        Database::advertisedProducts.pop();
+        Database::advertisedProducts.push(make_pair(product, stock));
+        advertisement.append("Buy " + product->name + " from " + stock->vendor->getUsername() + " at Rs. " + to_string(stock->price*(1-Database::discount)) + " only!\n     ");
+    }
+    advertisement.append("Limited offer! Search for these products now!\n");
+    return advertisement;
+}
+
+///////////////////////////////////// CART PRODUCT //////////////////////////////////////////////////////
 
 CartProduct::CartProduct(Product* product, Stock* stock, int quantity) {
     this->product = product;
@@ -648,7 +685,8 @@ void CartProduct :: displayOrderProduct(){
 
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////// CART //////////////////////////////////////////////////////////
+
 void Cart :: addCartProductToCart(CartProduct newCartProduct){
     cartProducts.push_back(newCartProduct);
 }
@@ -667,7 +705,7 @@ void Cart :: removeCartProductFromCart(int index){
     cartProducts.erase(cartProducts.begin()+index);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// CUSTOMER /////////////////////////////////////////////////////
 
 
 Customer::Customer(int id) : User(id) {type = CUSTOMER;}
@@ -714,4 +752,8 @@ void Customer::objectFromDatabase(Customer* customer, ifstream& fin) {
     customer->cart.cartProducts.push_back(cartProduct);
   }
   
+}
+
+bool Customer::getMembershipStatus() {
+  return primeMember;
 }
