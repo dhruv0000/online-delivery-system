@@ -39,7 +39,7 @@ int printUserChoice(){
 
 
 void getDetails(string &username,string &password,unsigned long long& hashPassword,string &rePassword,
-    string &accountNumber,Address &address,Type& type,int wish){
+    string &accountNumber,Address &address,Type& type,int wish,bool &prime){
     
         clear();
         char t[100]; 
@@ -101,6 +101,13 @@ void getDetails(string &username,string &password,unsigned long long& hashPasswo
         }else{
              type = VENDOR;
         }
+        char in4[]="Do you want to be a Prime Member?";
+        string option[]={"YES","NO"};
+        int choice = displayBoxHeader(option,2,in4);
+        if(choice==1)
+            prime=true;
+        else
+            prime=false;
         
 }
 
@@ -200,7 +207,7 @@ int displayVendorChoices(){
     return displayBox(in,6);
 }
 
-void getProductDetails(string &name,string &type,int &quantity,double &price,string &description){
+void getProductDetails(string &name,string &type,int &quantity,double &price,string &description,bool &advertise){
 
     char temp[100];
 
@@ -226,7 +233,7 @@ void getProductDetails(string &name,string &type,int &quantity,double &price,str
 
     char check;
     clear();
-    char in4[]="Would you liketo add description of your product?Y/N";
+    char in4[]="Would you like to add description of your product?Y/N";
     displayWindow(in4,temp);
     check = (temp[0]);
 
@@ -237,6 +244,16 @@ void getProductDetails(string &name,string &type,int &quantity,double &price,str
         displayWindow(in7,temp);
         description = string(temp);
     }
+
+    clear();
+    string option[] = {"Yes","No"};
+    char in8[]="Would you like to advertise your Product for Rs.50 ";
+    int choice=displayBoxHeader(option,2,in8);
+    
+    if(choice==1)
+        advertise=true;
+    else
+        advertise=false;
 
 }
 
@@ -310,12 +327,12 @@ int main(){
         unsigned long long hashPassword;
         Address address;
         Type type;
-
+        bool prime;
         if(userWish ==  1|| userWish == 2){
-            getDetails(username,password,hashPassword,rePassword,accountNumber,address,type,userWish);
+            getDetails(username,password,hashPassword,rePassword,accountNumber,address,type,userWish,prime);
         }
 
-        if(UserManager :: registerUser(username, hashPassword, accountNumber, address, type)){
+        if(UserManager :: registerUser(username, hashPassword, accountNumber, address, type,prime)){
             clear();
             mvprintw(5,5,"You have successfully created new account (:");
             if(type == CUSTOMER)
@@ -643,10 +660,6 @@ int main(){
             UserManager :: logoutUser();
             goto SignIn;
         }
-        else{
-            cout<<"\033[1;31mYou have entered wrong choice\033[0m"<<endl;
-            goto CustomerChoices;
-        }
        
 
     }
@@ -674,9 +687,10 @@ int main(){
             string name,type,description;
             int quantity;
             double price;
+            bool advertise;
 
-            getProductDetails(name,type,quantity,price,description);
-            ProductManager :: addProduct(name,type,quantity,price,type);
+            getProductDetails(name,type,quantity,price,description,advertise);
+            ProductManager :: addProduct(name,type,quantity,price,type,advertise);
             // if(!(ProductManager :: addProduct(name,type,quantity,price,type))){
             //     cout<<"Sorry something went wrong"<<endl;
             //     cout<<"Try after Sometime to add product"<<endl;

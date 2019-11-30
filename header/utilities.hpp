@@ -21,8 +21,12 @@ int displayBox(string choices[],int n){
     
     WINDOW* menu = newwin(9,xMax-12,yMax-13,5);
     box(menu,0,0);
+
+    string ad = Product::getAdvertisedProduct(1);
+    mvprintw(yMax-4,5,"%s",ad.c_str());
     refresh();
     wrefresh(menu);
+
 
      keypad(menu,true);
     // string choices[]={"Manan","Manul","Dhruv"};
@@ -75,8 +79,10 @@ int displayBoxHeader(string choices[],int n,char* header){
     
     // init_pair(1,COLOR_RED,COLOR_BLACK);
     
-    WINDOW* menu = newwin(9,xMax-12,yMax-9,5);
+    WINDOW* menu = newwin(9,xMax-12,yMax-13,5);
     box(menu,0,0);
+    string ad = Product::getAdvertisedProduct(1);
+    mvprintw(yMax-4,5,"%s",ad.c_str());
     refresh();
     wrefresh(menu);
 
@@ -124,8 +130,10 @@ void displayWindow(char in[],const char* c,char in1[] = NULL){
     int xMax,yMax;
     getmaxyx(stdscr,yMax,xMax);
 
-    WINDOW* input = newwin(9,xMax-12,yMax-9,5);
+    WINDOW* input = newwin(9,xMax-12,yMax-13,5);
     box(input,0,0);
+    string ad = Product::getAdvertisedProduct(1);
+    mvprintw(yMax-4,5,"%s",ad.c_str());
     refresh();
     wrefresh(input);
 
@@ -612,6 +620,23 @@ int Product::getProductID() {
 Stock* Product::getStock(int id) {
   return stocks[id];
 }
+string Product::getAdvertisedProduct(int count = 1) {
+    if(Database::currentUser == NULL) return "";
+    if(Database::currentUser->getUserType() == VENDOR) return "";
+    if(((Customer*)(Database::currentUser))->getMembershipStatus()) {
+        return "You are a prime member! Enjoy " + to_string(Database::primeDiscount*100) + "% EXTRA DISCOUNT on every item!\n";
+    }
+    string advertisement = "Flat " + to_string(int(Database::discount*100)) + "% off on every item!!\n";
+    for(int i = 0; i < min((int)(Database::advertisedProducts.size()), count); i++) {
+        Product* product = Database::advertisedProducts.front().first;
+        Stock* stock = Database::advertisedProducts.front().second;
+        Database::advertisedProducts.pop();
+        Database::advertisedProducts.push(make_pair(product, stock));
+        advertisement.append("Buy " + product->name + " from " + stock->vendor->getUsername() + " at Rs. " + to_string(stock->price*(1-Database::discount)) + " only!\n     ");
+    }
+    advertisement.append("Limited offer! Search for these products now!\n");
+    return advertisement;
+}
 
 ///////////////////////////////////// CART PRODUCT //////////////////////////////////////////////////////
 
@@ -716,4 +741,8 @@ void Customer::objectFromDatabase(Customer* customer, ifstream& fin) {
     customer->cart.cartProducts.push_back(cartProduct);
   }
   
+}
+
+bool Customer::getMembershipStatus() {
+  return primeMember;
 }

@@ -22,7 +22,6 @@ The project uses the concepts of _classes_, _templates_, _template specializatio
   * Wallet
 - Discount
 - Database
-- Review and Rating System
 - Multiple Vendors Support
 - Trust Building among Vendors
 
@@ -31,6 +30,7 @@ The project uses the concepts of _classes_, _templates_, _template specializatio
 - We tried to host the database online, without success.
 - The system was divided into three separate subsystems, visually _User Manager_, _Product Manager_ and _Order Manager_, to improve modularity and readability of the code.
 - Exception handling was not implemented from starting which led to the program shutting down ungracefully.
+- Tried to include Review and Rating System. were not able to integrate Backend with nCurser front-end.
 
 
  

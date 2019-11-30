@@ -161,6 +161,7 @@ class Product{
     string getProductName();
     int getProductID();
     Stock* getStock(int id);
+    static string getAdvertisedProduct(int);
     friend class ProductManager;
     friend class OrderManager;
 };
@@ -202,6 +203,7 @@ public:
   void removeCartProduct(int);
   string getDatabaseString();
   static void objectFromDatabase(Customer* customer, ifstream& fin);
+  bool getMembershipStatus();
   friend class OrderManager;
   friend class UserManager;
   friend class ProductManager;
