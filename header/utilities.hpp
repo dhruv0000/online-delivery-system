@@ -321,7 +321,7 @@ bool Order :: displayOrderVendor(){
 
   mvprintw(4*i,5,"Cost of Package: %d",cost);
   mvprintw(4*i+1,5,"User Info:");
-  mvprintw(4*i+2,5,"Delivery Slot: %d",deliverySlot);
+  mvprintw(4*i+2,5,"Delivery Slot: %s",deliverySlot.c_str());
   customer->displayUserInformation(4*i+3);
 
   string in[] = {"1:Dispatch this order","2:See next order","3:Exit"};
@@ -335,14 +335,6 @@ bool Order :: displayOrderVendor(){
   return false;
 
 }
-
-
-
-
-
-
-
-
 
 
 
@@ -657,7 +649,7 @@ string CartProduct::getDatabaseString() {
 
 void CartProduct :: displayCartProduct(){
     product->displayProduct();
-    printw("     Quantity in Cart :%d",stock->quantity);
+    printw("     Quantity in Cart :%d",quantity);
 }
 
 void CartProduct :: displayOrderProduct(int i){
@@ -686,7 +678,7 @@ void Cart :: addCartProductToCart(CartProduct newCartProduct){
 void Cart :: displayCartFromCart(){
   int i = 1;
   for(auto presentCartProduct : cartProducts){
-    printw("     Product %d:",i);
+    printw("\n    Product %d:",i);
     presentCartProduct.displayCartProduct();
     i++;
   }

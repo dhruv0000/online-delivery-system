@@ -451,7 +451,7 @@ int main(){
                 displayWindow(c,ven);
                 vendorSelection = stod(ven)-1; 
 
-                Stock* stock = ProductManager :: getStockPointer(topSearch[vendorSelection],vendorSelection);
+                Stock* stock = ProductManager :: getStockPointer(topSearch[customerWish],vendorSelection);
                 // cout<<stock->price<<endl;
 
                 int productAcceptance = displayProductAcceptance();
@@ -466,7 +466,7 @@ int main(){
                     displayWindow(c,qin);
                     quantity = stod(qin); 
 
-                    OrderManager :: addToCart(topSearch[vendorSelection],stock,quantity);
+                    OrderManager :: addToCart(topSearch[customerWish],stock,quantity);
                     clear();
                     mvprintw(3,5,"Your Product has bee added into cart");
                     goto CustomerChoices;
@@ -489,7 +489,7 @@ int main(){
                     // cout<<searchProduct[0]->getProductName()<<endl;
                     
                     
-                    OrderManager :: placeOrder(topSearch[0],stock,quantity,deliverySlot,paymentStatus);
+                    OrderManager :: placeOrder(topSearch[customerWish],stock,quantity,deliverySlot,paymentStatus);
                     clear();
                     mvprintw(3,5,"Your Product has successfully ordered (:");
                     goto CustomerChoices;
@@ -611,7 +611,8 @@ int main(){
                 displayWindow(chh,inpt);
                 int deleteItem= stoi(inpt);
 
-                CartProduct *cartProduct = OrderManager :: getCartProduct(deleteItem-1);
+                //CartProduct *cartProduct = OrderManager :: getCartProduct(deleteItem-1);
+                OrderManager :: removeFromCart(deleteItem-1);
                 mvprintw(5,5,"Your product has been removed");
 
 
