@@ -66,7 +66,6 @@ void getDetails(string &username,string &password,unsigned long long& hashPasswo
                 displayWindow(in10,t,in1);
                 password = string(t);
 
-
                 if(Password :: checkStrength(password))
                     break;
 

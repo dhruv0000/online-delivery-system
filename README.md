@@ -48,7 +48,6 @@ cd online-delivery-system
 ```
 
 Run the makefile:
-```bash 
 start
 ```
 
