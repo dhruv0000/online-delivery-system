@@ -341,7 +341,7 @@ namespace Database {
     // wrapper function to handle writing of all entities to file at program termination
     void writeToDatabase() {
       ofstream fout;
-      fout.open("charges.db");
+      fout.open("database/charges.db");
       fout<<Database::discount<<endl;
       fout<<Database::deliveryCharge<<endl;
       fout<<Database::advertisingCost<<endl;
@@ -350,9 +350,9 @@ namespace Database {
       fout<<Database::admin->getWalletBalance()<<endl;
       fout.close();
 
-      writeEntityToDatabase<Product>(Database::products, "products.db");
-      writeEntityToDatabase<User>(Database::users, "users.db");
-      writeEntityToDatabase<Order>(Database::orders, "orders.db");
+      writeEntityToDatabase<Product>(Database::products, "database/products.db");
+      writeEntityToDatabase<User>(Database::users, "database/users.db");
+      writeEntityToDatabase<Order>(Database::orders, "database/orders.db");
 
     }
 
@@ -366,7 +366,7 @@ namespace Database {
       Database::primeDiscount = 0.1;
       Database::currentUser = NULL;
       ifstream fin;
-      fin.open("charges.db");
+      fin.open("database/charges.db");
       if(!fin.fail()) {
         if(fin.peek() != ifstream::traits_type::eof()) {
           double adminWalletBalance;
@@ -376,12 +376,12 @@ namespace Database {
         fin.close();
       }
 
-      initializeDataVectors<Product>(Database::products, "products.db");
-      initializeDataVectors<User>(Database::users, "users.db");
-      initializeDataVectors<Order>(Database::orders, "orders.db");
+      initializeDataVectors<Product>(Database::products, "database/products.db");
+      initializeDataVectors<User>(Database::users, "database/users.db");
+      initializeDataVectors<Order>(Database::orders, "database/orders.db");
       
-      readEntityFromDatabase<Product>(Database::products, "products.db");
-      readEntityFromDatabase<User>(Database::users, "users.db");
-      readEntityFromDatabase<Order>(Database::orders, "orders.db");
+      readEntityFromDatabase<Product>(Database::products, "database/products.db");
+      readEntityFromDatabase<User>(Database::users, "database/users.db");
+      readEntityFromDatabase<Order>(Database::orders, "database/orders.db");
     }
 };

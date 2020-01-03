@@ -28,3 +28,5 @@ header/trial.cpp
 my.file
 users.db
 charges.db
+database/products.db
+database/orders.db
