@@ -141,7 +141,7 @@ public:
 
     // if customer wants prime membership
     static void makeCustomerPrimeMember(Customer* customer) {
-        if(customer->getWalletBalance() < Database::primeMembershipCost) return;
+        
         customer->updateWalletBalance(-(Database::primeMembershipCost));
         Database::admin->updateWalletBalance(Database::primeMembershipCost);
         customer->primeMember = true;
