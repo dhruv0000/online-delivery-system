@@ -48,6 +48,7 @@ cd online-delivery-system
 ```
 
 Run the makefile:
+```
 start
 ```
 
