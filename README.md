@@ -4,7 +4,7 @@
 ![System Requirement](https://img.shields.io/badge/lib-ncurses-blue)
 ![System Requirement](https://img.shields.io/badge/language-c%2B%2B-yellow)
 
-A _nCursers_ based CLI software to order, track and manage delivery of goods.
+An object oriented C++ project, created for university course with _nCurses_ based CLI software to order, track and manage delivery of goods.
 
 ### Concepts and Tools Learnt
 The project uses the concepts of _classes_, _templates_, _template specialization_, _virtual functions_, _namespaces_, _inheritance_, _file handling_, _password hashing_, _STL components_ ,_friend functions_ and _nCurses Library_.
